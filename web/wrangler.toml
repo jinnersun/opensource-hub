@@ -4,6 +4,10 @@ compatibility_flags = ["nodejs_compat"]
 
 main = ".open-next/worker.js"
 
+# 修复 __name is not defined 错误
+# 参考: https://opennext.js.org/cloudflare/howtos/keep_names
+keep_names = false
+
 [assets]
 directory = ".open-next/assets"
 binding = "ASSETS"
