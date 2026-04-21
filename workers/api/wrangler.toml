@@ -2,8 +2,8 @@ name = "opensource-hub-api"
 main = "index.ts"
 compatibility_date = "2024-04-01"
 
-# 禁止公网访问：只能通过 Service Binding 内网调用
-workers_dev = false
+# 暂时允许公网访问，验证 API 可用后再关闭
+workers_dev = true
 
 # D1 数据库绑定
 [[d1_databases]]

@@ -1,15 +1,20 @@
 /**
  * OpenSource-Hub API 客户端
- * 
+ *
  * 数据流架构：
  * - 开发环境：直接 fetch 本地 Workers API (localhost:8787)
- * - 生产环境：通过 /api/proxy 路由 → Service Binding 内网直连 API Worker
- * 
- * API Worker 无需暴露公网 URL，外部无法访问。
+ * - 生产环境：直接 fetch API Worker 公网 URL
+ *
+ * TODO: 在 CF Pages Dashboard 配置 Service Binding 后，可改为内网直连
  */
 
-// API 基础 URL（仅开发环境使用）
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787'
+// API 基础 URL
+// 生产环境：直接请求 API Worker 公网 URL
+// 开发环境：请求本地 Workers API
+// TODO: 在 CF Pages Dashboard 配置 Service Binding 后，可改为内网直连
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production'
+  ? 'https://opensource-hub-api.358042175.workers.dev'
+  : 'http://localhost:8787')
 
 // 请求超时时间
 const TIMEOUT = 30000
@@ -173,18 +178,7 @@ async function fetchWithTimeout(url: string, options: RequestInit = {}, timeout 
 }
 
 async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  // 判断当前环境
-  const isServer = typeof window === 'undefined'
-  const isProd = process.env.NODE_ENV === 'production'
-
-  let url: string
-  if (isServer || !isProd) {
-    // SSR 或开发环境：直接请求 Workers API
-    url = `${API_BASE}${endpoint}`
-  } else {
-    // 客户端 + 生产环境：走 /api/proxy（Service Binding 内网直连）
-    url = `/api/proxy?path=${encodeURIComponent(endpoint)}`
-  }
+  const url = `${API_BASE}${endpoint}`
   
   try {
     const response = await fetchWithTimeout(url, {
