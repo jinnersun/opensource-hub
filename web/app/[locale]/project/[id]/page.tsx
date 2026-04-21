@@ -1,5 +1,8 @@
-import { notFound } from "next/navigation"
-import { getTranslations } from 'next-intl/server'
+"use client"
+
+import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
+import { useParams } from 'next/navigation'
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Breadcrumb } from "@/components/breadcrumb"
@@ -8,18 +11,13 @@ import { OSDownload } from "@/components/project-detail/os-download"
 import { SafeAuditCard } from "@/components/project-detail/safe-audit-card"
 import { EnvironmentGuide } from "@/components/project-detail/environment-guide"
 import { MetaInfoCard } from "@/components/project-detail/meta-info-card"
+import { ErrorState } from "@/components/error-state"
 import { getApp, getApps, transformAppForDisplay } from "@/lib/api"
 import type { Project } from "@/lib/api"
-import { Star, ShieldCheck, CheckCircle2, Sparkles } from "lucide-react"
+import { Star, ShieldCheck, CheckCircle2, Sparkles, Loader2 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-
-interface ProjectPageProps {
-  params: Promise<{
-    locale: string
-    id: string
-  }>
-}
+import { Link } from '@/i18n/routing'
 
 function formatStars(stars: number): string {
   if (stars >= 1000) {
@@ -28,38 +26,71 @@ function formatStars(stars: number): string {
   return stars.toString()
 }
 
-export default async function ProjectPage({ params }: ProjectPageProps) {
-  const { locale, id } = await params
-  const t = await getTranslations({ locale, namespace: 'project' })
-  const td = await getTranslations({ locale, namespace: 'data' })
+export default function ProjectPage() {
+  const t = useTranslations('project')
+  const td = useTranslations('data')
+  const te = useTranslations('errors')
+  const params = useParams()
+  const id = params.id as string
 
-  // 从 API 获取项目数据
-  let project: Project | undefined
-  try {
-    const app = await getApp(id)
-    project = transformAppForDisplay(app)
-  } catch (err) {
-    console.error('API request failed:', err)
-    throw err
+  const [project, setProject] = useState<Project | null>(null)
+  const [similarProjects, setSimilarProjects] = useState<Project[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  const loadData = useCallback(async () => {
+    setLoading(true)
+    setError(false)
+    try {
+      const app = await getApp(id)
+      const p = transformAppForDisplay(app)
+      setProject(p)
+
+      // Get similar projects
+      try {
+        const appsResult = await getApps({ category: p.category, limit: 4 })
+        setSimilarProjects(
+          (appsResult.data || [])
+            .map(transformAppForDisplay)
+            .filter((sp: Project) => sp.id !== p.id)
+            .slice(0, 3)
+        )
+      } catch {
+        // similarProjects 失败不阻断
+      }
+    } catch (err) {
+      console.error('API request failed:', err)
+      setError(true)
+    } finally {
+      setLoading(false)
+    }
+  }, [id])
+
+  useEffect(() => {
+    loadData()
+  }, [loadData])
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    )
   }
-  
-  if (!project) {
-    notFound()
+
+  if (error || !project) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="mx-auto max-w-7xl px-4 py-12">
+          <ErrorState title={te('title')} description={te('description')} onRetry={loadData} />
+        </main>
+        <Footer />
+      </div>
+    )
   }
 
   const categoryLabel = td(`categories.${project.category}.label`)
-  
-  // Get similar projects (same category, different project)
-  let similarProjects: Project[] = []
-  try {
-    const appsResult = await getApps({ category: project.category, limit: 4 })
-    similarProjects = (appsResult.data || [])
-      .map(transformAppForDisplay)
-      .filter((p: Project) => p.id !== project.id)
-      .slice(0, 3)
-  } catch {
-    // similarProjects 失败不阻断页面，保持空数组
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -196,7 +227,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 <h3 className="text-sm font-semibold mb-3">{t('similarProjects')}</h3>
                 <div className="space-y-3">
                   {similarProjects.map((p) => (
-                    <a
+                    <Link
                       key={p.id}
                       href={`/project/${p.id}`}
                       className="flex items-start gap-3 rounded-lg border p-3 transition-colors hover:bg-muted"
@@ -208,7 +239,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                           {p.description}
                         </p>
                       </div>
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </div>

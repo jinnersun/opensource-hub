@@ -140,7 +140,10 @@
       "privacy": { "label": "Privacy Protection", "description": "Block ads and trackers — safeguard your digital privacy" },
       "design": { "label": "Design Tools", "description": "Image editing, UI design, and vector drawing — unleash your creativity" },
       "office": { "label": "Office Productivity", "description": "Document processing, note-taking, and collaboration — work more efficiently" },
-      "system": { "label": "System Optimization", "description": "System cleaning, performance tuning, and hardware management — keep your PC fast" }
+      "system": { "label": "System Optimization", "description": "System cleaning, performance tuning, and hardware management — keep your PC fast" },
+      "clean-install": { "label": "Clean Install", "description": "System installation, slimming tools, and bootable USB creators" },
+      "dev-tools": { "label": "Developer Tools", "description": "Terminal enhancers, Git tools, debuggers — essentials for developers" },
+      "file-management": { "label": "File Management", "description": "File sync, batch rename, and cloud drive tools — manage your files effortlessly" }
     },
     "softwareCount": "{count} tools"
   },

@@ -21,6 +21,10 @@ const iconMap: Record<string, LucideIcon> = {
   palette: Palette,
   "file-text": FileText,
   settings: Settings,
+  monitor: Settings,
+  code: Settings,
+  folder: FileText,
+  lock: Shield,
 }
 
 interface CategoryCardProps {

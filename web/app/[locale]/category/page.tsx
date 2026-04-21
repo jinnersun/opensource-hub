@@ -1,41 +1,65 @@
-import type { Metadata } from "next"
-import { getTranslations } from 'next-intl/server'
+"use client"
+
+import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { CategoryCard } from "@/components/category-card"
 import { ProjectCard } from "@/components/project-card"
+import { ErrorState } from "@/components/error-state"
 import { getCategories, getTrending, transformAppForDisplay, transformCategoryForDisplay } from "@/lib/api"
+import type { Project, Category } from "@/lib/api"
 import { Link } from '@/i18n/routing'
-import { LayoutGrid, Flame } from "lucide-react"
+import { LayoutGrid, Flame, Loader2 } from "lucide-react"
 
-interface CategoryPageProps {
-  params: Promise<{ locale: string }>
-}
+export default function CategoryPage() {
+  const t = useTranslations('category')
+  const te = useTranslations('errors')
+  const [categories, setCategories] = useState<Category[]>([])
+  const [hotProjects, setHotProjects] = useState<Project[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
-export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
-  const { locale } = await params
-  const t = await getTranslations({ locale, namespace: 'category' })
-  return {
-    title: `${t('browseAll')} - OpenSource-Hub`,
-    description: `${t('browseDesc')} ${t('browseCta')}`,
+  const loadData = useCallback(async () => {
+    setLoading(true)
+    setError(false)
+    try {
+      const [cats, trending] = await Promise.all([
+        getCategories(),
+        getTrending('week', 3),
+      ])
+      setCategories(cats.map(transformCategoryForDisplay))
+      setHotProjects(trending.map(transformAppForDisplay))
+    } catch (err) {
+      console.error('API request failed:', err)
+      setError(true)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    loadData()
+  }, [loadData])
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    )
   }
-}
 
-export default async function CategoryPage({ params }: CategoryPageProps) {
-  const { locale } = await params
-  const t = await getTranslations({ locale, namespace: 'category' })
-  let categories
-  let hotProjects
-  try {
-    const [cats, trending] = await Promise.all([
-      getCategories(),
-      getTrending('week', 3),
-    ])
-    categories = cats.map(transformCategoryForDisplay)
-    hotProjects = trending.map(transformAppForDisplay)
-  } catch (err) {
-    console.error('API request failed:', err)
-    throw err
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="mx-auto max-w-7xl px-4 py-12">
+          <ErrorState title={te('title')} description={te('description')} onRetry={loadData} />
+        </main>
+        <Footer />
+      </div>
+    )
   }
 
   return (

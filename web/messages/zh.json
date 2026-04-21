@@ -140,7 +140,10 @@
       "privacy": { "label": "隐私保护", "description": "屏蔽广告、阻止追踪，守护你的数字隐私" },
       "design": { "label": "设计工具", "description": "图片编辑、UI 设计、矢量绘图，释放你的创意" },
       "office": { "label": "办公提效", "description": "文档处理、笔记工具、协作平台，让工作更高效" },
-      "system": { "label": "系统调优", "description": "系统清理、性能优化、硬件管理，保持电脑流畅" }
+      "system": { "label": "系统调优", "description": "系统清理、性能优化、硬件管理，保持电脑流畅" },
+      "clean-install": { "label": "纯净装机", "description": "系统安装、精简工具、启动盘制作，装系统不再烦恼" },
+      "dev-tools": { "label": "开发工具", "description": "终端增强、Git 工具、调试器，开发者必备利器" },
+      "file-management": { "label": "文件管理", "description": "文件同步、批量重命名、云盘工具，轻松管理你的文件" }
     },
     "softwareCount": "{count} 款软件"
   },
