@@ -23,6 +23,7 @@ export default function HomePage() {
   const [trendingProjects, setTrendingProjects] = useState<Project[]>([])
   const [featuredProjects, setFeaturedProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
+  const [dataSource, setDataSource] = useState<'api' | 'fallback'>('fallback')
 
   useEffect(() => {
     async function loadData() {
@@ -34,12 +35,14 @@ export default function HomePage() {
         setTrendingProjects(data.trending.map(transformAppForDisplay))
         // 推荐
         setFeaturedProjects(data.featured.map(transformAppForDisplay))
+        setDataSource('api')
       } catch (err) {
         console.warn('API unavailable, using fallback data', err)
         // Fallback 到 mock 数据
         setAllCategories(fallbackCategories)
         setTrendingProjects(getTrendingByPeriod("week").slice(0, 4))
         setFeaturedProjects(fallbackProjects)
+        setDataSource('fallback')
       } finally {
         setLoading(false)
       }
@@ -203,6 +206,11 @@ export default function HomePage() {
         open={requestDialogOpen}
         onClose={() => setRequestDialogOpen(false)}
       />
+
+      {/* 数据源标识 - 上线前删除 */}
+      <div className={`fixed bottom-2 right-2 z-50 rounded-full px-3 py-1 text-xs font-mono shadow-lg ${dataSource === 'api' ? 'bg-emerald-500/90 text-white' : 'bg-amber-500/90 text-white'}`}>
+        {dataSource === 'api' ? '🟢 D1 数据库' : '🟡 Mock 数据'}
+      </div>
     </div>
   )
 }

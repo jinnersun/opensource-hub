@@ -6,8 +6,8 @@ export const runtime = 'edge'
  * 在开发环境：直接 fetch 本地 API Worker
  * 
  * Service Binding 获取方式：
- * OpenNext for Cloudflare 将 wrangler.toml 的 bindings 注入到 globalThis.__OPENNEXT_API__
- * 或通过 cloudflare:workers 模块（仅在 CF runtime 可用）
+ * OpenNext for Cloudflare 通过 getCloudflareContext() 获取 env
+ * env 存储在 globalThis[Symbol.for('__cloudflare-context__')] 的 AsyncLocalStorage 中
  */
 export async function GET(request: Request) {
   const url = new URL(request.url)
@@ -24,23 +24,23 @@ export async function GET(request: Request) {
     let response: Response
 
     // 尝试获取 Cloudflare Worker env（Service Binding）
-    // OpenNext for Cloudflare 将 env 挂载在 globalThis.__cloudflare_env__
     let apiBinding: any = null
     try {
-      // 方式 1: 通过 globalThis 获取（OpenNext 运行时注入）
-      const cfEnv = (globalThis as any).__cloudflare_env__
-      if (cfEnv?.API) {
-        apiBinding = cfEnv.API
+      // OpenNext for Cloudflare: 通过 getCloudflareContext 获取 env
+      const { getCloudflareContext } = await import('@opennextjs/cloudflare')
+      const ctx = getCloudflareContext() as any
+      if (ctx?.env?.API) {
+        apiBinding = ctx.env.API
       }
     } catch {}
 
     try {
-      // 方式 2: 通过 cloudflare:workers 模块获取
+      // 备用方式: 通过 AsyncLocalStorage 直接读取
       if (!apiBinding) {
-        // @ts-ignore
-        const { env } = await import('cloudflare:workers')
-        if (env?.API) {
-          apiBinding = env.API
+        const contextSymbol = Symbol.for('__cloudflare-context__')
+        const cfContext = (globalThis as any)[contextSymbol]
+        if (cfContext?.env?.API) {
+          apiBinding = cfContext.env.API
         }
       }
     } catch {}
