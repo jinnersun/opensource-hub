@@ -1,0 +1,13 @@
+name = "opensource-hub"
+compatibility_date = "2024-01-01"
+
+# D1 数据库配置
+[[d1_databases]]
+binding = "DB"
+database_name = "opensource-hub-db"
+database_id = "9989fa14-ca29-46ef-8c9f-9ab55f6b47d7"
+
+# KV 命名空间配置（可选，用于缓存）
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = "your-kv-id"

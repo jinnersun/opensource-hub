@@ -1,0 +1,14 @@
+{
+  "name": "opensource-hub-scripts",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "harvest": "tsx github-harvester.ts",
+    "harvest:default": "tsx github-harvester.ts --output ../data/harvested-apps.json"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "tsx": "^4.7.0",
+    "typescript": "^5.7.0"
+  }
+}

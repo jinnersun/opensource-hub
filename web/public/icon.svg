@@ -1,0 +1,20 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @media (prefers-color-scheme: light) {
+      .bg { fill: #0f172a; }
+      .fg { fill: #ffffff; }
+    }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #f8fafc; }
+      .fg { fill: #0f172a; }
+    }
+  </style>
+  <rect class="bg" width="180" height="180" rx="40" />
+  <!-- Shield shape -->
+  <path class="fg" d="M90 28 L140 52 L140 92 C140 118 118 140 90 152 C62 140 40 118 40 92 L40 52 Z" opacity="0.15"/>
+  <path class="fg" d="M90 34 L134 55 L134 92 C134 115 114 135 90 146 C66 135 46 115 46 92 L46 55 Z" fill="none" stroke-width="4" stroke="currentColor" opacity="0.3"/>
+  <!-- Code brackets < /> -->
+  <path class="fg" d="M68 82 L54 90 L68 98" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path class="fg" d="M112 82 L126 90 L112 98" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path class="fg" d="M100 72 L82 108" stroke-width="5" stroke-linecap="round" fill="none"/>
+</svg>

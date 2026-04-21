@@ -1,0 +1,52 @@
+# Wrangler 缓存和状态
+.wrangler/
+
+# Node 模块
+node_modules/
+web/node_modules/
+workers/api/node_modules/
+scripts/node_modules/
+migrations/node_modules/
+
+# 构建产物
+dist/
+web/.open-next/
+web/.next/
+
+# 压缩包
+*.zip
+
+# 环境变量文件
+.env
+.env.local
+.env.production
+
+# 日志
+*.log
+
+# 截图与图片（根目录）
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+
+# 文档目录
+doc/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Qoder 缓存
+.qoder/
+
+# 私有数据
+私有数据/
+
+# Vercel
+.vercel/

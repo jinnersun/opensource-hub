@@ -1,0 +1,14 @@
+{
+  "name": "opensource-hub-db-setup",
+  "version": "1.0.0",
+  "description": "Cloudflare D1 数据库初始化脚本",
+  "scripts": {
+    "db:create": "wrangler d1 create opensource-hub-db",
+    "db:migrate": "wrangler d1 execute opensource-hub-db --file migrations/001_initial_schema.sql",
+    "db:seed": "wrangler d1 execute opensource-hub-db --file migrations/002_seed_data.sql",
+    "db:reset": "wrangler d1 execute opensource-hub-db --command \"DROP TABLE IF EXISTS search_analytics; DROP TABLE IF EXISTS download_stats; DROP TABLE IF EXISTS app_security; DROP TABLE IF EXISTS app_ai_content; DROP TABLE IF EXISTS app_versions; DROP TABLE IF EXISTS apps; DROP TABLE IF EXISTS categories; DROP TABLE IF EXISTS tags; DROP TABLE IF EXISTS system_config;\" && npm run db:migrate",
+    "db:info": "wrangler d1 info opensource-hub-db",
+    "db:studio": "wrangler d1 studio opensource-hub-db",
+    "db:backup": "wrangler d1 execute opensource-hub-db --command \".dump\" > backups/backup_$(date +%Y%m%d_%H%M%S).sql"
+  }
+}
