@@ -8,7 +8,9 @@ import { OSDownload } from "@/components/project-detail/os-download"
 import { SafeAuditCard } from "@/components/project-detail/safe-audit-card"
 import { EnvironmentGuide } from "@/components/project-detail/environment-guide"
 import { MetaInfoCard } from "@/components/project-detail/meta-info-card"
+import { getApp, getApps, transformAppForDisplay } from "@/lib/api"
 import { getProject, projects } from "@/lib/data"
+import type { Project } from "@/lib/data"
 import { Star, ShieldCheck, CheckCircle2, Sparkles } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -29,9 +31,18 @@ function formatStars(stars: number): string {
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { locale, id } = await params
-  const project = getProject(id)
   const t = await getTranslations({ locale, namespace: 'project' })
   const td = await getTranslations({ locale, namespace: 'data' })
+
+  // 先从 API 获取，失败则 fallback
+  let project: Project | undefined
+  try {
+    const app = await getApp(id)
+    project = transformAppForDisplay(app)
+  } catch (err) {
+    console.warn('API unavailable, using fallback data', err)
+    project = getProject(id)
+  }
   
   if (!project) {
     notFound()
@@ -40,9 +51,18 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const categoryLabel = td(`categories.${project.category}.label`)
   
   // Get similar projects (same category, different project)
-  const similarProjects = projects
-    .filter(p => p.category === project.category && p.id !== project.id)
-    .slice(0, 3)
+  let similarProjects: Project[] = []
+  try {
+    const appsResult = await getApps({ category: project.category, limit: 4 })
+    similarProjects = (appsResult.data || [])
+      .map(transformAppForDisplay)
+      .filter((p: Project) => p.id !== project.id)
+      .slice(0, 3)
+  } catch {
+    similarProjects = projects
+      .filter(p => p.category === project.category && p.id !== project.id)
+      .slice(0, 3)
+  }
 
   return (
     <div className="min-h-screen bg-background">

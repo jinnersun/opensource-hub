@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useTranslations } from 'next-intl'
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
@@ -10,17 +10,50 @@ import { ProjectCard } from "@/components/project-card"
 import { SecurityDashboard } from "@/components/security-dashboard"
 import { CategoryCard } from "@/components/category-card"
 import { SubmitRequestDialog } from "@/components/submit-request-dialog"
-import { categories, projects, getTrendingByPeriod } from "@/lib/data"
+import { getHomeData, transformAppForDisplay, transformCategoryForDisplay } from "@/lib/api"
+import { categories as fallbackCategories, projects as fallbackProjects, getTrendingByPeriod, type Project, type Category } from "@/lib/data"
 import { Link } from '@/i18n/routing'
-import { Flame, ArrowRight } from "lucide-react"
+import { Flame, ArrowRight, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export default function HomePage() {
   const t = useTranslations('home')
   const [requestDialogOpen, setRequestDialogOpen] = useState(false)
-  const allCategories = categories
-  const trendingProjects = getTrendingByPeriod("week").slice(0, 4)
-  const featuredProjects = projects
+  const [allCategories, setAllCategories] = useState<Category[]>([])
+  const [trendingProjects, setTrendingProjects] = useState<Project[]>([])
+  const [featuredProjects, setFeaturedProjects] = useState<Project[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const data = await getHomeData()
+        // 分类
+        setAllCategories(data.categories.map(transformCategoryForDisplay))
+        // 热门
+        setTrendingProjects(data.trending.map(transformAppForDisplay))
+        // 推荐
+        setFeaturedProjects(data.featured.map(transformAppForDisplay))
+      } catch (err) {
+        console.warn('API unavailable, using fallback data', err)
+        // Fallback 到 mock 数据
+        setAllCategories(fallbackCategories)
+        setTrendingProjects(getTrendingByPeriod("week").slice(0, 4))
+        setFeaturedProjects(fallbackProjects)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadData()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
 
   return (
     <div className="flex min-h-screen flex-col">

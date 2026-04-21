@@ -1,14 +1,16 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
-import { Flame, Clock, Trophy } from 'lucide-react'
+import { Flame, Clock, Trophy, Loader2 } from 'lucide-react'
 import { Footer } from '@/components/footer'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Leaderboard } from '@/components/leaderboard'
 import { ActivityFeed } from '@/components/activity-feed'
 import { Header } from '@/components/header'
+import { getTrending, transformAppForDisplay } from '@/lib/api'
 import { getTrendingByPeriod } from '@/lib/data'
-import { useState } from 'react'
+import type { Project } from '@/lib/data'
 
 const mockActivities = [
   {
@@ -60,7 +62,24 @@ const mockActivities = [
 export default function TrendingPage() {
   const t = useTranslations('trending')
   const [period, setPeriod] = useState<'day' | 'week' | 'alltime'>('week')
-  const trendingProjects = getTrendingByPeriod(period)
+  const [trendingProjects, setTrendingProjects] = useState<Project[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const data = await getTrending(period)
+        setTrendingProjects(data.map(transformAppForDisplay))
+      } catch (err) {
+        console.warn('API unavailable, using fallback data', err)
+        setTrendingProjects(getTrendingByPeriod(period))
+      } finally {
+        setLoading(false)
+      }
+    }
+    setLoading(true)
+    loadData()
+  }, [period])
 
   return (
     <div className="min-h-screen bg-background">

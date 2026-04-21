@@ -4,6 +4,7 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { CategoryCard } from "@/components/category-card"
 import { ProjectCard } from "@/components/project-card"
+import { getCategories, getTrending, transformAppForDisplay, transformCategoryForDisplay } from "@/lib/api"
 import { getAllCategories, getTrendingByPeriod } from "@/lib/data"
 import { Link } from '@/i18n/routing'
 import { LayoutGrid, Flame } from "lucide-react"
@@ -24,8 +25,20 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'category' })
-  const categories = getAllCategories()
-  const hotProjects = getTrendingByPeriod("week").slice(0, 3)
+  let categories
+  let hotProjects
+  try {
+    const [cats, trending] = await Promise.all([
+      getCategories(),
+      getTrending('week', 3),
+    ])
+    categories = cats.map(transformCategoryForDisplay)
+    hotProjects = trending.map(transformAppForDisplay)
+  } catch (err) {
+    console.warn('API unavailable, using fallback data', err)
+    categories = getAllCategories()
+    hotProjects = getTrendingByPeriod("week").slice(0, 3)
+  }
 
   return (
     <div className="min-h-screen bg-background">

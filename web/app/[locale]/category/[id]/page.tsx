@@ -1,14 +1,17 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { notFound, useParams } from 'next/navigation'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { ProjectCard } from '@/components/project-card'
 import { CategoryCard } from '@/components/category-card'
+import { getApps, getCategories, transformAppForDisplay, transformCategoryForDisplay } from '@/lib/api'
 import { projects, categories, getCategory } from '@/lib/data'
+import type { Project, Category } from '@/lib/data'
 import { Link } from '@/i18n/routing'
-import { ArrowLeft, Package } from 'lucide-react'
+import { ArrowLeft, Package, Loader2 } from 'lucide-react'
 
 const categoryEmojis: Record<string, string> = {
   'ai': '✨',
@@ -25,17 +28,48 @@ export default function CategoryDetailPage() {
   const params = useParams()
   const categoryId = params.id as string
   
+  const [categoryProjects, setCategoryProjects] = useState<Project[]>([])
+  const [allCategories, setAllCategories] = useState<Category[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [appsResult, cats] = await Promise.all([
+          getApps({ category: categoryId }),
+          getCategories(),
+        ])
+        setCategoryProjects((appsResult.data || []).map(transformAppForDisplay))
+        setAllCategories(cats.map(transformCategoryForDisplay))
+      } catch (err) {
+        console.warn('API unavailable, using fallback data', err)
+        setCategoryProjects(projects.filter(p => p.category === categoryId))
+        setAllCategories(categories)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadData()
+  }, [categoryId])
+
   const category = getCategory(categoryId)
   
   if (!category) {
     notFound()
   }
   
-  const categoryProjects = projects.filter(p => p.category === categoryId)
   const label = td(`categories.${categoryId}.label`)
   const description = td(`categories.${categoryId}.description`)
   const emoji = categoryEmojis[categoryId] || '📦'
-  const otherCategories = categories.filter(c => c.id !== categoryId).slice(0, 3)
+  const otherCategories = allCategories.filter(c => c.id !== categoryId).slice(0, 3)
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background">
