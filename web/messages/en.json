@@ -13,6 +13,13 @@
     "version": "Version",
     "stars": "stars"
   },
+  "errors": {
+    "title": "Failed to Load",
+    "description": "Unable to connect to the server. Please check your network and try again.",
+    "retry": "Retry",
+    "noData": "No Data Available",
+    "comingSoon": "Coming Soon"
+  },
   "nav": {
     "discover": "Discover",
     "trending": "Trending",

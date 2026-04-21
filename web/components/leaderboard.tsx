@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { ProjectIcon } from '@/components/project-icon'
 import { Sparkline } from '@/components/sparkline'
 import { AppModal } from '@/components/app-modal'
-import { Project } from '@/lib/data'
+import type { Project } from '@/lib/data'
 
 interface LeaderboardProps {
   projects: Project[]

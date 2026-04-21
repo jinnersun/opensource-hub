@@ -1,15 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
-import { notFound, useParams } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { ProjectCard } from '@/components/project-card'
 import { CategoryCard } from '@/components/category-card'
+import { ErrorState } from '@/components/error-state'
 import { getApps, getCategories, transformAppForDisplay, transformCategoryForDisplay } from '@/lib/api'
-import { projects, categories, getCategory } from '@/lib/data'
-import type { Project, Category } from '@/lib/data'
+import type { Project, Category } from '@/lib/api'
 import { Link } from '@/i18n/routing'
 import { ArrowLeft, Package, Loader2 } from 'lucide-react'
 
@@ -24,42 +24,44 @@ const categoryEmojis: Record<string, string> = {
 
 export default function CategoryDetailPage() {
   const t = useTranslations('category')
+  const te = useTranslations('errors')
   const td = useTranslations('data')
   const params = useParams()
   const categoryId = params.id as string
   
   const [categoryProjects, setCategoryProjects] = useState<Project[]>([])
   const [allCategories, setAllCategories] = useState<Category[]>([])
+  const [currentCategory, setCurrentCategory] = useState<Category | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const [appsResult, cats] = await Promise.all([
-          getApps({ category: categoryId }),
-          getCategories(),
-        ])
-        setCategoryProjects((appsResult.data || []).map(transformAppForDisplay))
-        setAllCategories(cats.map(transformCategoryForDisplay))
-      } catch (err) {
-        console.warn('API unavailable, using fallback data', err)
-        setCategoryProjects(projects.filter(p => p.category === categoryId))
-        setAllCategories(categories)
-      } finally {
-        setLoading(false)
-      }
+  const loadData = useCallback(async () => {
+    setLoading(true)
+    setError(false)
+    try {
+      const [appsResult, cats] = await Promise.all([
+        getApps({ category: categoryId }),
+        getCategories(),
+      ])
+      setCategoryProjects((appsResult.data || []).map(transformAppForDisplay))
+      const displayCats = cats.map(transformCategoryForDisplay)
+      setAllCategories(displayCats)
+      const found = displayCats.find(c => c.id === categoryId)
+      setCurrentCategory(found || null)
+    } catch (err) {
+      console.error('API request failed:', err)
+      setError(true)
+    } finally {
+      setLoading(false)
     }
-    loadData()
   }, [categoryId])
 
-  const category = getCategory(categoryId)
-  
-  if (!category) {
-    notFound()
-  }
-  
-  const label = td(`categories.${categoryId}.label`)
-  const description = td(`categories.${categoryId}.description`)
+  useEffect(() => {
+    loadData()
+  }, [loadData])
+
+  const label = currentCategory?.label || td(`categories.${categoryId}.label`)
+  const description = currentCategory?.description || td(`categories.${categoryId}.description`)
   const emoji = categoryEmojis[categoryId] || '📦'
   const otherCategories = allCategories.filter(c => c.id !== categoryId).slice(0, 3)
 
@@ -67,6 +69,18 @@ export default function CategoryDetailPage() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="mx-auto max-w-7xl px-4 py-12">
+          <ErrorState title={te('title')} description={te('description')} onRetry={loadData} />
+        </main>
+        <Footer />
       </div>
     )
   }

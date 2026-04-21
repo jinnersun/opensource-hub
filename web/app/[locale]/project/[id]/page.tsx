@@ -9,8 +9,7 @@ import { SafeAuditCard } from "@/components/project-detail/safe-audit-card"
 import { EnvironmentGuide } from "@/components/project-detail/environment-guide"
 import { MetaInfoCard } from "@/components/project-detail/meta-info-card"
 import { getApp, getApps, transformAppForDisplay } from "@/lib/api"
-import { getProject, projects } from "@/lib/data"
-import type { Project } from "@/lib/data"
+import type { Project } from "@/lib/api"
 import { Star, ShieldCheck, CheckCircle2, Sparkles } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -34,14 +33,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const t = await getTranslations({ locale, namespace: 'project' })
   const td = await getTranslations({ locale, namespace: 'data' })
 
-  // 先从 API 获取，失败则 fallback
+  // 从 API 获取项目数据
   let project: Project | undefined
   try {
     const app = await getApp(id)
     project = transformAppForDisplay(app)
   } catch (err) {
-    console.warn('API unavailable, using fallback data', err)
-    project = getProject(id)
+    console.error('API request failed:', err)
+    throw err
   }
   
   if (!project) {
@@ -59,9 +58,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       .filter((p: Project) => p.id !== project.id)
       .slice(0, 3)
   } catch {
-    similarProjects = projects
-      .filter(p => p.category === project.category && p.id !== project.id)
-      .slice(0, 3)
+    // similarProjects 失败不阻断页面，保持空数组
   }
 
   return (

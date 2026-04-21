@@ -25,7 +25,8 @@ interface AppModalProps {
   onClose: () => void
 }
 
-type OS = "windows" | "mac" | "linux" | "unknown"
+type PlatformKey = "windows" | "mac" | "linux"
+type OS = PlatformKey | "unknown"
 
 function detectOS(): OS {
   if (typeof window === "undefined") return "unknown"
@@ -46,6 +47,8 @@ const osLabels: Record<OS, string> = {
   linux: "Linux",
   unknown: "Download",
 }
+
+const platformKeys: PlatformKey[] = ["windows", "mac", "linux"]
 
 const OsIcon = ({ os, className }: { os: OS; className?: string }) => {
   if (os === "windows") return <Monitor className={className} />
@@ -92,13 +95,13 @@ export function AppModal({ project, open, onClose }: AppModalProps) {
 
   if (!open) return null
 
-  const availablePlatforms = Object.keys(project.platforms) as OS[]
+  const availablePlatforms = platformKeys.filter((k) => project.platforms[k])
   const activePlatform =
-    project.platforms[selectedOS] ??
+    (selectedOS !== "unknown" ? project.platforms[selectedOS] : undefined) ??
     project.platforms[availablePlatforms[0]] ??
     null
 
-  const isDetected = selectedOS === detectedOS && availablePlatforms.includes(detectedOS)
+  const isDetected = selectedOS !== "unknown" && selectedOS === detectedOS && availablePlatforms.includes(detectedOS as PlatformKey)
 
   return (
     <div

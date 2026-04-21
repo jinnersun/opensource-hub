@@ -13,6 +13,13 @@
     "version": "版本",
     "stars": "好评"
   },
+  "errors": {
+    "title": "加载失败",
+    "description": "无法连接到服务器，请检查网络后重试",
+    "retry": "重试",
+    "noData": "暂无数据",
+    "comingSoon": "即将上线"
+  },
   "nav": {
     "discover": "发现",
     "trending": "热门动态",

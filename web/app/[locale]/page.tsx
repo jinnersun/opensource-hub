@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useTranslations } from 'next-intl'
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
@@ -10,50 +10,58 @@ import { ProjectCard } from "@/components/project-card"
 import { SecurityDashboard } from "@/components/security-dashboard"
 import { CategoryCard } from "@/components/category-card"
 import { SubmitRequestDialog } from "@/components/submit-request-dialog"
-import { getHomeData, transformAppForDisplay, transformCategoryForDisplay } from "@/lib/api"
-import { categories as fallbackCategories, projects as fallbackProjects, getTrendingByPeriod, type Project, type Category } from "@/lib/data"
+import { ErrorState } from "@/components/error-state"
+import { getHomeData, transformAppForDisplay, transformCategoryForDisplay, type Project, type Category } from "@/lib/api"
 import { Link } from '@/i18n/routing'
 import { Flame, ArrowRight, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export default function HomePage() {
   const t = useTranslations('home')
+  const te = useTranslations('errors')
   const [requestDialogOpen, setRequestDialogOpen] = useState(false)
   const [allCategories, setAllCategories] = useState<Category[]>([])
   const [trendingProjects, setTrendingProjects] = useState<Project[]>([])
   const [featuredProjects, setFeaturedProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
-  const [dataSource, setDataSource] = useState<'api' | 'fallback'>('fallback')
+  const [error, setError] = useState(false)
+
+  const loadData = useCallback(async () => {
+    setLoading(true)
+    setError(false)
+    try {
+      const data = await getHomeData()
+      setAllCategories(data.categories.map(transformCategoryForDisplay))
+      setTrendingProjects(data.trending.map(transformAppForDisplay))
+      setFeaturedProjects(data.featured.map(transformAppForDisplay))
+    } catch (err) {
+      console.error('API request failed:', err)
+      setError(true)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
-    async function loadData() {
-      try {
-        const data = await getHomeData()
-        // 分类
-        setAllCategories(data.categories.map(transformCategoryForDisplay))
-        // 热门
-        setTrendingProjects(data.trending.map(transformAppForDisplay))
-        // 推荐
-        setFeaturedProjects(data.featured.map(transformAppForDisplay))
-        setDataSource('api')
-      } catch (err) {
-        console.warn('API unavailable, using fallback data', err)
-        // Fallback 到 mock 数据
-        setAllCategories(fallbackCategories)
-        setTrendingProjects(getTrendingByPeriod("week").slice(0, 4))
-        setFeaturedProjects(fallbackProjects)
-        setDataSource('fallback')
-      } finally {
-        setLoading(false)
-      }
-    }
     loadData()
-  }, [])
+  }, [loadData])
 
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <Header />
+        <main className="flex-1">
+          <ErrorState title={te('title')} description={te('description')} onRetry={loadData} />
+        </main>
+        <Footer />
       </div>
     )
   }
@@ -206,11 +214,6 @@ export default function HomePage() {
         open={requestDialogOpen}
         onClose={() => setRequestDialogOpen(false)}
       />
-
-      {/* 数据源标识 - 上线前删除 */}
-      <div className={`fixed bottom-2 right-2 z-50 rounded-full px-3 py-1 text-xs font-mono shadow-lg ${dataSource === 'api' ? 'bg-emerald-500/90 text-white' : 'bg-amber-500/90 text-white'}`}>
-        {dataSource === 'api' ? '🟢 D1 数据库' : '🟡 Mock 数据'}
-      </div>
     </div>
   )
 }

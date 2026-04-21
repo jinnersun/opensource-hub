@@ -5,7 +5,6 @@ import { Footer } from "@/components/footer"
 import { CategoryCard } from "@/components/category-card"
 import { ProjectCard } from "@/components/project-card"
 import { getCategories, getTrending, transformAppForDisplay, transformCategoryForDisplay } from "@/lib/api"
-import { getAllCategories, getTrendingByPeriod } from "@/lib/data"
 import { Link } from '@/i18n/routing'
 import { LayoutGrid, Flame } from "lucide-react"
 
@@ -35,9 +34,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     categories = cats.map(transformCategoryForDisplay)
     hotProjects = trending.map(transformAppForDisplay)
   } catch (err) {
-    console.warn('API unavailable, using fallback data', err)
-    categories = getAllCategories()
-    hotProjects = getTrendingByPeriod("week").slice(0, 3)
+    console.error('API request failed:', err)
+    throw err
   }
 
   return (

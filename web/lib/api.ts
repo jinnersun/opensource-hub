@@ -18,6 +18,56 @@ const TIMEOUT = 30000
 // 类型定义
 // ==========================================
 
+// ---------- 前端展示层类型 (对应 data.ts 旧类型) ----------
+
+export interface Category {
+  id: string
+  label: string
+  description: string
+  emoji: string
+  keywords: string[]
+  color: string
+  projectCount?: number
+}
+
+export interface Project {
+  id: string
+  name: string
+  humanTitle: string
+  description: string
+  longDescription: string
+  stars: number
+  category: string
+  categoryLabel: string
+  verified: boolean
+  features: string[]
+  gettingStarted: string[]
+  uninstallNote: string
+  dependsOn?: string
+  platforms: {
+    windows?: { url: string; version: string; size: string }
+    mac?: { url: string; version: string; size: string }
+    linux?: { url: string; version: string; size: string }
+  }
+  checksum: string
+  sourceUrl: string
+  lastUpdated: string
+  securityScan: "passed" | "pending" | "failed"
+  license?: string
+  docsUrl?: string
+  homepage?: string
+  starGrowth24h?: number
+  starGrowthWeek?: number
+  sparklineData?: number[]
+  trendingScore?: number
+  allTimeRank?: number
+  controversy?: boolean
+  hasIssues?: boolean
+  tags?: string[]
+}
+
+// ---------- API 层类型 (D1 数据库返回) ----------
+
 export interface App {
   id: string
   name: string
@@ -71,7 +121,7 @@ export interface SecurityInfo {
   audit_status: string
 }
 
-export interface Category {
+export interface ApiCategory {
   id: string
   name: string
   slug: string
@@ -96,7 +146,7 @@ export interface PaginatedResponse<T> {
 
 export interface HomeData {
   featured: App[]
-  categories: Category[]
+  categories: ApiCategory[]
   trending: App[]
   newArrivals: App[]
 }
@@ -200,8 +250,8 @@ export async function getApp(id: string): Promise<App> {
 /**
  * 获取分类列表
  */
-export async function getCategories(): Promise<Category[]> {
-  const response = await apiRequest<{ data: Category[] }>('/api/categories')
+export async function getCategories(): Promise<ApiCategory[]> {
+  const response = await apiRequest<{ data: ApiCategory[] }>('/api/categories')
   return response.data
 }
 
@@ -297,7 +347,7 @@ export function transformAppForDisplay(app: App) {
     // 以下字段兼容 data.ts 的 Project 类型
     license: app.license || undefined,
     homepage: app.homepage_url || undefined,
-  } as import('@/lib/data').Project
+  }
 }
 
 /**
@@ -314,7 +364,7 @@ function formatFileSize(bytes: number): string {
 /**
  * 将 API 分类转换为前端分类格式
  */
-export function transformCategoryForDisplay(category: Category) {
+export function transformCategoryForDisplay(category: ApiCategory) {
   const colorMap: Record<string, string> = {
     'system': 'from-slate-500 to-zinc-600',
     'ai': 'from-violet-500 to-purple-600',
@@ -347,5 +397,5 @@ export function transformCategoryForDisplay(category: Category) {
     keywords: [category.name, category.description],
     color: colorMap[category.slug] || 'from-gray-500 to-slate-600',
     projectCount: category.app_count,
-  } as import('@/lib/data').Category
+  }
 }
