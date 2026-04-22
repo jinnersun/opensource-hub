@@ -9,13 +9,12 @@ export const runtime = 'edge'
  * Cloudflare Pages 生产环境：通过 Service Binding 内网直连
  * 开发环境：fallback 到 localhost:8787
  */
-async function proxyHandler(request: Request, params: Promise<{ path: string[] }>) {
-  const { path } = await params
+async function proxyHandler(request: Request) {
   const url = new URL(request.url)
 
-  // 重构目标 API 路径，保留原始 query string
-  const apiPath = '/' + path.join('/')
-  const search = url.search
+  // 直接从 URL 解析目标 API 路径，不依赖 context.params
+  // /api/proxy/api/home?period=week → /api/home?period=week
+  const apiPath = url.pathname.replace(/^\/api\/proxy/, '') + url.search
 
   try {
     let response: Response
@@ -25,7 +24,7 @@ async function proxyHandler(request: Request, params: Promise<{ path: string[] }
       const { env } = getCloudflareContext()
       const apiBinding = (env as any).API
       if (apiBinding && typeof apiBinding.fetch === 'function') {
-        const apiRequest = new Request(`http://internal${apiPath}${search}`, {
+        const apiRequest = new Request(`http://internal${apiPath}`, {
           method: request.method,
           headers: {
             'Content-Type': 'application/json',
@@ -35,9 +34,10 @@ async function proxyHandler(request: Request, params: Promise<{ path: string[] }
       } else {
         throw new Error('Service binding not available')
       }
-    } catch {
+    } catch (sbErr: any) {
       // Fallback: 开发环境直连本地 API Worker
-      const devUrl = `http://localhost:8787${apiPath}${search}`
+      console.warn('Service Binding failed:', sbErr?.message || sbErr)
+      const devUrl = `http://localhost:8787${apiPath}`
       response = await fetch(devUrl, {
         method: request.method,
         headers: { 'Content-Type': 'application/json' },
@@ -61,10 +61,10 @@ async function proxyHandler(request: Request, params: Promise<{ path: string[] }
   }
 }
 
-export async function GET(request: Request, context: { params: Promise<{ path: string[] }> }) {
-  return proxyHandler(request, context.params)
+export async function GET(request: Request) {
+  return proxyHandler(request)
 }
 
-export async function POST(request: Request, context: { params: Promise<{ path: string[] }> }) {
-  return proxyHandler(request, context.params)
+export async function POST(request: Request) {
+  return proxyHandler(request)
 }
