@@ -1,5 +1,3 @@
-export const runtime = 'edge'
-
 /**
  * API 代理路由
  * 通过 ?path= 参数转发到 API Worker
