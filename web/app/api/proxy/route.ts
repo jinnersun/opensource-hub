@@ -1,16 +1,16 @@
-import { getCloudflareContext } from "@opennextjs/cloudflare";
-
 export const runtime = 'edge'
 
 /**
  * API 代理路由
- * 在 Cloudflare Workers 上：通过 Service Binding 内网直连 API Worker
- * 在开发环境：直接 fetch 本地 API Worker
+ * 通过 ?path= 参数转发到 API Worker
+ *
+ * Cloudflare Pages 生产环境：通过 Service Binding 内网直连
+ * 开发环境：fallback 到 localhost:8787
  */
 export async function GET(request: Request) {
   const url = new URL(request.url)
   const apiPath = url.searchParams.get('path')
-  
+
   if (!apiPath) {
     return new Response(JSON.stringify({ error: 'Missing path parameter' }), {
       status: 400,
@@ -21,10 +21,10 @@ export async function GET(request: Request) {
   try {
     let response: Response
 
-    // 尝试通过 Service Binding 内网直连 API Worker
+    // 优先尝试 Service Binding 内网直连
     try {
-      const { env } = getCloudflareContext()
-      const apiBinding = (env as any).API
+      const cloudflareContext = (globalThis as any)[Symbol.for("__cloudflare-context__")]
+      const apiBinding = cloudflareContext?.env?.API
       if (apiBinding && typeof apiBinding.fetch === 'function') {
         const apiRequest = new Request(`http://internal${apiPath}`, {
           method: 'GET',
@@ -32,14 +32,11 @@ export async function GET(request: Request) {
         })
         response = await apiBinding.fetch(apiRequest)
       } else {
-        // 开发环境：直接 fetch 本地 Workers API
-        const devUrl = `http://localhost:8787${apiPath}`
-        response = await fetch(devUrl, {
-          headers: { 'Content-Type': 'application/json' },
-        })
+        throw new Error(`Service binding not available, context=${typeof cloudflareContext}, api=${typeof apiBinding}`)
       }
-    } catch {
-      // Service Binding 不可用（开发环境或未配置），fallback 到直连
+    } catch (sbErr: any) {
+      // Fallback: 开发环境直连本地 API Worker
+      console.warn('Service Binding failed:', sbErr?.message || sbErr)
       const devUrl = `http://localhost:8787${apiPath}`
       response = await fetch(devUrl, {
         headers: { 'Content-Type': 'application/json' },

@@ -7,11 +7,15 @@
  */
 
 // API 基础 URL
-// 生产环境：走代理路由 /api/proxy，由 Edge Runtime 通过 Service Binding 内网转发
+// 生产环境：走代理路由 /api/proxy?path=，由 Edge Runtime 通过 Service Binding 内网转发
 // 开发环境：直接请求本地 Workers API
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production'
-  ? '/api/proxy'
-  : 'http://localhost:8787')
+function buildApiUrl(endpoint: string): string {
+  if (process.env.NODE_ENV === 'production' && !process.env.NEXT_PUBLIC_API_URL) {
+    return `/api/proxy?path=${encodeURIComponent(endpoint)}`
+  }
+  const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787'
+  return `${base}${endpoint}`
+}
 
 // 请求超时时间
 const TIMEOUT = 30000
@@ -175,7 +179,7 @@ async function fetchWithTimeout(url: string, options: RequestInit = {}, timeout 
 }
 
 async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const url = `${API_BASE}${endpoint}`
+  const url = buildApiUrl(endpoint)
   
   try {
     const response = await fetchWithTimeout(url, {
