@@ -3,17 +3,14 @@
  *
  * 数据流架构：
  * - 开发环境：直接 fetch 本地 Workers API (localhost:8787)
- * - 生产环境：直接 fetch API Worker 公网 URL
- *
- * TODO: 在 CF Pages Dashboard 配置 Service Binding 后，可改为内网直连
+ * - 生产环境：通过 /api/proxy → Service Binding 内网直连 API Worker
  */
 
 // API 基础 URL
-// 生产环境：直接请求 API Worker 公网 URL
-// 开发环境：请求本地 Workers API
-// TODO: 在 CF Pages Dashboard 配置 Service Binding 后，可改为内网直连
+// 生产环境：走代理路由 /api/proxy，由 Edge Runtime 通过 Service Binding 内网转发
+// 开发环境：直接请求本地 Workers API
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production'
-  ? 'https://opensource-hub-api.358042175.workers.dev'
+  ? '/api/proxy'
   : 'http://localhost:8787')
 
 // 请求超时时间
