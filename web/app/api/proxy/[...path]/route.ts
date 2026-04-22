@@ -1,5 +1,3 @@
-import { getCloudflareContext } from "@opennextjs/cloudflare";
-
 export const runtime = 'edge'
 
 /**
@@ -21,8 +19,9 @@ async function proxyHandler(request: Request) {
 
     // 优先尝试 Service Binding 内网直连
     try {
-      const { env } = getCloudflareContext()
-      const apiBinding = (env as any).API
+      // 直接读取 OpenNext 存储的全局 Cloudflare 上下文
+      const cloudflareContext = (globalThis as any)[Symbol.for("__cloudflare-context__")]
+      const apiBinding = cloudflareContext?.env?.API
       if (apiBinding && typeof apiBinding.fetch === 'function') {
         const apiRequest = new Request(`http://internal${apiPath}`, {
           method: request.method,
@@ -32,7 +31,7 @@ async function proxyHandler(request: Request) {
         })
         response = await apiBinding.fetch(apiRequest)
       } else {
-        throw new Error('Service binding not available')
+        throw new Error(`Service binding not available, context=${typeof cloudflareContext}, api=${typeof apiBinding}`)
       }
     } catch (sbErr: any) {
       // Fallback: 开发环境直连本地 API Worker
