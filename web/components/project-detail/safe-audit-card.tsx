@@ -3,6 +3,7 @@
 import { ShieldCheck, ExternalLink, Copy, Check } from "lucide-react"
 import { useState } from "react"
 import { useTranslations } from 'next-intl'
+import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import type { Project } from "@/lib/data"
@@ -45,6 +46,38 @@ export function SafeAuditCard({ project }: SafeAuditCardProps) {
           </div>
         </div>
 
+        {/* VirusTotal Score */}
+        {project.virustotalScore != null && (
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-muted-foreground">{t('vtScore')}</p>
+            <div className="flex items-center gap-3 rounded-lg border p-2.5">
+              <div className={cn(
+                "flex size-9 shrink-0 items-center justify-center rounded-full text-xs font-bold",
+                project.virustotalScore === 0
+                  ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                  : project.virustotalScore <= 5
+                    ? "bg-amber-500/15 text-amber-600 dark:text-amber-400"
+                    : "bg-red-500/15 text-red-600 dark:text-red-400"
+              )}>
+                {project.virustotalScore}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className={cn(
+                  "text-sm font-medium",
+                  project.virustotalScore === 0
+                    ? "text-emerald-600 dark:text-emerald-400"
+                    : project.virustotalScore <= 5
+                      ? "text-amber-600 dark:text-amber-400"
+                      : "text-red-600 dark:text-red-400"
+                )}>
+                  {project.virustotalScore === 0 ? t('vtSafe') : t('vtDetections', { score: project.virustotalScore })}
+                </p>
+                <p className="text-xs text-muted-foreground">0/{70 + project.virustotalScore} engines</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* VirusTotal Link */}
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground">{t('virusScan')}</p>
@@ -57,11 +90,6 @@ export function SafeAuditCard({ project }: SafeAuditCardProps) {
             <span>{t('vtReport')}</span>
             <ExternalLink className="size-3.5 text-muted-foreground" />
           </a>
-          {project.virustotalScore != null && (
-            <p className="text-xs text-muted-foreground">
-              VirusTotal: {project.virustotalScore} detections
-            </p>
-          )}
         </div>
 
         {/* SHA256 Checksum */}

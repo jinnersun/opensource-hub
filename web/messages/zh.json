@@ -20,6 +20,18 @@
     "noData": "暂无数据",
     "comingSoon": "即将上线"
   },
+  "notFound": {
+    "title": "页面不存在",
+    "description": "你访问的页面可能已被移动或删除，请检查链接是否正确",
+    "goBack": "返回上页",
+    "goHome": "回到首页"
+  },
+  "errorPage": {
+    "title": "出了点问题",
+    "description": "页面加载时发生了错误，请稍后重试",
+    "retry": "重试",
+    "goHome": "回到首页"
+  },
   "nav": {
     "discover": "发现",
     "trending": "热门动态",
@@ -41,6 +53,8 @@
     "ctaTitle": "找不到你想要的工具？",
     "ctaSubtitle": "告诉我们你的需求，我们会帮你找到最合适的免费替代方案",
     "ctaButton": "提交需求",
+    "newArrivals": "最新到达",
+    "newArrivalsSubtitle": "最近收录的新工具，抢先体验",
     "footer": "© 2026 OpenSource-Hub. 专注于分发经过验证的优质开源软件。",
     "aboutUs": "关于我们",
     "privacy": "隐私政策",
@@ -51,6 +65,12 @@
     "aiSearch": "AI 搜索",
     "hint": "由向量语义搜索驱动 · 试试「我想要一个下载 YouTube 视频的工具」",
     "suggestions": ["如何录制屏幕", "免费剪辑视频", "保护我的隐私", "PDF 转 Word"]
+  },
+  "searchPage": {
+    "enterKeyword": "输入关键词搜索开源软件",
+    "noResults": "未找到相关软件",
+    "noResultsHint": "试试换个关键词，或用场景描述你的需求",
+    "resultCount": "找到 {count} 个与「{query}」相关的结果"
   },
   "security": {
     "todayReport": "今日安全报告",
@@ -101,7 +121,18 @@
     "downloadNow": "立即下载",
     "verified": "已验证",
     "close": "关闭",
-    "recommend": "推荐"
+    "recommend": "推荐",
+    "summary": "一句话白话总结",
+    "caveats": "避坑指南",
+    "useCases": "适用场景",
+    "tags": "标签",
+    "releaseNotes": "最新更新",
+    "portable": "绿色版 / 便携版",
+    "portableDesc": "无需安装，双击即可运行，不写注册表",
+    "vtScore": "VirusTotal 检测",
+    "vtSafe": "安全",
+    "vtDetections": "{score} 个引擎报毒",
+    "depDownload": "下载"
   },
   "trending": {
     "title": "热门动态",

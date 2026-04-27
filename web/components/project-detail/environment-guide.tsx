@@ -1,6 +1,6 @@
 "use client"
 
-import { CheckCircle2, Info, AlertTriangle, Trash2 } from "lucide-react"
+import { CheckCircle2, Info, AlertTriangle, Trash2, Leaf, ExternalLink } from "lucide-react"
 import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Project } from "@/lib/data"
@@ -20,6 +20,23 @@ export function EnvironmentGuide({ project }: EnvironmentGuideProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Portable / Green Edition Badge */}
+        {project.isPortable && (
+          <div className="flex items-start gap-3 rounded-lg bg-emerald-500/10 p-3">
+            <div className="flex size-8 items-center justify-center rounded-full bg-emerald-500/20 shrink-0">
+              <Leaf className="size-4 text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                {t('portable')}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {t('portableDesc')}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Uninstall Info */}
         <div className="flex items-start gap-3 rounded-lg bg-emerald-500/10 p-3">
           <div className="flex size-8 items-center justify-center rounded-full bg-emerald-500/20 shrink-0">
@@ -41,13 +58,30 @@ export function EnvironmentGuide({ project }: EnvironmentGuideProps) {
             <div className="flex size-8 items-center justify-center rounded-full bg-amber-500/20 shrink-0">
               <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400" />
             </div>
-            <div>
+            <div className="min-w-0 flex-1">
               <p className="text-sm font-medium text-amber-600 dark:text-amber-400">
                 {t('dependencies')}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
                 {project.dependsOn}
               </p>
+              {/* Dependency download link */}
+              {project.dependencies && project.dependencies.length > 0 && project.dependencies.some(d => d.url) && (
+                <div className="mt-2 space-y-1">
+                  {project.dependencies!.filter(d => d.url).map((dep, i) => (
+                    <a
+                      key={i}
+                      href={dep.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-2 py-0.5 text-xs text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-colors"
+                    >
+                      {dep.name} {t('depDownload')}
+                      <ExternalLink className="size-3" />
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         ) : (

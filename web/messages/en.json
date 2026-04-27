@@ -20,6 +20,18 @@
     "noData": "No Data Available",
     "comingSoon": "Coming Soon"
   },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you're looking for may have been moved or deleted. Please check the URL.",
+    "goBack": "Go Back",
+    "goHome": "Back to Home"
+  },
+  "errorPage": {
+    "title": "Something Went Wrong",
+    "description": "An error occurred while loading this page. Please try again later.",
+    "retry": "Retry",
+    "goHome": "Back to Home"
+  },
   "nav": {
     "discover": "Discover",
     "trending": "Trending",
@@ -41,6 +53,8 @@
     "ctaTitle": "Can't find the tool you need?",
     "ctaSubtitle": "Tell us what you need and we'll help you find the best free alternative",
     "ctaButton": "Submit Request",
+    "newArrivals": "New Arrivals",
+    "newArrivalsSubtitle": "Recently added tools — try them first",
     "footer": "© 2026 OpenSource-Hub. Dedicated to distributing verified quality open source software.",
     "aboutUs": "About Us",
     "privacy": "Privacy Policy",
@@ -51,6 +65,12 @@
     "aiSearch": "AI Search",
     "hint": "Powered by semantic vector search · Try \"I want a tool to download YouTube videos\"",
     "suggestions": ["How to record screen", "Free video editing", "Protect my privacy", "PDF to Word"]
+  },
+  "searchPage": {
+    "enterKeyword": "Enter a keyword to search open source software",
+    "noResults": "No software found",
+    "noResultsHint": "Try different keywords or describe what you need",
+    "resultCount": "Found {count} result(s) for \"{query}\""
   },
   "security": {
     "todayReport": "Today's Security Report",
@@ -101,7 +121,18 @@
     "downloadNow": "Download Now",
     "verified": "Verified",
     "close": "Close",
-    "recommend": "Recommend"
+    "recommend": "Recommend",
+    "summary": "Plain Language Summary",
+    "caveats": "What It Can't Do",
+    "useCases": "Use Cases",
+    "tags": "Tags",
+    "releaseNotes": "Latest Release Notes",
+    "portable": "Portable / Green Edition",
+    "portableDesc": "No installation needed — just run. No registry entries.",
+    "vtScore": "VirusTotal Detection",
+    "vtSafe": "Safe",
+    "vtDetections": "{score} engine(s) flagged",
+    "depDownload": "Download"
   },
   "trending": {
     "title": "Trending",

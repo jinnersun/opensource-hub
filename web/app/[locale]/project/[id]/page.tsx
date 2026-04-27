@@ -14,9 +14,10 @@ import { MetaInfoCard } from "@/components/project-detail/meta-info-card"
 import { ErrorState } from "@/components/error-state"
 import { getApp, getApps, transformAppForDisplay } from "@/lib/api"
 import type { Project } from "@/lib/api"
-import { Star, ShieldCheck, CheckCircle2, Sparkles, Loader2 } from "lucide-react"
+import { Star, ShieldCheck, CheckCircle2, Sparkles, Lightbulb, AlertTriangle, Target, Tag, FileEdit, Loader2 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Link } from '@/i18n/routing'
 
 function formatStars(stars: number): string {
@@ -72,8 +73,59 @@ export default function ProjectPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          {/* Breadcrumb skeleton */}
+          <div className="mb-6 flex items-center gap-2">
+            <Skeleton className="h-4 w-24" />
+            <span className="text-muted-foreground">/</span>
+            <Skeleton className="h-4 w-32" />
+          </div>
+          {/* Hero skeleton */}
+          <section className="mb-10">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+              <div className="flex gap-4">
+                <Skeleton className="size-16 rounded-xl" />
+                <div className="space-y-3">
+                  <Skeleton className="h-8 w-64" />
+                  <Skeleton className="h-4 w-48" />
+                  <Skeleton className="h-4 w-96" />
+                </div>
+              </div>
+              <div className="lg:w-80 space-y-3">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-14 w-full rounded-xl" />
+                <div className="flex gap-2">
+                  <Skeleton className="h-8 w-24 rounded-lg" />
+                  <Skeleton className="h-8 w-24 rounded-lg" />
+                </div>
+              </div>
+            </div>
+          </section>
+          {/* Content skeleton */}
+          <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
+            <div className="space-y-8">
+              <Skeleton className="h-20 w-full rounded-xl" />
+              <div className="space-y-3">
+                <Skeleton className="h-6 w-32" />
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Skeleton className="h-14 rounded-lg" />
+                  <Skeleton className="h-14 rounded-lg" />
+                  <Skeleton className="h-14 rounded-lg" />
+                  <Skeleton className="h-14 rounded-lg" />
+                </div>
+              </div>
+              <Skeleton className="h-24 w-full rounded-xl" />
+            </div>
+            <div className="space-y-6">
+              <Skeleton className="h-48 w-full rounded-lg" />
+              <Skeleton className="h-36 w-full rounded-lg" />
+              <Skeleton className="h-48 w-full rounded-lg" />
+            </div>
+          </div>
+        </main>
+        <Footer />
       </div>
     )
   }
@@ -156,25 +208,79 @@ export default function ProjectPage() {
         <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
           {/* Left Column */}
           <div className="space-y-8">
+            {/* AI Summary */}
+            {project.summary && (
+              <section>
+                <div className="rounded-xl border bg-violet-500/5 p-5">
+                  <div className="flex items-start gap-3">
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-violet-500/10">
+                      <Lightbulb className="size-4 text-violet-500" />
+                    </div>
+                    <div>
+                      <h2 className="text-sm font-semibold text-violet-600 dark:text-violet-400 mb-1">{t('summary')}</h2>
+                      <p className="text-sm text-foreground leading-relaxed">{project.summary}</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )}
+
             {/* AI Summary / Features */}
-            <section>
-              <h2 className="flex items-center gap-2 text-xl font-bold mb-4">
-                <Sparkles className="size-5 text-violet-500" />
-                {t('coreFeatures')}
-              </h2>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {project.features.map((feature, index) => (
-                  <Card key={index} className="border-border/50">
-                    <CardContent className="flex items-start gap-3 p-4">
-                      <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-violet-500/10">
-                        <CheckCircle2 className="size-3.5 text-violet-500" />
-                      </div>
-                      <p className="text-sm">{feature}</p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </section>
+            {project.features.length > 0 && (
+              <section>
+                <h2 className="flex items-center gap-2 text-xl font-bold mb-4">
+                  <Sparkles className="size-5 text-violet-500" />
+                  {t('coreFeatures')}
+                </h2>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {project.features.map((feature, index) => (
+                    <Card key={index} className="border-border/50">
+                      <CardContent className="flex items-start gap-3 p-4">
+                        <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-violet-500/10">
+                          <CheckCircle2 className="size-3.5 text-violet-500" />
+                        </div>
+                        <p className="text-sm">{feature}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Caveats / What it can't do */}
+            {project.caveats.length > 0 && (
+              <section>
+                <h2 className="flex items-center gap-2 text-xl font-bold mb-4">
+                  <AlertTriangle className="size-5 text-amber-500" />
+                  {t('caveats')}
+                </h2>
+                <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 space-y-2">
+                  {project.caveats.map((caveat, index) => (
+                    <div key={index} className="flex items-start gap-2 text-sm">
+                      <span className="text-amber-500 shrink-0">•</span>
+                      <span className="text-muted-foreground">{caveat}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Use Cases */}
+            {project.useCases.length > 0 && (
+              <section>
+                <h2 className="flex items-center gap-2 text-xl font-bold mb-4">
+                  <Target className="size-5 text-emerald-500" />
+                  {t('useCases')}
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {project.useCases.map((useCase, index) => (
+                    <Badge key={index} variant="secondary" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20">
+                      {useCase}
+                    </Badge>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* Long Description */}
             <section>
@@ -184,22 +290,56 @@ export default function ProjectPage() {
               </div>
             </section>
 
-            {/* Getting Started */}
-            <section>
-              <h2 className="text-xl font-bold mb-4">{t('gettingStarted')}</h2>
-              <div className="rounded-xl border bg-card">
-                <ol className="divide-y">
-                  {project.gettingStarted.map((step, index) => (
-                    <li key={index} className="flex items-start gap-4 p-4">
-                      <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-foreground text-background text-sm font-bold">
-                        {index + 1}
-                      </div>
-                      <p className="pt-1 text-muted-foreground">{step}</p>
-                    </li>
+            {/* Tags */}
+            {project.tags && project.tags.length > 0 && (
+              <section>
+                <h2 className="flex items-center gap-2 text-xl font-bold mb-4">
+                  <Tag className="size-5 text-muted-foreground" />
+                  {t('tags')}
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {project.tags.map((tag, index) => (
+                    <Badge key={index} variant="outline" className="text-xs">
+                      {tag}
+                    </Badge>
                   ))}
-                </ol>
-              </div>
-            </section>
+                </div>
+              </section>
+            )}
+
+            {/* Getting Started */}
+            {project.gettingStarted.length > 0 && (
+              <section>
+                <h2 className="text-xl font-bold mb-4">{t('gettingStarted')}</h2>
+                <div className="rounded-xl border bg-card">
+                  <ol className="divide-y">
+                    {project.gettingStarted.map((step, index) => (
+                      <li key={index} className="flex items-start gap-4 p-4">
+                        <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-foreground text-background text-sm font-bold">
+                          {index + 1}
+                        </div>
+                        <p className="pt-1 text-muted-foreground">{step}</p>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </section>
+            )}
+
+            {/* Release Notes */}
+            {project.latestReleaseNotes && (
+              <section>
+                <h2 className="flex items-center gap-2 text-xl font-bold mb-4">
+                  <FileEdit className="size-5 text-blue-500" />
+                  {t('releaseNotes')}
+                </h2>
+                <div className="rounded-xl border bg-card p-4 text-sm text-muted-foreground">
+                  {project.latestReleaseNotes.split('\n').filter((l: string) => l.trim()).map((line: string, i: number) => (
+                    <p key={i} className="mb-1">{line}</p>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* Visual Assets Placeholder */}
             <section>

@@ -13,8 +13,9 @@ import { SubmitRequestDialog } from "@/components/submit-request-dialog"
 import { ErrorState } from "@/components/error-state"
 import { getHomeData, transformAppForDisplay, transformCategoryForDisplay, type Project, type Category } from "@/lib/api"
 import { Link } from '@/i18n/routing'
-import { Flame, ArrowRight, Loader2 } from "lucide-react"
+import { Flame, ArrowRight, Sparkles, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function HomePage() {
   const t = useTranslations('home')
@@ -22,6 +23,7 @@ export default function HomePage() {
   const [requestDialogOpen, setRequestDialogOpen] = useState(false)
   const [allCategories, setAllCategories] = useState<Category[]>([])
   const [trendingProjects, setTrendingProjects] = useState<Project[]>([])
+  const [newArrivals, setNewArrivals] = useState<Project[]>([])
   const [featuredProjects, setFeaturedProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -33,6 +35,7 @@ export default function HomePage() {
       const data = await getHomeData()
       setAllCategories(data.categories.map(transformCategoryForDisplay))
       setTrendingProjects(data.trending.map(transformAppForDisplay))
+      setNewArrivals(data.newArrivals.map(transformAppForDisplay))
       setFeaturedProjects(data.featured.map(transformAppForDisplay))
     } catch (err) {
       console.error('API request failed:', err)
@@ -48,8 +51,53 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      <div className="flex min-h-screen flex-col">
+        <Header />
+        <main className="flex-1">
+          {/* Hero skeleton */}
+          <section className="border-b bg-gradient-to-b from-background to-secondary/20 px-4 py-16 sm:py-24">
+            <div className="mx-auto max-w-4xl text-center">
+              <Skeleton className="mx-auto mb-4 h-6 w-48 rounded-full" />
+              <Skeleton className="mx-auto h-12 w-96 mb-4" />
+              <Skeleton className="mx-auto h-6 w-80 mb-10" />
+              <Skeleton className="mx-auto h-14 w-full max-w-2xl rounded-2xl" />
+            </div>
+          </section>
+          {/* Category skeleton */}
+          <section className="border-b bg-secondary/10 px-4 py-12">
+            <div className="mx-auto max-w-7xl">
+              <Skeleton className="h-8 w-48 mb-2" />
+              <Skeleton className="h-5 w-72 mb-8" />
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="rounded-xl border p-5 space-y-3">
+                    <Skeleton className="h-5 w-24" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-3/4" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+          {/* Trending skeleton */}
+          <section className="px-4 py-12">
+            <div className="mx-auto max-w-7xl">
+              <Skeleton className="h-8 w-36 mb-2" />
+              <Skeleton className="h-5 w-64 mb-8" />
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="rounded-xl border p-5 space-y-3">
+                    <Skeleton className="size-10 rounded-lg" />
+                    <Skeleton className="h-5 w-2/3" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        </main>
+        <Footer />
       </div>
     )
   }
@@ -153,6 +201,29 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* New Arrivals Section */}
+        {newArrivals.length > 0 && (
+          <section className="border-t bg-secondary/10 px-4 py-12 sm:py-16">
+            <div className="mx-auto max-w-7xl">
+              <div className="mb-8 flex items-center gap-3">
+                <Sparkles className="size-6 text-violet-500" />
+                <div>
+                  <h2 className="text-2xl font-bold sm:text-3xl">{t('newArrivals')}</h2>
+                  <p className="mt-1 text-muted-foreground">
+                    {t('newArrivalsSubtitle')}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                {newArrivals.map((project) => (
+                  <ProjectCard key={project.id} project={project} />
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Main: Featured Projects + Security Sidebar */}
         <section id="featured" className="border-t bg-secondary/10 px-4 py-12 sm:py-16">

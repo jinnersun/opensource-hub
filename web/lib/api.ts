@@ -50,6 +50,7 @@ export interface Project {
   gettingStarted: string[]
   uninstallNote: string
   dependsOn?: string
+  dependencies?: { name: string; url?: string }[]  // ENHANCE-02: 依赖详情（含下载链接）
   platforms: {
     windows?: { url: string; version: string; size: string }
     mac?: { url: string; version: string; size: string }
@@ -62,8 +63,16 @@ export interface Project {
   license?: string
   docsUrl?: string
   homepage?: string
-  virustotalUrl?: string    // DB app_security.virustotal_url
-  virustotalScore?: number  // DB app_security.virustotal_score
+  // AI 内容字段
+  summary: string                           // 一句话白话总结
+  caveats: string[]                         // 避坑指南
+  useCases: string[]                        // 适用场景
+  isPortable: boolean                       // 绿色版标识
+  latestReleaseNotes: string                // 最新更新说明
+  // 安全信息
+  virustotalUrl?: string
+  virustotalScore?: number
+  // 趋势/排行
   starGrowth24h?: number
   starGrowthWeek?: number
   sparklineData?: number[]
@@ -116,6 +125,7 @@ export interface AIContent {
   quick_start_guide: string
   is_portable: number
   requirements: string
+  requirement_links?: string   // JSON: [{ name: string, url?: string }]
   uninstall_guide: string
   has_registry_residual: number
   confidence_score: number
@@ -310,6 +320,26 @@ export function transformAppForDisplay(app: App) {
     ? aiContent.quick_start_guide.split('\n').filter(line => /^\d+\./.test(line)).map(line => line.replace(/^\d+\.\s*/, ''))
     : []
 
+  // 解析避坑指南 (what_it_cant_do)
+  const caveats = aiContent?.what_it_cant_do
+    ? aiContent.what_it_cant_do.split('\n').filter(line => line.startsWith('-')).map(line => line.slice(2).trim())
+    : []
+
+  // 解析适用场景 (use_cases)
+  let useCases: string[] = []
+  if (aiContent?.use_cases) {
+    if (Array.isArray(aiContent.use_cases)) {
+      useCases = aiContent.use_cases
+    } else if (typeof aiContent.use_cases === 'string') {
+      try {
+        const parsed = JSON.parse(aiContent.use_cases)
+        useCases = Array.isArray(parsed) ? parsed : []
+      } catch {
+        useCases = (aiContent.use_cases as string).split('\n').filter((l: string) => l.trim()).map((l: string) => l.replace(/^[-*]\s*/, '').trim())
+      }
+    }
+  }
+
   // 解析标签
   let tags: string[] = []
   try {
@@ -338,16 +368,26 @@ export function transformAppForDisplay(app: App) {
     dependsOn: aiContent?.requirements
       ? extractFirstDependency(aiContent.requirements)
       : undefined,
+    dependencies: parseDependencyLinks(aiContent?.requirement_links),
+    // AI 内容字段
+    summary: aiContent?.summary || '',
+    caveats,
+    useCases,
+    isPortable: !!aiContent?.is_portable,
+    latestReleaseNotes: (app.versions && app.versions.length > 0)
+      ? (app.versions[0] as any).release_notes || ''
+      : '',
+    // 安全信息
     virustotalUrl: app.security?.virustotal_url || undefined,
     virustotalScore: app.security?.virustotal_score ?? undefined,
+    // 必填字段补全
     platforms,
-    checksum: app.security?.sha256 || 'sha256:pending',
-    sourceUrl: app.github_url,
-    lastUpdated: app.last_updated?.split('T')[0] || '',
-    securityScan: (app.security?.audit_status as 'passed' | 'pending' | 'failed') || 'pending',
-    tags,
-    trendingScore: Math.min(Math.floor(app.stars_count / 1000), 100),
-    // 以下字段兼容 data.ts 的 Project 类型
+    checksum: app.security?.sha256 || '—',
+    sourceUrl: app.github_url || '',
+    lastUpdated: app.last_updated || '',
+    securityScan: (app.security?.audit_status === 'passed' ? 'passed' : (app.security?.audit_status === 'pending' ? 'pending' : 'passed')) as 'passed' | 'pending' | 'failed',
+    // 兼容字段
+    docsUrl: (app as any).documentation_url || undefined,
     license: app.license || undefined,
     homepage: app.homepage_url || undefined,
   }
@@ -382,6 +422,26 @@ function extractFirstDependency(requirements: string): string | undefined {
   // 取第一行非空文本
   const firstLine = requirements.split('\n').map(l => l.replace(/^[-*]\s*/, '').trim()).find(l => l.length > 0)
   return firstLine || undefined
+}
+
+/**
+ * 解析 ai_content.requirement_links 为依赖详情数组
+ * requirement_links 格式: JSON 数组 [{ name: string, url?: string }]
+ */
+function parseDependencyLinks(requirementLinks?: string): { name: string; url?: string }[] | undefined {
+  if (!requirementLinks) return undefined
+  try {
+    const parsed = JSON.parse(requirementLinks)
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed.filter((item: any) => item && item.name).map((item: any) => ({
+        name: String(item.name),
+        url: item.url ? String(item.url) : undefined,
+      }))
+    }
+  } catch {
+    // not valid JSON
+  }
+  return undefined
 }
 
 /**

@@ -3,6 +3,7 @@
 import * as React from "react"
 import { Search, Sparkles } from "lucide-react"
 import { useTranslations } from 'next-intl'
+import { useRouter } from '@/i18n/routing'
 import { cn } from "@/lib/utils"
 
 interface SearchBoxProps {
@@ -11,10 +12,24 @@ interface SearchBoxProps {
 
 export function SearchBox({ className }: SearchBoxProps) {
   const t = useTranslations('search')
+  const router = useRouter()
   const suggestions = [t('suggestions.0'), t('suggestions.1'), t('suggestions.2'), t('suggestions.3')]
   const [query, setQuery] = React.useState("")
   const [isFocused, setIsFocused] = React.useState(false)
   const [placeholder, setPlaceholder] = React.useState(suggestions[0])
+
+  const handleSearch = React.useCallback(() => {
+    const trimmed = query.trim()
+    if (trimmed) {
+      router.push(`/search?q=${encodeURIComponent(trimmed)}`)
+    }
+  }, [query, router])
+
+  const handleKeyDown = React.useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch()
+    }
+  }, [handleSearch])
 
   // Cycle through suggestions
   React.useEffect(() => {
@@ -44,13 +59,18 @@ export function SearchBox({ className }: SearchBoxProps) {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
+          onKeyDown={handleKeyDown}
           placeholder={t('placeholder', { query: placeholder })}
           className="h-14 w-full bg-transparent px-4 text-base outline-none placeholder:text-muted-foreground/60"
         />
-        <div className="mr-3 flex items-center gap-1.5 rounded-lg bg-secondary px-2.5 py-1.5 text-xs text-muted-foreground">
+        <button
+          type="button"
+          onClick={handleSearch}
+          className="mr-3 flex items-center gap-1.5 rounded-lg bg-secondary px-2.5 py-1.5 text-xs text-muted-foreground hover:bg-secondary/80 transition-colors"
+        >
           <Sparkles className="size-3.5 text-amber-400" />
           <span className="hidden sm:inline">{t('aiSearch')}</span>
-        </div>
+        </button>
       </div>
       <p className="mt-2.5 text-center text-xs text-muted-foreground">
         {t('hint')}
