@@ -49,7 +49,7 @@ export function SafeAuditCard({ project }: SafeAuditCardProps) {
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground">{t('virusScan')}</p>
           <a
-            href={`https://www.virustotal.com/gui/file/${project.checksum}`}
+            href={project.virustotalUrl || `https://www.virustotal.com/gui/file/${project.checksum}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-between rounded-lg border p-2.5 text-sm transition-colors hover:bg-muted"
@@ -57,6 +57,11 @@ export function SafeAuditCard({ project }: SafeAuditCardProps) {
             <span>{t('vtReport')}</span>
             <ExternalLink className="size-3.5 text-muted-foreground" />
           </a>
+          {project.virustotalScore != null && (
+            <p className="text-xs text-muted-foreground">
+              VirusTotal: {project.virustotalScore} detections
+            </p>
+          )}
         </div>
 
         {/* SHA256 Checksum */}

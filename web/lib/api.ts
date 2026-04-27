@@ -62,6 +62,8 @@ export interface Project {
   license?: string
   docsUrl?: string
   homepage?: string
+  virustotalUrl?: string    // DB app_security.virustotal_url
+  virustotalScore?: number  // DB app_security.virustotal_score
   starGrowth24h?: number
   starGrowthWeek?: number
   sparklineData?: number[]
@@ -134,6 +136,8 @@ export interface ApiCategory {
   description: string
   icon: string
   app_count: number
+  color?: string          // DB categories.color
+  lucide_icon?: string   // DB categories.lucide_icon
 }
 
 export interface ApiResponse<T> {
@@ -323,7 +327,7 @@ export function transformAppForDisplay(app: App) {
     name: app.name,
     humanTitle: `${app.name} — ${app.description?.slice(0, 30) || '开源工具'}`,
     description: app.description,
-    longDescription: app.description,
+    longDescription: (app as any).full_description || app.description,
     stars: app.stars_count,
     category: app.category || 'system',
     categoryLabel: app.category_name || app.category || '系统调教',
@@ -331,7 +335,11 @@ export function transformAppForDisplay(app: App) {
     features: features.slice(0, 5),
     gettingStarted: gettingStarted.slice(0, 3),
     uninstallNote: aiContent?.uninstall_guide?.split('\n')[0] || '卸载干净，不留系统痕迹',
-    dependsOn: undefined,
+    dependsOn: aiContent?.requirements
+      ? extractFirstDependency(aiContent.requirements)
+      : undefined,
+    virustotalUrl: app.security?.virustotal_url || undefined,
+    virustotalScore: app.security?.virustotal_score ?? undefined,
     platforms,
     checksum: app.security?.sha256 || 'sha256:pending',
     sourceUrl: app.github_url,
@@ -357,40 +365,36 @@ function formatFileSize(bytes: number): string {
 }
 
 /**
+ * 从 ai_content.requirements 提取第一个依赖项
+ * requirements 可能是纯文本（"需要 .NET 6 运行时"）或 JSON 数组
+ */
+function extractFirstDependency(requirements: string): string | undefined {
+  try {
+    // 尝试 JSON 解析
+    const parsed = JSON.parse(requirements)
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      const first = parsed[0]
+      return typeof first === 'string' ? first : first.name || String(first)
+    }
+  } catch {
+    // 不是 JSON，按纯文本处理
+  }
+  // 取第一行非空文本
+  const firstLine = requirements.split('\n').map(l => l.replace(/^[-*]\s*/, '').trim()).find(l => l.length > 0)
+  return firstLine || undefined
+}
+
+/**
  * 将 API 分类转换为前端分类格式
  */
 export function transformCategoryForDisplay(category: ApiCategory) {
-  const colorMap: Record<string, string> = {
-    'system': 'from-slate-500 to-zinc-600',
-    'ai': 'from-violet-500 to-purple-600',
-    'video': 'from-red-500 to-orange-500',
-    'clean-install': 'from-blue-500 to-cyan-500',
-    'dev-tools': 'from-emerald-500 to-teal-600',
-    'privacy': 'from-green-500 to-emerald-600',
-    'file-management': 'from-pink-500 to-rose-500',
-    'office': 'from-indigo-500 to-blue-600',
-    'design': 'from-fuchsia-500 to-pink-600',
-  }
-
-  const iconMap: Record<string, string> = {
-    'system': 'settings',
-    'ai': 'sparkles',
-    'video': 'play',
-    'clean-install': 'monitor',
-    'dev-tools': 'code',
-    'privacy': 'lock',
-    'file-management': 'folder',
-    'office': 'file-text',
-    'design': 'palette',
-  }
-
   return {
     id: category.slug,
     label: category.name,
     description: category.description,
-    emoji: iconMap[category.slug] || 'star',
+    emoji: category.lucide_icon || category.icon || 'star',
     keywords: [category.name, category.description],
-    color: colorMap[category.slug] || 'from-gray-500 to-slate-600',
+    color: category.color || 'from-gray-500 to-slate-600',
     projectCount: category.app_count,
   }
 }

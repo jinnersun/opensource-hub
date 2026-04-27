@@ -11,15 +11,25 @@ import { ErrorState } from '@/components/error-state'
 import { getApps, getCategories, transformAppForDisplay, transformCategoryForDisplay } from '@/lib/api'
 import type { Project, Category } from '@/lib/api'
 import { Link } from '@/i18n/routing'
-import { ArrowLeft, Package, Loader2 } from 'lucide-react'
+import { ArrowLeft, Package, Loader2, type LucideIcon, Sparkles, Video, Shield, Palette, FileText, Settings, Monitor, Code, Folder, Lock } from 'lucide-react'
 
-const categoryEmojis: Record<string, string> = {
-  'ai': '✨',
-  'video': '🎬',
-  'office': '📋',
-  'privacy': '🔒',
-  'system': '⚙️',
-  'design': '🎨',
+// Lucide icon key → 组件映射
+const lucideIconMap: Record<string, LucideIcon> = {
+  sparkles: Sparkles,
+  play: Video,
+  shield: Shield,
+  palette: Palette,
+  "file-text": FileText,
+  settings: Settings,
+  monitor: Monitor,
+  code: Code,
+  folder: Folder,
+  lock: Lock,
+}
+
+function getCategoryIcon(emojiKey: string): { Icon: LucideIcon; fallback: string } {
+  const Icon = lucideIconMap[emojiKey]
+  return Icon != null ? { Icon, fallback: '' } : { Icon: Sparkles, fallback: '📦' }
 }
 
 export default function CategoryDetailPage() {
@@ -62,7 +72,7 @@ export default function CategoryDetailPage() {
 
   const label = currentCategory?.label || td(`categories.${categoryId}.label`)
   const description = currentCategory?.description || td(`categories.${categoryId}.description`)
-  const emoji = categoryEmojis[categoryId] || '📦'
+  const currentIcon = currentCategory ? getCategoryIcon(currentCategory.emoji) : null
   const otherCategories = allCategories.filter(c => c.id !== categoryId).slice(0, 3)
 
   if (loading) {
@@ -105,7 +115,13 @@ export default function CategoryDetailPage() {
           {/* Left sidebar: Category info */}
           <aside className="w-full lg:w-72 shrink-0">
             <div className="rounded-2xl border bg-card p-6 sticky top-20">
-              <div className="text-4xl mb-3">{emoji}</div>
+              {currentIcon?.Icon ? (
+                <div className={`mb-3 flex size-12 items-center justify-center rounded-xl bg-gradient-to-br ${currentCategory?.color || 'from-gray-500 to-slate-600'}`}>
+                  <currentIcon.Icon className="size-6 text-white" />
+                </div>
+              ) : (
+                <div className="text-4xl mb-3">{currentIcon?.fallback || '📦'}</div>
+              )}
               <h1 className="text-2xl font-bold mb-2">{label}</h1>
               <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                 {description}
@@ -126,7 +142,12 @@ export default function CategoryDetailPage() {
                     href={`/category/${cat.id}`}
                     className="flex items-center gap-3 rounded-xl border bg-card px-4 py-3 text-sm transition-colors hover:bg-muted"
                   >
-                    <span className="text-lg">{categoryEmojis[cat.id] || '📦'}</span>
+                    <span className="flex size-6 items-center justify-center rounded-lg bg-muted">
+                      {(() => {
+                        const { Icon: CatIcon } = getCategoryIcon(cat.emoji)
+                        return CatIcon ? <CatIcon className="size-3.5" /> : <span className="text-sm">📦</span>
+                      })()}
+                    </span>
                     <span className="font-medium">{td(`categories.${cat.id}.label`)}</span>
                   </Link>
                 ))}
