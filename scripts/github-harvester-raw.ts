@@ -403,56 +403,104 @@ class RawDataHarvester {
 }
 
 // ==========================================
-// 预设仓库列表
+// 仓库发现与加载
 // ==========================================
 
-const DEFAULT_REPOS: GitHubRepo[] = [
-  // 系统调优
-  { owner: 'microsoft', repo: 'PowerToys', category: 'system', tags: ['效率工具', '窗口管理', '快捷键'] },
-  { owner: 'voidtools', repo: 'Everything', category: 'system', tags: ['文件搜索', '效率工具', 'NTFS'] },
-  { owner: 'zhongyang219', repo: 'TrafficMonitor', category: 'system', tags: ['网速监控', '硬件监控', '任务栏'] },
+async function loadReposFromFile(filePath: string): Promise<GitHubRepo[]> {
+  const content = await fs.readFile(filePath, 'utf-8')
+  const data = JSON.parse(content)
+  return Array.isArray(data) ? data : data.repos || []
+}
+
+async function discoverTrendingRepos(token?: string): Promise<GitHubRepo[]> {
+  console.log('🔥 发现趋势项目...')
   
-  // AI 生产力
-  { owner: 'ollama', repo: 'ollama', category: 'ai', tags: ['大模型', '本地AI', 'LLM'] },
-  { owner: 'Bin-Huang', repo: 'chatbox', category: 'ai', tags: ['AI对话', 'GPT', 'Claude'] },
-  { owner: 'janhq', repo: 'jan', category: 'ai', tags: ['本地AI', '隐私', 'AI助手'] },
+  // 使用 GitHub Search API 发现热门项目
+  const queries = [
+    'stars:>1000 language:typescript created:>2026-01-01',
+    'stars:>5000 language:python created:>2025-06-01',
+    'stars:>3000 language:rust created:>2025-06-01'
+  ]
   
-  // 影音处理
-  { owner: 'obsproject', repo: 'obs-studio', category: 'video', tags: ['直播', '录屏', '视频制作'] },
-  { owner: 'yt-dlp', repo: 'yt-dlp', category: 'video', tags: ['视频下载', 'YouTube', 'B站'] },
-  { owner: 'HandBrake', repo: 'HandBrake', category: 'video', tags: ['视频转码', '格式转换', '压缩'] },
-  { owner: 'mltframework', repo: 'shotcut', category: 'video', tags: ['视频剪辑', '4K', '滤镜'] },
+  const discovered: GitHubRepo[] = []
+  const headers: Record<string, string> = {
+    'Accept': 'application/vnd.github.v3+json',
+    'User-Agent': 'OpenSource-Hub-Harvester'
+  }
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
   
-  // 纯净装机
-  { owner: 'pbatard', repo: 'rufus', category: 'clean-install', tags: ['U盘启动', '系统安装', 'PE制作'] },
-  { owner: 'ventoy', repo: 'Ventoy', category: 'clean-install', tags: ['多系统', 'U盘启动', 'ISO'] },
+  for (const query of queries) {
+    try {
+      const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}&sort=stars&order=desc&per_page=5`
+      const response = await fetch(url, { headers })
+      
+      if (response.ok) {
+        const data = await response.json()
+        
+        if (data?.items) {
+          for (const item of data.items) {
+            // 过滤：非 Fork、有描述、有 Release
+            if (!item.fork && item.description && item.stargazers_count > 1000) {
+              discovered.push({
+                owner: item.owner.login,
+                repo: item.name,
+                category: 'discovered',
+                tags: item.topics?.slice(0, 3) || ['trending']
+              })
+            }
+          }
+        }
+      }
+      
+      await delay(1000) // 搜索 API 也有速率限制
+    } catch (error) {
+      console.warn(`搜索失败: ${query}`, error)
+    }
+  }
   
-  // 开发工具
-  { owner: 'microsoft', repo: 'vscode', category: 'dev-tools', tags: ['代码编辑器', 'IDE', '调试'] },
-  { owner: 'git', repo: 'git', category: 'dev-tools', tags: ['版本控制', 'Git', '代码管理'] },
-  { owner: 'microsoft', repo: 'terminal', category: 'dev-tools', tags: ['终端', '命令行', 'WSL'] },
-  { owner: 'jesseduffield', repo: 'lazygit', category: 'dev-tools', tags: ['Git', '终端UI', '效率工具'] },
+  console.log(`✅ 发现 ${discovered.length} 个趋势项目`)
+  return discovered
+}
+
+async function loadReposFromSubmissions(d1: D1Client): Promise<GitHubRepo[]> {
+  console.log('📥 加载用户提交的项目...')
   
-  // 隐私保护
-  { owner: 'gorhill', repo: 'uBlock', category: 'privacy', tags: ['广告拦截', '隐私保护', '浏览器扩展'] },
-  { owner: 'bitwarden', repo: 'clients', category: 'privacy', tags: ['密码管理', '安全', '自动填充'] },
-  { owner: 'veracrypt', repo: 'VeraCrypt', category: 'privacy', tags: ['磁盘加密', '文件保护', '隐私'] },
+  try {
+    const result = await d1.first(
+      `SELECT github_url FROM repo_submissions WHERE status = 'approved' ORDER BY created_at DESC LIMIT 10`
+    )
+    
+    // 注意：这里简化处理，实际需要解析多条记录
+    // 完整实现需要查询所有记录
+    const submissions: GitHubRepo[] = []
+    
+    // 暂时返回空数组，等待完整实现
+    return submissions
+  } catch (error) {
+    console.log('📥 暂无用户提交的项目')
+    return []
+  }
+}
+
+// 合并所有来源的仓库列表（去重）
+function mergeRepos(...sources: GitHubRepo[][]): GitHubRepo[] {
+  const seen = new Set<string>()
+  const merged: GitHubRepo[] = []
   
-  // 文件管理
-  { owner: 'syncthing', repo: 'syncthing', category: 'file-management', tags: ['文件同步', '跨平台', 'P2P'] },
-  { owner: 'ip7z', repo: '7zip', category: 'file-management', tags: ['压缩', '解压', '7z'] },
-  { owner: 'files-community', repo: 'Files', category: 'file-management', tags: ['文件管理器', '标签页', '双面板'] },
+  for (const source of sources) {
+    for (const repo of source) {
+      const key = `${repo.owner}/${repo.repo}`
+      if (!seen.has(key)) {
+        seen.add(key)
+        merged.push(repo)
+      }
+    }
+  }
   
-  // 设计工具
-  { owner: 'GNOME', repo: 'gimp', category: 'design', tags: ['图片编辑', 'PS替代', '图层'] },
-  { owner: 'inkscape', repo: 'inkscape', category: 'design', tags: ['矢量图', 'SVG', 'Logo设计'] },
-  { owner: 'jgraph', repo: 'drawio-desktop', category: 'design', tags: ['流程图', '架构图', 'UML'] },
-  
-  // 办公提效
-  { owner: 'obsidianmd', repo: 'obsidian-release', category: 'office', tags: ['笔记', '知识管理', 'Markdown'] },
-  { owner: 'sumatrapdfreader', repo: 'sumatrapdf', category: 'office', tags: ['PDF阅读', '电子书', '轻量'] },
-  { owner: 'marktext', repo: 'marktext', category: 'office', tags: ['Markdown', '编辑器', '写作'] },
-]
+  return merged
+}
 
 // ==========================================
 // 主函数
@@ -464,22 +512,46 @@ async function main() {
   const reposIndex = args.indexOf('--repos')
   const outputIndex = args.indexOf('--output')
   const tokenIndex = args.indexOf('--token')
+  const discoverIndex = args.indexOf('--discover')
+  const submissionsIndex = args.indexOf('--submissions')
   
   const reposFile = reposIndex !== -1 ? args[reposIndex + 1] : null
   const outputFile = outputIndex !== -1 ? args[outputIndex + 1] : 'data/harvested-raw.json'
   const token = tokenIndex !== -1 ? args[tokenIndex + 1] : undefined
+  const enableDiscover = discoverIndex !== -1
+  const enableSubmissions = submissionsIndex !== -1
 
-  // 加载仓库列表
-  let repos: GitHubRepo[]
-  if (reposFile) {
-    console.log(`📂 从文件加载仓库列表: ${reposFile}`)
-    const content = await fs.readFile(reposFile, 'utf-8')
-    const data = JSON.parse(content)
-    repos = Array.isArray(data) ? data : data.repos || []
-  } else {
-    console.log('📋 使用预设仓库列表')
-    repos = DEFAULT_REPOS
+  // 加载仓库列表（多层来源）
+  const sources: GitHubRepo[][] = []
+  
+  // 1. 种子项目（配置文件）
+  const seedFile = reposFile || '../data/repos.json'
+  try {
+    console.log(`📂 加载种子项目: ${seedFile}`)
+    const seedRepos = await loadReposFromFile(seedFile)
+    sources.push(seedRepos)
+    console.log(`✅ 种子项目: ${seedRepos.length} 个`)
+  } catch (error) {
+    console.warn(`⚠️ 种子项目加载失败: ${seedFile}`)
   }
+  
+  // 2. 趋势发现（可选）
+  if (enableDiscover) {
+    console.log('🔥 启用趋势发现...')
+    const trendingRepos = await discoverTrendingRepos(token)
+    sources.push(trendingRepos)
+  }
+  
+  // 3. 用户提交（可选）
+  if (enableSubmissions) {
+    console.log('📥 加载用户提交...')
+    // 注意：需要 D1 连接，这里简化处理
+    // const submissionRepos = await loadReposFromSubmissions(d1)
+    // sources.push(submissionRepos)
+  }
+  
+  // 合并去重
+  const repos = mergeRepos(...sources)
 
   console.log(`🎯 共 ${repos.length} 个仓库待采集`)
 

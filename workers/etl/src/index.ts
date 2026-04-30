@@ -151,8 +151,8 @@ async function callAI(params: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      model: 'deepseek-v4-pro',  // DeepSeek V4 Pro（推荐）
-      // model: 'deepseek-v4-flash',  // DeepSeek V4 Flash（更快更便宜）
+      model: 'deepseek-v4-flash',  // DeepSeek V4 Flash（更快）
+      // model: 'deepseek-v4-pro',  // DeepSeek V4 Pro（质量更高但更慢）
       // model: 'gpt-4o-mini',  // OpenAI 模型（备用）
       messages: [
         { role: 'system', content: '你是一个专业的开源软件分析师。' },
@@ -235,7 +235,7 @@ async function processBatch(env: Env): Promise<number> {
       OR (etl_status = 'rate_limited' AND retry_count < max_retries AND last_processed_at < datetime('now', '-1 hour'))
     )
     ORDER BY collected_at ASC 
-    LIMIT 5
+    LIMIT 2
   `).all()
   
   if (rawApps.results.length === 0) {
@@ -299,7 +299,7 @@ async function processSingleApp(rawApp: any, env: Env): Promise<void> {
     readme: rawApp.readme_content,
     repoInfo: repoInfo,
     env: env,
-    timeout: 30000  // 30 秒超时
+    timeout: 60000  // 60 秒超时（Worker 限制 30 秒，但留余量）
   })
   
   // 3. 验证 AI 结果
@@ -495,14 +495,15 @@ export default {
   },
   
   // HTTP 触发
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url)
     
     // POST /etl/trigger - 手动触发 ETL
     if (url.pathname === '/etl/trigger' && request.method === 'POST') {
       try {
-        await processWithTimeout(env)
-        return new Response('ETL triggered successfully', { status: 200 })
+        // 使用 waitUntil 扩展 Worker 的生命周期，在后台处理
+        ctx.waitUntil(processWithTimeout(env))
+        return new Response('ETL Job started in background', { status: 202 })
       } catch (error) {
         return new Response(`ETL failed: ${error}`, { status: 500 })
       }

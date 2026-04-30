@@ -1,0 +1,169 @@
+{
+  "source": "seed",
+  "lastUpdated": "2026-04-30",
+  "description": "种子项目列表 - 人工精选的高质量开源软件",
+  "repos": [
+    {
+      "owner": "microsoft",
+      "repo": "PowerToys",
+      "category": "system",
+      "tags": ["效率工具", "窗口管理", "快捷键"]
+    },
+    {
+      "owner": "voidtools",
+      "repo": "Everything",
+      "category": "system",
+      "tags": ["文件搜索", "效率工具", "NTFS"]
+    },
+    {
+      "owner": "zhongyang219",
+      "repo": "TrafficMonitor",
+      "category": "system",
+      "tags": ["网速监控", "硬件监控", "任务栏"]
+    },
+    {
+      "owner": "ollama",
+      "repo": "ollama",
+      "category": "ai",
+      "tags": ["大模型", "本地AI", "LLM"]
+    },
+    {
+      "owner": "Bin-Huang",
+      "repo": "chatbox",
+      "category": "ai",
+      "tags": ["AI对话", "GPT", "Claude"]
+    },
+    {
+      "owner": "janhq",
+      "repo": "jan",
+      "category": "ai",
+      "tags": ["本地AI", "隐私", "AI助手"]
+    },
+    {
+      "owner": "obsproject",
+      "repo": "obs-studio",
+      "category": "video",
+      "tags": ["直播", "录屏", "视频制作"]
+    },
+    {
+      "owner": "yt-dlp",
+      "repo": "yt-dlp",
+      "category": "video",
+      "tags": ["视频下载", "YouTube", "B站"]
+    },
+    {
+      "owner": "HandBrake",
+      "repo": "HandBrake",
+      "category": "video",
+      "tags": ["视频转码", "格式转换", "压缩"]
+    },
+    {
+      "owner": "mltframework",
+      "repo": "shotcut",
+      "category": "video",
+      "tags": ["视频剪辑", "4K", "滤镜"]
+    },
+    {
+      "owner": "pbatard",
+      "repo": "rufus",
+      "category": "clean-install",
+      "tags": ["U盘启动", "系统安装", "PE制作"]
+    },
+    {
+      "owner": "ventoy",
+      "repo": "Ventoy",
+      "category": "clean-install",
+      "tags": ["多系统", "U盘启动", "ISO"]
+    },
+    {
+      "owner": "microsoft",
+      "repo": "vscode",
+      "category": "dev-tools",
+      "tags": ["代码编辑器", "IDE", "调试"]
+    },
+    {
+      "owner": "git",
+      "repo": "git",
+      "category": "dev-tools",
+      "tags": ["版本控制", "Git", "代码管理"]
+    },
+    {
+      "owner": "microsoft",
+      "repo": "terminal",
+      "category": "dev-tools",
+      "tags": ["终端", "命令行", "WSL"]
+    },
+    {
+      "owner": "jesseduffield",
+      "repo": "lazygit",
+      "category": "dev-tools",
+      "tags": ["Git", "终端UI", "效率工具"]
+    },
+    {
+      "owner": "gorhill",
+      "repo": "uBlock",
+      "category": "privacy",
+      "tags": ["广告拦截", "隐私保护", "浏览器扩展"]
+    },
+    {
+      "owner": "bitwarden",
+      "repo": "clients",
+      "category": "privacy",
+      "tags": ["密码管理", "安全", "自动填充"]
+    },
+    {
+      "owner": "veracrypt",
+      "repo": "VeraCrypt",
+      "category": "privacy",
+      "tags": ["磁盘加密", "文件保护", "隐私"]
+    },
+    {
+      "owner": "syncthing",
+      "repo": "syncthing",
+      "category": "file-management",
+      "tags": ["文件同步", "跨平台", "P2P"]
+    },
+    {
+      "owner": "ip7z",
+      "repo": "7zip",
+      "category": "file-management",
+      "tags": ["压缩", "解压", "归档"]
+    },
+    {
+      "owner": "files-community",
+      "repo": "Files",
+      "category": "file-management",
+      "tags": ["文件管理器", "Windows", "现代化"]
+    },
+    {
+      "owner": "GNOME",
+      "repo": "gimp",
+      "category": "creative",
+      "tags": ["图像编辑", "Photoshop替代品", "设计"]
+    },
+    {
+      "owner": "inkscape",
+      "repo": "inkscape",
+      "category": "creative",
+      "tags": ["矢量图", "Illustrator替代品", "设计"]
+    },
+    {
+      "owner": "jgraph",
+      "repo": "drawio-desktop",
+      "category": "productivity",
+      "tags": ["流程图", "图表", "Visio替代品"]
+    },
+    {
+      "owner": "sumatrapdfreader",
+      "repo": "sumatrapdf",
+      "category": "productivity",
+      "tags": ["PDF阅读器", "轻量", "开源"]
+    },
+    {
+      "owner": "marktext",
+      "repo": "marktext",
+      "category": "productivity",
+      "tags": ["Markdown编辑器", "写作", "笔记"]
+    }
+  ]
+}
