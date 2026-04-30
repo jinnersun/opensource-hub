@@ -206,7 +206,9 @@ class D1Client {
 
   async first(sql: string, params: any[] = []): Promise<any> {
     const result = await this.execute(sql, params)
-    return result?.result?.[0] || null
+    // Cloudflare D1 API 返回格式: result.result[0].results[0]
+    const rows = result?.result?.[0]?.results
+    return rows && rows.length > 0 ? rows[0] : null
   }
 }
 
