@@ -305,6 +305,26 @@ class RawDataHarvester {
 
       // 8. 写入 raw_apps 表
       console.log(`   💾 写入 raw_apps...`)
+      
+      // 截断 raw_api_data 避免 SQL 过长（D1 限制）
+      const rawApiData = JSON.stringify({
+        id: repoInfo.id,
+        name: repoInfo.name,
+        full_name: repoInfo.full_name,
+        description: repoInfo.description,
+        stargazers_count: repoInfo.stargazers_count,
+        language: repoInfo.language,
+        license: repoInfo.license,
+        topics: repoInfo.topics,
+        pushed_at: repoInfo.pushed_at,
+        created_at: repoInfo.created_at,
+        html_url: repoInfo.html_url,
+        homepage: repoInfo.homepage
+      })
+      
+      // 截断 README 避免 SQL 过长（限制 50000 字符）
+      const readmeContent = (readme?.content || '').substring(0, 50000)
+      
       const insertSQL = `
         INSERT INTO raw_apps (
           github_repo_id, full_name, raw_api_data, readme_content,
@@ -312,11 +332,11 @@ class RawDataHarvester {
         ) VALUES (
           ${repoInfo.id},
           '${fullName.replace(/'/g, "''")}',
-          ${escapeSQL(JSON.stringify(repoInfo))},
-          ${escapeSQL(readme?.content || '')},
+          ${escapeSQL(rawApiData)},
+          ${escapeSQL(readmeContent)},
           ${hasReleases},
           ${releases.length},
-          ${(readme?.content || '').length},
+          ${readmeContent.length},
           'pending'
         )
       `

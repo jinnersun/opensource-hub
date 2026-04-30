@@ -130,6 +130,7 @@ function generateId(): string {
 async function callAI(params: {
   readme: string
   repoInfo: any
+  env: Env
   timeout?: number
 }): Promise<AIResult> {
   const prompt = AI_PROMPT
@@ -146,7 +147,7 @@ async function callAI(params: {
   const response = await fetch('https://api.deepseek.com/chat/completions', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${params.repoInfo._env?.OPENAI_API_KEY || process.env.OPENAI_API_KEY}`,
+      'Authorization': `Bearer ${params.env.OPENAI_API_KEY}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
@@ -297,6 +298,7 @@ async function processSingleApp(rawApp: any, env: Env): Promise<void> {
   const aiResult = await callAI({
     readme: rawApp.readme_content,
     repoInfo: repoInfo,
+    env: env,
     timeout: 30000  // 30 秒超时
   })
   
