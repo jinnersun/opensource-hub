@@ -1,0 +1,22 @@
+name = "opensource-hub-etl"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# 定时触发：每 2 小时运行一次
+[triggers]
+crons = ["0 */2 * * *"]
+
+# D1 数据库绑定
+[[d1_databases]]
+binding = "DB"
+database_name = "opensource-hub-db"
+database_id = "9989fa14-ca29-46ef-8c9f-9ab55f6b47d7"
+
+# KV 命名空间绑定（用于存储指标）
+[[kv_namespaces]]
+binding = "KV"
+id = "4a1bc5fb651342528766c6f4248d4e69"
+
+# 环境变量
+[vars]
+ENVIRONMENT = "production"

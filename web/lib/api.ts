@@ -7,12 +7,25 @@
  */
 
 // API 基础 URL
-// 生产环境：走代理路由 /api/proxy?path=，由 Edge Runtime 通过 Service Binding 内网转发
+// 生产环境客户端：走代理路由 /api/proxy?path=，由 Edge Runtime 通过 Service Binding 内网转发
+// 生产环境 SSR：优先用 NEXT_PUBLIC_API_URL 直连（如有），否则也走代理
 // 开发环境：直接请求本地 Workers API
 function buildApiUrl(endpoint: string): string {
-  if (process.env.NODE_ENV === 'production' && !process.env.NEXT_PUBLIC_API_URL) {
-    return `/api/proxy?path=${encodeURIComponent(endpoint)}`
+  const isServer = typeof window === 'undefined'
+
+  // 生产环境：客户端永远走代理，SSR 可以走直连
+  if (process.env.NODE_ENV === 'production') {
+    if (!isServer) {
+      // 浏览器端：走 /api/proxy 避免 localhost 暴露
+      return `/api/proxy?path=${encodeURIComponent(endpoint)}`
+    }
+    // SSR 端：如果配置了 API URL 则直连，否则也走代理
+    if (!process.env.NEXT_PUBLIC_API_URL) {
+      return `/api/proxy?path=${encodeURIComponent(endpoint)}`
+    }
   }
+
+  // 开发环境：NEXT_PUBLIC_API_URL 或 localhost fallback
   const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787'
   return `${base}${endpoint}`
 }
