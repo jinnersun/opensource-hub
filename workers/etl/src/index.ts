@@ -235,7 +235,7 @@ async function processBatch(env: Env): Promise<number> {
       OR (etl_status = 'rate_limited' AND retry_count < max_retries AND last_processed_at < datetime('now', '-1 hour'))
     )
     ORDER BY collected_at ASC 
-    LIMIT 2
+    LIMIT 5
   `).all()
   
   if (rawApps.results.length === 0) {
@@ -476,8 +476,8 @@ async function processWithTimeout(env: Env) {
     }
     batchCount++
     
-    // 批次间休息 2 秒
-    await delay(2000)
+    // 批次间休息 0.5 秒
+    await delay(500)
   }
   
   console.log(`ETL completed: ${batchCount} batches processed in ${Date.now() - startTime}ms`)
