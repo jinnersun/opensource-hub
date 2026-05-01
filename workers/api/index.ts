@@ -51,19 +51,22 @@ async function getApps(db: D1Database, params: URLSearchParams): Promise<Respons
   const offset = parseInt(params.get('offset') || '0')
   const featured = params.get('featured')
   const search = params.get('q')
+  const lang = params.get('lang') || 'zh'
 
   try {
     let query = `
-      SELECT 
+      SELECT
         a.id, a.name, a.slug, a.description, a.category, a.tags,
         a.github_url, a.license, a.homepage_url, a.is_featured,
         a.status, a.stars_count, a.last_updated, a.created_at,
-        c.name as category_name
+        c.name as category_name,
+        t.summary, t.description as trans_desc, t.full_description, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats
       FROM apps a
       LEFT JOIN categories c ON a.category = c.slug
+      LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ?
       WHERE a.status = 'active'
     `
-    const bindings: (string | number)[] = []
+    const bindings: (string | number)[] = [lang]
 
     if (category) {
       query += ` AND a.category = ?`
@@ -90,17 +93,26 @@ async function getApps(db: D1Database, params: URLSearchParams): Promise<Respons
       (results || []).map(async (app: Record<string, unknown>) => {
         const { results: versions } = await db
           .prepare(`
-            SELECT id, version, os_type, arch, file_type, file_name, 
-                   file_size, download_url, release_date, is_stable
-            FROM app_versions 
-            WHERE app_id = ? 
+            SELECT id, version, os_type, arch, file_type, file_name,
+                   file_size, download_url, sha256, release_date, is_stable
+            FROM app_versions
+            WHERE app_id = ?
             ORDER BY release_date DESC
           `)
           .bind(app.id)
           .all()
-        
+
         return {
           ...app,
+          description: app.trans_desc || app.description,
+          ai_content: {
+            summary: app.summary,
+            features: app.features,
+            use_cases: app.use_cases,
+            quick_start_guide: app.quick_start_guide,
+            uninstall_guide: app.uninstall_guide,
+            caveats: app.caveats,
+          },
           versions: versions || [],
         }
       })
@@ -121,12 +133,12 @@ async function getApps(db: D1Database, params: URLSearchParams): Promise<Respons
 }
 
 // 获取应用详情
-async function getAppById(db: D1Database, id: string): Promise<Response> {
+async function getAppById(db: D1Database, id: string, lang: string): Promise<Response> {
   try {
     // 获取应用基本信息
     const app = await db
       .prepare(`
-        SELECT 
+        SELECT
           a.*,
           c.name as category_name
         FROM apps a
@@ -143,8 +155,8 @@ async function getAppById(db: D1Database, id: string): Promise<Response> {
     // 获取版本信息
     const { results: versions } = await db
       .prepare(`
-        SELECT * FROM app_versions 
-        WHERE app_id = ? 
+        SELECT * FROM app_versions
+        WHERE app_id = ?
         ORDER BY release_date DESC
       `)
       .bind(app.id)
@@ -152,8 +164,8 @@ async function getAppById(db: D1Database, id: string): Promise<Response> {
 
     // 获取 AI 内容
     const aiContent = await db
-      .prepare(`SELECT * FROM app_ai_content WHERE app_id = ?`)
-      .bind(app.id)
+      .prepare(`SELECT * FROM app_translations WHERE app_id = ? AND locale = ?`)
+      .bind(app.id, lang)
       .first()
 
     // 获取安全信息
@@ -164,6 +176,7 @@ async function getAppById(db: D1Database, id: string): Promise<Response> {
 
     return jsonResponse({
       ...app,
+      description: (aiContent as any)?.description || app.description,
       versions: versions || [],
       ai_content: aiContent,
       security,
@@ -201,18 +214,21 @@ async function getCategories(db: D1Database): Promise<Response> {
 async function getTrending(db: D1Database, params: URLSearchParams): Promise<Response> {
   const period = params.get('period') || 'week' // day, week, alltime
   const limit = Math.min(parseInt(params.get('limit') || '10'), 50)
+  const lang = params.get('lang') || 'zh'
 
   try {
     let query: string
-    
+
     if (period === 'day') {
       // 按24小时增长排序（这里用 stars_count 模拟）
       query = `
-        SELECT a.id, a.name, a.slug, a.description, a.category, 
+        SELECT a.id, a.name, a.slug, a.description, a.category,
                a.stars_count, a.last_updated,
-               c.name as category_name
+               c.name as category_name,
+               t.summary, t.description as trans_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats
         FROM apps a
         LEFT JOIN categories c ON a.category = c.slug
+        LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ?
         WHERE a.status = 'active'
         ORDER BY a.last_updated DESC
         LIMIT ?
@@ -222,9 +238,11 @@ async function getTrending(db: D1Database, params: URLSearchParams): Promise<Res
       query = `
         SELECT a.id, a.name, a.slug, a.description, a.category,
                a.stars_count, a.last_updated,
-               c.name as category_name
+               c.name as category_name,
+               t.summary, t.description as trans_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats
         FROM apps a
         LEFT JOIN categories c ON a.category = c.slug
+        LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ?
         WHERE a.status = 'active'
         ORDER BY a.stars_count DESC
         LIMIT ?
@@ -234,19 +252,34 @@ async function getTrending(db: D1Database, params: URLSearchParams): Promise<Res
       query = `
         SELECT a.id, a.name, a.slug, a.description, a.category,
                a.stars_count, a.last_updated,
-               c.name as category_name
+               c.name as category_name,
+               t.summary, t.description as trans_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats
         FROM apps a
         LEFT JOIN categories c ON a.category = c.slug
+        LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ?
         WHERE a.status = 'active'
         ORDER BY a.stars_count DESC
         LIMIT ?
       `
     }
 
-    const { results } = await db.prepare(query).bind(limit).all()
+    const { results } = await db.prepare(query).bind(lang, limit).all()
+
+    const mappedResults = (results || []).map((app: any) => ({
+      ...app,
+      description: app.trans_desc || app.description,
+      ai_content: {
+        summary: app.summary,
+        features: app.features,
+        use_cases: app.use_cases,
+        quick_start_guide: app.quick_start_guide,
+        uninstall_guide: app.uninstall_guide,
+        caveats: app.caveats,
+      }
+    }))
 
     return jsonResponse({
-      data: results || [],
+      data: mappedResults,
       period,
     })
   } catch (error) {
@@ -259,6 +292,7 @@ async function getTrending(db: D1Database, params: URLSearchParams): Promise<Res
 async function searchApps(db: D1Database, params: URLSearchParams): Promise<Response> {
   const query = params.get('q')
   const limit = Math.min(parseInt(params.get('limit') || '20'), 50)
+  const lang = params.get('lang') || 'zh'
 
   if (!query || query.trim().length < 2) {
     return errorResponse('Search query must be at least 2 characters', 400)
@@ -266,23 +300,25 @@ async function searchApps(db: D1Database, params: URLSearchParams): Promise<Resp
 
   try {
     const searchPattern = `%${query}%`
-    
+
     const { results } = await db
       .prepare(`
-        SELECT 
+        SELECT
           a.id, a.name, a.slug, a.description, a.category, a.tags,
           a.github_url, a.license, a.stars_count, a.last_updated,
-          c.name as category_name
+          c.name as category_name,
+          t.summary, t.description as trans_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats
         FROM apps a
         LEFT JOIN categories c ON a.category = c.slug
+        LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ?
         WHERE a.status = 'active'
           AND (a.name LIKE ? OR a.description LIKE ? OR a.tags LIKE ?)
-        ORDER BY 
+        ORDER BY
           CASE WHEN a.name LIKE ? THEN 0 ELSE 1 END,
           a.stars_count DESC
         LIMIT ?
       `)
-      .bind(searchPattern, searchPattern, searchPattern, `%${query}%`, limit)
+      .bind(lang, searchPattern, searchPattern, searchPattern, `%${query}%`, limit)
       .all()
 
     // 记录搜索分析
@@ -299,8 +335,21 @@ async function searchApps(db: D1Database, params: URLSearchParams): Promise<Resp
       .bind(query, results?.length || 0, results && results.length > 0 ? 1 : 0)
       .run()
 
+    const mappedResults = (results || []).map((app: any) => ({
+      ...app,
+      description: app.trans_desc || app.description,
+      ai_content: {
+        summary: app.summary,
+        features: app.features,
+        use_cases: app.use_cases,
+        quick_start_guide: app.quick_start_guide,
+        uninstall_guide: app.uninstall_guide,
+        caveats: app.caveats,
+      }
+    }))
+
     return jsonResponse({
-      data: results || [],
+      data: mappedResults,
       query,
       count: results?.length || 0,
     })
@@ -311,7 +360,8 @@ async function searchApps(db: D1Database, params: URLSearchParams): Promise<Resp
 }
 
 // 获取首页数据
-async function getHomeData(db: D1Database): Promise<Response> {
+async function getHomeData(db: D1Database, params: URLSearchParams): Promise<Response> {
+  const lang = params.get('lang') || 'zh'
   try {
     // 并行获取各类数据
     const [
@@ -322,13 +372,15 @@ async function getHomeData(db: D1Database): Promise<Response> {
     ] = await Promise.all([
       // 推荐应用
       db.prepare(`
-        SELECT a.id, a.name, a.slug, a.description, a.category, a.stars_count
+        SELECT a.id, a.name, a.slug, a.description, a.category, a.stars_count,
+               t.summary, t.description as trans_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats
         FROM apps a
+        LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ?
         WHERE a.status = 'active' AND a.is_featured = 1
         ORDER BY a.stars_count DESC
         LIMIT 6
-      `).all(),
-      
+      `).bind(lang).all(),
+
       // 分类列表
       db.prepare(`
         SELECT c.*, COUNT(a.id) as app_count
@@ -338,31 +390,48 @@ async function getHomeData(db: D1Database): Promise<Response> {
         GROUP BY c.id
         ORDER BY c.sort_order ASC
       `).all(),
-      
+
       // 热门应用
       db.prepare(`
-        SELECT a.id, a.name, a.slug, a.description, a.category, a.stars_count
+        SELECT a.id, a.name, a.slug, a.description, a.category, a.stars_count,
+               t.summary, t.description as trans_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats
         FROM apps a
+        LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ?
         WHERE a.status = 'active'
         ORDER BY a.stars_count DESC
         LIMIT 10
-      `).all(),
-      
+      `).bind(lang).all(),
+
       // 最新添加
       db.prepare(`
-        SELECT a.id, a.name, a.slug, a.description, a.category, a.stars_count
+        SELECT a.id, a.name, a.slug, a.description, a.category, a.stars_count,
+               t.summary, t.description as trans_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats
         FROM apps a
+        LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ?
         WHERE a.status = 'active'
         ORDER BY a.created_at DESC
         LIMIT 6
-      `).all(),
+      `).bind(lang).all(),
     ])
 
+    const mapApp = (app: any) => ({
+      ...app,
+      description: app.trans_desc || app.description,
+      ai_content: {
+        summary: app.summary,
+        features: app.features,
+        use_cases: app.use_cases,
+        quick_start_guide: app.quick_start_guide,
+        uninstall_guide: app.uninstall_guide,
+        caveats: app.caveats,
+      }
+    })
+
     return jsonResponse({
-      featured: featuredApps.results || [],
+      featured: (featuredApps.results || []).map(mapApp),
       categories: categories.results || [],
-      trending: trendingApps.results || [],
-      newArrivals: newApps.results || [],
+      trending: (trendingApps.results || []).map(mapApp),
+      newArrivals: (newApps.results || []).map(mapApp),
     })
   } catch (error) {
     console.error('Error fetching home data:', error)
@@ -403,7 +472,7 @@ export default {
 
       // 首页数据
       if (path === '/api/home') {
-        return await getHomeData(env.DB)
+        return await getHomeData(env.DB, url.searchParams)
       }
 
       // 应用列表
@@ -414,7 +483,7 @@ export default {
       // 应用详情
       const appDetailMatch = path.match(/^\/api\/apps\/([^/]+)$/)
       if (appDetailMatch) {
-        return await getAppById(env.DB, appDetailMatch[1])
+        return await getAppById(env.DB, appDetailMatch[1], url.searchParams.get('lang') || 'zh')
       }
 
       // 分类列表

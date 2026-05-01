@@ -1,6 +1,6 @@
 "use client"
 
-import { ShieldCheck, ExternalLink, Copy, Check } from "lucide-react"
+import { ShieldCheck, ShieldAlert, ExternalLink, Copy, Check } from "lucide-react"
 import { useState } from "react"
 import { useTranslations } from 'next-intl'
 import { cn } from "@/lib/utils"
@@ -16,7 +16,11 @@ export function SafeAuditCard({ project }: SafeAuditCardProps) {
   const [copied, setCopied] = useState(false)
   const t = useTranslations('project')
 
+  const hasChecksum = !!project.checksum && project.checksum !== '—'
+  const isPassed = project.securityScan === 'passed'
+
   const copyChecksum = () => {
+    if (!hasChecksum) return
     navigator.clipboard.writeText(project.checksum)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
@@ -26,22 +30,35 @@ export function SafeAuditCard({ project }: SafeAuditCardProps) {
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base">
-          <ShieldCheck className="size-5 text-emerald-500" />
+          <ShieldCheck className={cn("size-5", isPassed ? "text-emerald-500" : "text-muted-foreground")} />
           {t('securityAudit')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Security Status */}
-        <div className="flex items-center gap-3 rounded-lg bg-emerald-500/10 p-3">
-          <div className="flex size-8 items-center justify-center rounded-full bg-emerald-500/20">
-            <ShieldCheck className="size-4 text-emerald-600 dark:text-emerald-400" />
+        <div className={cn(
+          "flex items-center gap-3 rounded-lg p-3",
+          isPassed ? "bg-emerald-500/10" : "bg-muted/50"
+        )}>
+          <div className={cn(
+            "flex size-8 items-center justify-center rounded-full",
+            isPassed ? "bg-emerald-500/20" : "bg-muted"
+          )}>
+            {isPassed ? (
+              <ShieldCheck className="size-4 text-emerald-600 dark:text-emerald-400" />
+            ) : (
+              <ShieldAlert className="size-4 text-muted-foreground" />
+            )}
           </div>
           <div>
-            <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-              {t('securityScanPassed')}
+            <p className={cn(
+              "text-sm font-medium",
+              isPassed ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"
+            )}>
+              {isPassed ? t('securityScanPassed') : t('sha256Pending')}
             </p>
             <p className="text-xs text-muted-foreground">
-              {project.securityScan === "passed" ? t('passedMultiCheck') : t('scanning')}
+              {isPassed ? t('passedMultiCheck') : t('scanning')}
             </p>
           </div>
         </div>
@@ -78,43 +95,53 @@ export function SafeAuditCard({ project }: SafeAuditCardProps) {
           </div>
         )}
 
-        {/* VirusTotal Link */}
-        <div className="space-y-2">
-          <p className="text-xs font-medium text-muted-foreground">{t('virusScan')}</p>
-          <a
-            href={project.virustotalUrl || `https://www.virustotal.com/gui/file/${project.checksum}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-between rounded-lg border p-2.5 text-sm transition-colors hover:bg-muted"
-          >
-            <span>{t('vtReport')}</span>
-            <ExternalLink className="size-3.5 text-muted-foreground" />
-          </a>
-        </div>
+        {/* VirusTotal Link：仅当真的有 sha256 或 vt 链接时才展示 */}
+        {(project.virustotalUrl || hasChecksum) && (
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-muted-foreground">{t('virusScan')}</p>
+            <a
+              href={project.virustotalUrl || `https://www.virustotal.com/gui/file/${project.checksum}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between rounded-lg border p-2.5 text-sm transition-colors hover:bg-muted"
+            >
+              <span>{t('vtReport')}</span>
+              <ExternalLink className="size-3.5 text-muted-foreground" />
+            </a>
+          </div>
+        )}
 
-        {/* SHA256 Checksum */}
+        {/* SHA256 Checksum：缺失时显示 pending 提示而不是 "—" */}
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground">{t('sha256')}</p>
-          <div className="flex items-center gap-2">
-            <code className="flex-1 rounded-lg bg-muted px-3 py-2 text-xs font-mono break-all">
-              {project.checksum}
-            </code>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="shrink-0"
-              onClick={copyChecksum}
-            >
-              {copied ? (
-                <Check className="size-4 text-emerald-500" />
-              ) : (
-                <Copy className="size-4" />
-              )}
-            </Button>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            {t('verifyIntegrity')}
-          </p>
+          {hasChecksum ? (
+            <>
+              <div className="flex items-center gap-2">
+                <code className="flex-1 rounded-lg bg-muted px-3 py-2 text-xs font-mono break-all">
+                  {project.checksum}
+                </code>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="shrink-0"
+                  onClick={copyChecksum}
+                >
+                  {copied ? (
+                    <Check className="size-4 text-emerald-500" />
+                  ) : (
+                    <Copy className="size-4" />
+                  )}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {t('verifyIntegrity')}
+              </p>
+            </>
+          ) : (
+            <div className="rounded-lg border border-dashed p-2.5 text-xs text-muted-foreground">
+              {t('sha256Pending')}
+            </div>
+          )}
         </div>
 
         {/* Source Code Link */}

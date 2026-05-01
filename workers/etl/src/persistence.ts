@@ -2,7 +2,7 @@
  * D1 写入封装：raw_apps 状态机 + apps/app_translations 内容写入
  */
 
-import type { AIResult, Env, GitHubRepoInfo } from './types'
+import type { AIResult, Env, GitHubRepoInfo, ReleaseAssetView } from './types'
 import { toSqliteDateTime } from './scheduling'
 
 function generateAppId(githubRepoId: number): string {
@@ -115,12 +115,13 @@ export async function saveSuccess(params: {
   etag: string | undefined
   ai: AIResult
   nextCheckAt: string
+  releaseAssets?: ReleaseAssetView[]
 }): Promise<void> {
-  const { env, fullName, repo, ai, etag, nextCheckAt, readme } = params
+  const { env, fullName, repo, ai, etag, nextCheckAt, readme, releaseAssets } = params
   const appId = generateAppId(repo.id)
   const [owner, repoName] = fullName.split('/')
 
-  await env.DB.batch([
+  const stmts = [
     env.DB.prepare(
       `INSERT OR REPLACE INTO apps (
          id, name, slug, description, full_description, category, tags,
@@ -137,6 +138,7 @@ export async function saveSuccess(params: {
     buildAiContentStmt(env, appId, ai),
     buildTranslationStmt(env, appId, 'zh', ai),
     buildTranslationStmt(env, appId, 'en', ai),
+    ...buildVersionStmts(env, appId, releaseAssets),
     env.DB.prepare(
       `UPDATE raw_apps
        SET etl_status = 'completed',
@@ -163,7 +165,45 @@ export async function saveSuccess(params: {
       nextCheckAt,
       ai.qualityScore,
     ),
-  ])
+  ]
+  await env.DB.batch(stmts)
+}
+
+/**
+ * 仅刷新 release/版本数据（POST /etl/refresh-versions 用）
+ * 不动 AI 内容，不走 raw_apps 状态机
+ */
+export async function saveVersionsOnly(
+  env: Env,
+  appId: string,
+  assets: ReleaseAssetView[],
+): Promise<void> {
+  const stmts = buildVersionStmts(env, appId, assets)
+  if (stmts.length === 0) return
+  await env.DB.batch(stmts)
+}
+
+function buildVersionStmts(env: Env, appId: string, assets: ReleaseAssetView[] | undefined) {
+  if (!assets || assets.length === 0) return []
+  const stmts = [
+    // 同 app 旧版本先删，避免 (app_id, os_type) 唯一冲突 / 残留旧 url
+    env.DB.prepare(`DELETE FROM app_versions WHERE app_id = ?`).bind(appId),
+  ]
+  for (const a of assets) {
+    const id = `ver_${appId}_${a.os}_${a.arch}`
+    stmts.push(
+      env.DB.prepare(
+        `INSERT OR REPLACE INTO app_versions (
+           id, app_id, version, os_type, arch, file_type, file_name, file_size,
+           download_url, sha256, release_notes, release_date, is_stable
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ).bind(
+        id, appId, a.version, a.os, a.arch, a.file_type, a.file_name, a.file_size,
+        a.download_url, a.sha256, a.release_notes, a.release_date, a.is_stable,
+      ),
+    )
+  }
+  return stmts
 }
 
 /**
@@ -185,7 +225,7 @@ function buildAiContentStmt(env: Env, appId: string, ai: AIResult) {
     whatItDoes,
     ai.caveatsZh,
     JSON.stringify(ai.useCasesZh),
-    ai.quickStartGuideZh,
+    JSON.stringify(ai.quickStartGuideZh),
     0,
     null,
     null,
@@ -215,7 +255,7 @@ function buildTranslationStmt(env: Env, appId: string, locale: 'zh' | 'en', ai: 
   ).bind(
     generateId(), appId, locale, sum, desc, ai.fullDescription,
     JSON.stringify(features), JSON.stringify(useCases),
-    quickStart, uninstall, caveats,
+    JSON.stringify(quickStart), uninstall, caveats,
     ai.modelVersion, ai.qualityScore,
   )
 }

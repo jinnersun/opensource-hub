@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from "react"
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { SearchBox } from "@/components/search-box"
@@ -20,6 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 export default function HomePage() {
   const t = useTranslations('home')
   const te = useTranslations('errors')
+  const locale = useLocale()
   const [requestDialogOpen, setRequestDialogOpen] = useState(false)
   const [allCategories, setAllCategories] = useState<Category[]>([])
   const [trendingProjects, setTrendingProjects] = useState<Project[]>([])
@@ -32,7 +33,7 @@ export default function HomePage() {
     setLoading(true)
     setError(false)
     try {
-      const data = await getHomeData()
+      const data = await getHomeData(locale)
       setAllCategories(data.categories.map(transformCategoryForDisplay))
       setTrendingProjects(data.trending.map(transformAppForDisplay))
       setNewArrivals(data.newArrivals.map(transformAppForDisplay))
@@ -43,7 +44,7 @@ export default function HomePage() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [locale])
 
   useEffect(() => {
     loadData()

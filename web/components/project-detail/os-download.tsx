@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Download, Monitor, Apple, Cpu, Info } from "lucide-react"
+import { Download, Monitor, Apple, Cpu, Info, ExternalLink } from "lucide-react"
 import { useTranslations } from 'next-intl'
 import { cn } from "@/lib/utils"
 import type { Project } from "@/lib/data"
@@ -50,22 +50,28 @@ export function OSDownload({ project, variant = "default" }: OSDownloadProps) {
   const availablePlatforms = (Object.keys(project.platforms) as OS[]).filter(
     (os): os is Exclude<OS, "unknown"> => os !== "unknown"
   )
-  
+
   const getPlatform = (os: OS) => {
     if (os === "unknown") return undefined
     return project.platforms[os]
   }
-  
+
   const activePlatform = getPlatform(selectedOS) ?? getPlatform(availablePlatforms[0]) ?? null
 
   const isDetected = selectedOS === detectedOS && detectedOS !== "unknown" && availablePlatforms.includes(detectedOS)
 
+  // 没有任何下载包时的兜底：跳转项目主页 / GitHub
+  const fallbackHref = project.homepage || project.sourceUrl || "#"
+  const hasReleases = availablePlatforms.length > 0
+
   if (variant === "compact") {
     return (
       <div className="space-y-3">
-        {activePlatform ? (
+        {hasReleases && activePlatform ? (
           <a
-            href={`/api/download?id=${project.id}&platform=${selectedOS}`}
+            href={activePlatform.url}
+            target="_blank"
+            rel="noopener noreferrer"
             className={cn(
               "flex w-full items-center justify-between rounded-xl px-4 py-3.5 font-medium transition-all",
               "bg-foreground text-background hover:opacity-90 active:scale-[0.98]"
@@ -85,12 +91,23 @@ export function OSDownload({ project, variant = "default" }: OSDownloadProps) {
             <Download className="size-5 opacity-70" />
           </a>
         ) : (
-          <div className="rounded-xl border border-dashed p-4 text-center text-sm text-muted-foreground">
-            {t('notSupported')}
-          </div>
+          <a
+            href={fallbackHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(
+              "flex w-full items-center justify-between rounded-xl px-4 py-3.5 font-medium transition-all",
+              "bg-foreground text-background hover:opacity-90 active:scale-[0.98]"
+            )}
+          >
+            <div className="flex items-center gap-3">
+              <ExternalLink className="size-5" />
+              <p className="text-sm font-semibold">{t('visitHomepage')}</p>
+            </div>
+          </a>
         )}
 
-        {availablePlatforms.length > 1 && (
+        {hasReleases && availablePlatforms.length > 1 && (
           <div className="flex flex-wrap gap-2">
             {availablePlatforms
               .filter((os) => os !== selectedOS)
@@ -127,7 +144,7 @@ export function OSDownload({ project, variant = "default" }: OSDownloadProps) {
       </div>
 
       {/* OS selector pills */}
-      {availablePlatforms.length > 1 && (
+      {hasReleases && availablePlatforms.length > 1 && (
         <div className="flex flex-wrap gap-2">
           {availablePlatforms.map((os) => (
             <button
@@ -153,9 +170,11 @@ export function OSDownload({ project, variant = "default" }: OSDownloadProps) {
       )}
 
       {/* Primary Download Button */}
-      {activePlatform ? (
+      {hasReleases && activePlatform ? (
         <a
-          href={`/api/download?id=${project.id}&platform=${selectedOS}`}
+          href={activePlatform.url}
+          target="_blank"
+          rel="noopener noreferrer"
           className={cn(
             "flex w-full items-center justify-between rounded-xl px-4 py-3.5 font-medium transition-all",
             "bg-foreground text-background hover:opacity-90 active:scale-[0.98]"
@@ -175,13 +194,27 @@ export function OSDownload({ project, variant = "default" }: OSDownloadProps) {
           <Download className="size-5 opacity-70" />
         </a>
       ) : (
-        <div className="rounded-xl border border-dashed p-4 text-center text-sm text-muted-foreground">
-          {t('notSupported')}
+        <div className="space-y-2">
+          <a
+            href={fallbackHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(
+              "flex w-full items-center justify-between rounded-xl px-4 py-3.5 font-medium transition-all",
+              "bg-foreground text-background hover:opacity-90 active:scale-[0.98]"
+            )}
+          >
+            <div className="flex items-center gap-3">
+              <ExternalLink className="size-5" />
+              <p className="text-sm font-semibold">{t('visitHomepage')}</p>
+            </div>
+          </a>
+          <p className="text-xs text-muted-foreground px-1">{t('noReleaseHint')}</p>
         </div>
       )}
 
       {/* Other platforms */}
-      {availablePlatforms.length > 1 && (
+      {hasReleases && availablePlatforms.length > 1 && (
         <div className="flex flex-wrap gap-2">
           {availablePlatforms
             .filter((os) => os !== selectedOS)

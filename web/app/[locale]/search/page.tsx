@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback, Suspense } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
@@ -14,6 +14,7 @@ import { Search, Loader2, Frown } from "lucide-react"
 function SearchResults() {
   const t = useTranslations('searchPage')
   const te = useTranslations('errors')
+  const locale = useLocale()
   const searchParams = useSearchParams()
   const query = searchParams.get('q') || ''
 
@@ -31,7 +32,7 @@ function SearchResults() {
     setLoading(true)
     setError(false)
     try {
-      const result = await searchApps(query, 30)
+      const result = await searchApps(query, 30, locale)
       setProjects(result.data.map(transformAppForDisplay))
       setTotal(result.count)
     } catch (err) {
@@ -40,7 +41,7 @@ function SearchResults() {
     } finally {
       setLoading(false)
     }
-  }, [query])
+  }, [query, locale])
 
   useEffect(() => {
     doSearch()

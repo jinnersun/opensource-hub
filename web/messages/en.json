@@ -132,7 +132,10 @@
     "vtScore": "VirusTotal Detection",
     "vtSafe": "Safe",
     "vtDetections": "{score} engine(s) flagged",
-    "depDownload": "Download"
+    "depDownload": "Download",
+    "visitHomepage": "Visit Project Homepage",
+    "noReleaseHint": "No installer available yet — head to the source repository",
+    "sha256Pending": "Awaiting security scan"
   },
   "trending": {
     "title": "Trending",

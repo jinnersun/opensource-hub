@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { CategoryCard } from "@/components/category-card"
@@ -15,6 +15,7 @@ import { LayoutGrid, Flame, Loader2 } from "lucide-react"
 export default function CategoryPage() {
   const t = useTranslations('category')
   const te = useTranslations('errors')
+  const locale = useLocale()
   const [categories, setCategories] = useState<Category[]>([])
   const [hotProjects, setHotProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
@@ -26,7 +27,7 @@ export default function CategoryPage() {
     try {
       const [cats, trending] = await Promise.all([
         getCategories(),
-        getTrending('week', 3),
+        getTrending('week', 3, locale),
       ])
       setCategories(cats.map(transformCategoryForDisplay))
       setHotProjects(trending.map(transformAppForDisplay))
@@ -36,7 +37,7 @@ export default function CategoryPage() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [locale])
 
   useEffect(() => {
     loadData()

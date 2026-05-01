@@ -132,7 +132,10 @@
     "vtScore": "VirusTotal 检测",
     "vtSafe": "安全",
     "vtDetections": "{score} 个引擎报毒",
-    "depDownload": "下载"
+    "depDownload": "下载",
+    "visitHomepage": "前往项目主页",
+    "noReleaseHint": "该项目暂未提供安装包，请直接访问源代码仓库",
+    "sha256Pending": "等待安全扫描"
   },
   "trending": {
     "title": "热门动态",

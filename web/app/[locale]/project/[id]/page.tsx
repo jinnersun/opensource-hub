@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { useParams } from 'next/navigation'
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
@@ -33,6 +33,7 @@ export default function ProjectPage() {
   const te = useTranslations('errors')
   const params = useParams()
   const id = params.id as string
+  const locale = useLocale()
 
   const [project, setProject] = useState<Project | null>(null)
   const [similarProjects, setSimilarProjects] = useState<Project[]>([])
@@ -43,13 +44,13 @@ export default function ProjectPage() {
     setLoading(true)
     setError(false)
     try {
-      const app = await getApp(id)
+      const app = await getApp(id, locale)
       const p = transformAppForDisplay(app)
       setProject(p)
 
       // Get similar projects
       try {
-        const appsResult = await getApps({ category: p.category, limit: 4 })
+        const appsResult = await getApps({ category: p.category, limit: 4, locale })
         setSimilarProjects(
           (appsResult.data || [])
             .map(transformAppForDisplay)
@@ -65,7 +66,7 @@ export default function ProjectPage() {
     } finally {
       setLoading(false)
     }
-  }, [id])
+  }, [id, locale])
 
   useEffect(() => {
     loadData()

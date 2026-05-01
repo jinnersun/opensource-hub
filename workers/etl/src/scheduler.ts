@@ -4,6 +4,7 @@
 
 import { AIClient } from './ai'
 import { GitHubClient } from './github'
+import { fetchLatestRelease } from './release'
 import {
   computeNextCheckAt,
   computeNextCheckAt304,
@@ -17,7 +18,7 @@ import {
   saveSkipped,
   saveSuccess,
 } from './persistence'
-import type { BatchStats, Env, RawApp } from './types'
+import type { BatchStats, Env, RawApp, ReleaseAssetView } from './types'
 
 // Free plan 单次 invocation 上限 50 个 subrequest
 // 单批耗费：2（fetchDueBatch+lockBatch）+ N*4（fetch repo/readme/AI/D1 batch）+ N*1 KV/recordMetrics
@@ -139,9 +140,22 @@ async function processOneInner(
   const readme = await github.fetchReadme(fullName)
   const aiResult = await ai.generate(repo, readme)
 
-  // 4. 入库
+  // 4. GitHub Releases（拿下载链接 + sha256，失败/无 release 不阻断主流程）
+  let releaseAssets: ReleaseAssetView[] | undefined
+  try {
+    const rel = await fetchLatestRelease(fullName, env.GITHUB_TOKEN)
+    if (rel.status === 'ok' && rel.assets && rel.assets.length > 0) {
+      releaseAssets = rel.assets
+    }
+  } catch (err) {
+    console.warn(`[ETL] fetchLatestRelease ${fullName} failed:`, (err as Error).message)
+  }
+
+  // 5. 入库
   await saveSuccess({
-    env, fullName, repo, readme, etag: fetchResult.etag, ai: aiResult, nextCheckAt: nextOk,
+    env, fullName, repo, readme,
+    etag: fetchResult.etag, ai: aiResult, nextCheckAt: nextOk,
+    releaseAssets,
   })
   stats.succeeded++
 }

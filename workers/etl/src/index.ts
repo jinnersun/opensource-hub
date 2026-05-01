@@ -9,6 +9,8 @@
  */
 
 import { runEtl } from './scheduler'
+import { fetchLatestRelease } from './release'
+import { saveVersionsOnly } from './persistence'
 import type { BatchStats, Env } from './types'
 
 interface ETLMetrics {
@@ -58,6 +60,41 @@ async function executeAndRecord(env: Env): Promise<void> {
   await recordMetrics(env, stats)
 }
 
+/**
+ * 仅给已 completed 的 raw_apps 增量补齐 release/sha256，不重跑 AI。
+ * 优先处理那些 app_versions 表里没有任何记录的项目。
+ */
+async function refreshVersions(env: Env, limit: number): Promise<void> {
+  const rows = await env.DB.prepare(
+    `SELECT r.full_name, r.github_repo_id
+     FROM raw_apps r
+     WHERE r.etl_status = 'completed'
+       AND r.github_repo_id IS NOT NULL
+       AND NOT EXISTS (
+         SELECT 1 FROM app_versions v WHERE v.app_id = 'app_' || r.github_repo_id
+       )
+     ORDER BY r.last_processed_at DESC
+     LIMIT ?`,
+  ).bind(limit).all<{ full_name: string; github_repo_id: number }>()
+
+  let ok = 0, noRel = 0, fail = 0
+  for (const r of rows.results || []) {
+    try {
+      const rel = await fetchLatestRelease(r.full_name, env.GITHUB_TOKEN)
+      if (rel.status === 'ok' && rel.assets && rel.assets.length > 0) {
+        await saveVersionsOnly(env, `app_${r.github_repo_id}`, rel.assets)
+        ok++
+      } else {
+        noRel++
+      }
+    } catch (err) {
+      console.warn(`[refreshVersions] ${r.full_name} failed:`, (err as Error).message)
+      fail++
+    }
+  }
+  console.log(`[refreshVersions] done: ok=${ok} noRelease=${noRel} fail=${fail} total=${rows.results?.length || 0}`)
+}
+
 async function handleStatus(env: Env): Promise<Response> {
   const rows = await env.DB.prepare(
     `SELECT etl_status, COUNT(*) AS count FROM raw_apps GROUP BY etl_status`,
@@ -94,6 +131,12 @@ export default {
       return new Response('ETL job started in background', { status: 202 })
     }
 
+    if (url.pathname === '/etl/refresh-versions' && request.method === 'POST') {
+      const limit = Math.max(1, Math.min(50, parseInt(url.searchParams.get('limit') || '20')))
+      ctx.waitUntil(refreshVersions(env, limit))
+      return new Response(`refresh-versions started (limit=${limit})`, { status: 202 })
+    }
+
     if (url.pathname === '/etl/status' && request.method === 'GET') {
       try {
         return await handleStatus(env)
@@ -113,7 +156,12 @@ export default {
       return Response.json({
         service: 'opensource-hub-etl',
         status: 'ok',
-        endpoints: ['POST /etl/trigger', 'GET /etl/status', 'GET /etl/metrics'],
+        endpoints: [
+          'POST /etl/trigger',
+          'POST /etl/refresh-versions?limit=20',
+          'GET /etl/status',
+          'GET /etl/metrics',
+        ],
       })
     }
 

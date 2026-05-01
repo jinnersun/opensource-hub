@@ -72,7 +72,7 @@ export interface AIResult {
   summaryZh: string
   featuresZh: string[]
   useCasesZh: string[]
-  quickStartGuideZh: string
+  quickStartGuideZh: string[]
   uninstallGuideZh: string
   caveatsZh: string
 
@@ -80,7 +80,7 @@ export interface AIResult {
   descriptionEn: string
   featuresEn: string[]
   useCasesEn: string[]
-  quickStartGuideEn: string
+  quickStartGuideEn: string[]
   uninstallGuideEn: string
   caveatsEn: string
 
@@ -100,4 +100,36 @@ export interface BatchStats {
   succeeded: number
   failed: number
   rateLimited: number
+}
+
+export interface GitHubReleaseAsset {
+  name: string
+  size: number
+  browser_download_url: string
+  content_type?: string
+  digest?: string | null   // 2024-08 起 GitHub 在 release asset 上提供 "sha256:xxx"
+}
+
+export interface GitHubReleaseInfo {
+  tag_name: string
+  name: string | null
+  published_at: string | null
+  body: string | null
+  prerelease: boolean
+  draft: boolean
+  assets: GitHubReleaseAsset[]
+}
+
+export interface ReleaseAssetView {
+  os: 'windows' | 'macos' | 'linux'
+  arch: string
+  file_type: string
+  file_name: string
+  file_size: number
+  download_url: string
+  sha256: string | null
+  version: string
+  release_date: string | null
+  release_notes: string | null
+  is_stable: number
 }

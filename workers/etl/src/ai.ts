@@ -35,7 +35,7 @@ README 内容：
   "summaryZh": "一句话白话总结（中文，30 字以内）",
   "featuresZh": ["功能1", "功能2", "功能3"],
   "useCasesZh": ["场景1", "场景2"],
-  "quickStartGuideZh": "一分钟上手指南（中文，步骤用 \\n 分隔）",
+  "quickStartGuideZh": ["步骤1：下载安装包并双击运行", "步骤2：按向导完成安装", "步骤3：启动应用即可使用"],
   "uninstallGuideZh": "卸载说明（中文）",
   "caveatsZh": "避坑指南（中文）",
 
@@ -43,7 +43,7 @@ README 内容：
   "descriptionEn": "Short description (English)",
   "featuresEn": ["Feature 1", "Feature 2"],
   "useCasesEn": ["Use case 1", "Use case 2"],
-  "quickStartGuideEn": "Quick start guide (English)",
+  "quickStartGuideEn": ["Step 1: Download installer and double-click to run", "Step 2: Follow the wizard", "Step 3: Launch the app"],
   "uninstallGuideEn": "Uninstall guide (English)",
   "caveatsEn": "Caveats (English)",
 
@@ -56,7 +56,8 @@ README 内容：
 2. 突出核心卖点和适用场景
 3. 明确说明不能做什么（避坑）
 4. 质量评分 0-1，基于 README 完整度和项目活跃度
-5. 必须返回合法的 JSON，不要包含 markdown 代码块标记`
+5. 必须返回合法的 JSON，不要包含 markdown 代码块标记
+6. quickStartGuideZh / quickStartGuideEn 必须是字符串数组（每一步一个元素），不要使用换行符或编号前缀`
 
 export class AIClient {
   constructor(private apiKey: string) {}
@@ -147,8 +148,6 @@ export function normalizeAIResult(r: AIResult): void {
   r.summaryZh = toStringField(r.summaryZh)
   r.summaryEn = toStringField(r.summaryEn)
   r.descriptionEn = toStringField(r.descriptionEn)
-  r.quickStartGuideZh = toStringField(r.quickStartGuideZh)
-  r.quickStartGuideEn = toStringField(r.quickStartGuideEn)
   r.uninstallGuideZh = toStringField(r.uninstallGuideZh)
   r.uninstallGuideEn = toStringField(r.uninstallGuideEn)
   r.caveatsZh = toStringField(r.caveatsZh)
@@ -160,6 +159,8 @@ export function normalizeAIResult(r: AIResult): void {
   r.featuresEn = toStringArray(r.featuresEn)
   r.useCasesZh = toStringArray(r.useCasesZh)
   r.useCasesEn = toStringArray(r.useCasesEn)
+  r.quickStartGuideZh = toStringArray(r.quickStartGuideZh)
+  r.quickStartGuideEn = toStringArray(r.quickStartGuideEn)
   // 数值字段
   if (typeof r.qualityScore !== 'number') {
     const n = Number(r.qualityScore)

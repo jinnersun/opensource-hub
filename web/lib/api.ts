@@ -65,9 +65,9 @@ export interface Project {
   dependsOn?: string
   dependencies?: { name: string; url?: string }[]  // ENHANCE-02: 依赖详情（含下载链接）
   platforms: {
-    windows?: { url: string; version: string; size: string }
-    mac?: { url: string; version: string; size: string }
-    linux?: { url: string; version: string; size: string }
+    windows?: { url: string; version: string; size: string; sha256?: string | null }
+    mac?: { url: string; version: string; size: string; sha256?: string | null }
+    linux?: { url: string; version: string; size: string; sha256?: string | null }
   }
   checksum: string
   sourceUrl: string
@@ -125,23 +125,28 @@ export interface AppVersion {
   file_name: string
   file_size: number
   download_url: string
+  sha256?: string | null
   release_date: string
   is_stable: number
 }
 
 export interface AIContent {
-  id: string
+  id?: string
   summary: string
-  what_it_does: string
-  what_it_cant_do: string
+  // 来自 app_translations.features（JSON 数组字符串）或旧 app_ai_content.what_it_does
+  features?: string | string[]
+  what_it_does?: string
+  // 来自 app_translations.caveats（数组或字符串）或旧 app_ai_content.what_it_cant_do
+  caveats?: string | string[]
+  what_it_cant_do?: string
   use_cases: string | string[]
-  quick_start_guide: string
-  is_portable: number
-  requirements: string
+  quick_start_guide: string | string[]
+  is_portable?: number
+  requirements?: string
   requirement_links?: string   // JSON: [{ name: string, url?: string }]
   uninstall_guide: string
-  has_registry_residual: number
-  confidence_score: number
+  has_registry_residual?: number
+  confidence_score?: number
 }
 
 export interface SecurityInfo {
@@ -236,8 +241,9 @@ async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promi
 /**
  * 获取首页数据
  */
-export async function getHomeData(): Promise<HomeData> {
-  return apiRequest<HomeData>('/api/home')
+export async function getHomeData(locale?: string): Promise<HomeData> {
+  const q = locale ? `?lang=${encodeURIComponent(locale)}` : ''
+  return apiRequest<HomeData>(`/api/home${q}`)
 }
 
 /**
@@ -249,15 +255,17 @@ export async function getApps(params?: {
   offset?: number
   featured?: boolean
   q?: string
+  locale?: string
 }): Promise<PaginatedResponse<App[]>> {
   const searchParams = new URLSearchParams()
-  
+
   if (params?.category) searchParams.set('category', params.category)
   if (params?.limit) searchParams.set('limit', params.limit.toString())
   if (params?.offset) searchParams.set('offset', params.offset.toString())
   if (params?.featured) searchParams.set('featured', 'true')
   if (params?.q) searchParams.set('q', params.q)
-  
+  if (params?.locale) searchParams.set('lang', params.locale)
+
   const query = searchParams.toString()
   return apiRequest<PaginatedResponse<App[]>>(`/api/apps${query ? `?${query}` : ''}`)
 }
@@ -265,8 +273,9 @@ export async function getApps(params?: {
 /**
  * 获取应用详情
  */
-export async function getApp(id: string): Promise<App> {
-  return apiRequest<App>(`/api/apps/${id}`)
+export async function getApp(id: string, locale?: string): Promise<App> {
+  const q = locale ? `?lang=${encodeURIComponent(locale)}` : ''
+  return apiRequest<App>(`/api/apps/${id}${q}`)
 }
 
 /**
@@ -280,16 +289,18 @@ export async function getCategories(): Promise<ApiCategory[]> {
 /**
  * 获取热门应用
  */
-export async function getTrending(period: 'day' | 'week' | 'alltime' = 'week', limit = 10): Promise<App[]> {
-  const response = await apiRequest<{ data: App[] }>(`/api/trending?period=${period}&limit=${limit}`)
+export async function getTrending(period: 'day' | 'week' | 'alltime' = 'week', limit = 10, locale?: string): Promise<App[]> {
+  const langQ = locale ? `&lang=${encodeURIComponent(locale)}` : ''
+  const response = await apiRequest<{ data: App[] }>(`/api/trending?period=${period}&limit=${limit}${langQ}`)
   return response.data
 }
 
 /**
  * 搜索应用
  */
-export async function searchApps(query: string, limit = 20): Promise<{ data: App[]; count: number }> {
-  return apiRequest<{ data: App[]; count: number }>(`/api/search?q=${encodeURIComponent(query)}&limit=${limit}`)
+export async function searchApps(query: string, limit = 20, locale?: string): Promise<{ data: App[]; count: number }> {
+  const langQ = locale ? `&lang=${encodeURIComponent(locale)}` : ''
+  return apiRequest<{ data: App[]; count: number }>(`/api/search?q=${encodeURIComponent(query)}&limit=${limit}${langQ}`)
 }
 
 /**
@@ -304,14 +315,48 @@ export async function healthCheck(): Promise<{ status: string; timestamp: string
 // ==========================================
 
 /**
+ * 把可能是数组 / JSON 字符串数组 / 多行文本的字段统一解析为 string[]
+ * 返回 null 表示原值为空（调用方可走 fallback 分支）
+ */
+function parseStringArray(value: unknown): string[] | null {
+  if (value == null || value === '') return null
+  if (Array.isArray(value)) {
+    const arr = value.map(v => String(v).trim()).filter(Boolean)
+    return arr.length ? arr : null
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    if (!trimmed) return null
+    // 优先尝试 JSON 数组解析
+    if (trimmed.startsWith('[')) {
+      try {
+        const parsed = JSON.parse(trimmed)
+        if (Array.isArray(parsed)) {
+          const arr = parsed.map(v => String(v).trim()).filter(Boolean)
+          return arr.length ? arr : null
+        }
+      } catch {
+        // 落到换行解析
+      }
+    }
+    // 按换行切分，剥离常见列表前缀（数字./-/*/•）
+    const arr = trimmed.split('\n')
+      .map(l => l.replace(/^\s*(?:\d+\.|[-*•])\s*/, '').trim())
+      .filter(Boolean)
+    return arr.length ? arr : null
+  }
+  return null
+}
+
+/**
  * 将 API 返回的应用数据转换为前端组件需要的格式
  */
 export function transformAppForDisplay(app: App) {
   const versions = app.versions || []
   
-  // 按操作系统分组版本
-  const platforms: Record<string, { url: string; version: string; size: string }> = {}
-  
+  // 按操作系统分组版本（含 sha256）
+  const platforms: Record<string, { url: string; version: string; size: string; sha256?: string | null }> = {}
+
   for (const ver of versions) {
     const key = ver.os_type === 'macos' ? 'mac' : ver.os_type
     if (!platforms[key]) {
@@ -319,39 +364,27 @@ export function transformAppForDisplay(app: App) {
         url: ver.download_url,
         version: ver.version,
         size: formatFileSize(ver.file_size),
+        sha256: ver.sha256 || null,
       }
     }
   }
 
   // 解析 AI 内容
   const aiContent = app.ai_content
-  const features = aiContent?.what_it_does
-    ? aiContent.what_it_does.split('\n').filter(line => line.startsWith('-')).map(line => line.slice(2).trim())
-    : []
-  
-  const gettingStarted = aiContent?.quick_start_guide
-    ? aiContent.quick_start_guide.split('\n').filter(line => /^\d+\./.test(line)).map(line => line.replace(/^\d+\.\s*/, ''))
-    : []
 
-  // 解析避坑指南 (what_it_cant_do)
-  const caveats = aiContent?.what_it_cant_do
-    ? aiContent.what_it_cant_do.split('\n').filter(line => line.startsWith('-')).map(line => line.slice(2).trim())
-    : []
+  const features = parseStringArray(aiContent?.features) ??
+    (aiContent?.what_it_does
+      ? aiContent.what_it_does.split('\n').filter(l => l.trim()).map(l => l.replace(/^[-*•]\s*/, '').trim())
+      : [])
 
-  // 解析适用场景 (use_cases)
-  let useCases: string[] = []
-  if (aiContent?.use_cases) {
-    if (Array.isArray(aiContent.use_cases)) {
-      useCases = aiContent.use_cases
-    } else if (typeof aiContent.use_cases === 'string') {
-      try {
-        const parsed = JSON.parse(aiContent.use_cases)
-        useCases = Array.isArray(parsed) ? parsed : []
-      } catch {
-        useCases = (aiContent.use_cases as string).split('\n').filter((l: string) => l.trim()).map((l: string) => l.replace(/^[-*]\s*/, '').trim())
-      }
-    }
-  }
+  const gettingStarted = parseStringArray(aiContent?.quick_start_guide) ?? []
+
+  const caveats = parseStringArray(aiContent?.caveats) ??
+    (aiContent?.what_it_cant_do
+      ? aiContent.what_it_cant_do.split('\n').filter(l => l.trim()).map(l => l.replace(/^[-*•]\s*/, '').trim())
+      : [])
+
+  const useCases = parseStringArray(aiContent?.use_cases) ?? []
 
   // 解析标签
   let tags: string[] = []
@@ -395,10 +428,21 @@ export function transformAppForDisplay(app: App) {
     virustotalScore: app.security?.virustotal_score ?? undefined,
     // 必填字段补全
     platforms,
-    checksum: app.security?.sha256 || '—',
+    // 校验码：优先取 windows -> mac -> linux 中第一个有值的；用作 fallback / VirusTotal 链接
+    checksum:
+      app.security?.sha256 ||
+      platforms.windows?.sha256 ||
+      platforms.mac?.sha256 ||
+      platforms.linux?.sha256 ||
+      '',
     sourceUrl: app.github_url || '',
     lastUpdated: app.last_updated || '',
-    securityScan: (app.security?.audit_status === 'passed' ? 'passed' : (app.security?.audit_status === 'pending' ? 'pending' : 'passed')) as 'passed' | 'pending' | 'failed',
+    // 安全扫描状态：仅当后端明确返回 passed 才算通过；缺失数据一律按 pending（等待扫描）处理，避免误导
+    securityScan: (app.security?.audit_status === 'passed'
+      ? 'passed'
+      : app.security?.audit_status === 'failed'
+        ? 'failed'
+        : 'pending') as 'passed' | 'pending' | 'failed',
     // 兼容字段
     docsUrl: (app as any).documentation_url || undefined,
     license: app.license || undefined,

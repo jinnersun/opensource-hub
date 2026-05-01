@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { useParams } from 'next/navigation'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
@@ -38,7 +38,8 @@ export default function CategoryDetailPage() {
   const td = useTranslations('data')
   const params = useParams()
   const categoryId = params.id as string
-  
+  const locale = useLocale()
+
   const [categoryProjects, setCategoryProjects] = useState<Project[]>([])
   const [allCategories, setAllCategories] = useState<Category[]>([])
   const [currentCategory, setCurrentCategory] = useState<Category | null>(null)
@@ -50,7 +51,7 @@ export default function CategoryDetailPage() {
     setError(false)
     try {
       const [appsResult, cats] = await Promise.all([
-        getApps({ category: categoryId }),
+        getApps({ category: categoryId, locale }),
         getCategories(),
       ])
       setCategoryProjects((appsResult.data || []).map(transformAppForDisplay))
@@ -64,7 +65,7 @@ export default function CategoryDetailPage() {
     } finally {
       setLoading(false)
     }
-  }, [categoryId])
+  }, [categoryId, locale])
 
   useEffect(() => {
     loadData()

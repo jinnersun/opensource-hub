@@ -165,9 +165,24 @@ export function AppModal({ project, open, onClose }: AppModalProps) {
           {/* AI Summary */}
           <div className="border-b px-5 py-4">
             <p className="text-sm leading-relaxed text-muted-foreground">
-              {project.description}
+              {project.summary || project.description}
             </p>
           </div>
+
+          {/* Core Features */}
+          {project.features && project.features.length > 0 && (
+            <div className="border-b px-5 py-5">
+              <p className="mb-3 text-sm font-semibold">{t('coreFeatures')}</p>
+              <ul className="flex flex-col gap-2">
+                {project.features.map((f, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <CheckCircle2 className="mt-0.5 size-3.5 shrink-0 text-emerald-500" />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Smart OS Download */}
           <div className="border-b px-5 py-5">
@@ -210,7 +225,9 @@ export function AppModal({ project, open, onClose }: AppModalProps) {
             {/* Primary Download Button */}
             {activePlatform ? (
               <a
-                href={`/api/download?id=${project.id}&platform=${selectedOS}`}
+                href={activePlatform.url}
+                target="_blank"
+                rel="noopener noreferrer"
                 className={cn(
                   "flex w-full items-center justify-between rounded-xl px-4 py-3.5 font-medium transition-all",
                   "bg-foreground text-background hover:opacity-90 active:scale-[0.98]"
@@ -230,9 +247,20 @@ export function AppModal({ project, open, onClose }: AppModalProps) {
                 <Download className="size-5 opacity-70" />
               </a>
             ) : (
-              <div className="rounded-xl border border-dashed p-4 text-center text-sm text-muted-foreground">
-                {t('notSupported')}
-              </div>
+              <a
+                href={project.homepage || project.sourceUrl || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                  "flex w-full items-center justify-between rounded-xl px-4 py-3.5 font-medium transition-all",
+                  "bg-foreground text-background hover:opacity-90 active:scale-[0.98]"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <ExternalLink className="size-5" />
+                  <p className="text-sm font-semibold">{t('visitHomepage')}</p>
+                </div>
+              </a>
             )}
 
             {/* Other platforms */}
@@ -258,19 +286,53 @@ export function AppModal({ project, open, onClose }: AppModalProps) {
           </div>
 
           {/* Getting Started */}
-          <div className="border-b px-5 py-5">
-            <p className="mb-3 text-sm font-semibold">{t('threeSteps')}</p>
-            <ol className="flex flex-col gap-3">
-              {project.gettingStarted.map((step, i) => (
-                <li key={i} className="flex items-start gap-3">
-                  <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-bold">
-                    {i + 1}
-                  </div>
-                  <p className="pt-0.5 text-sm text-muted-foreground">{step}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
+          {project.gettingStarted && project.gettingStarted.length > 0 && (
+            <div className="border-b px-5 py-5">
+              <p className="mb-3 text-sm font-semibold">{t('threeSteps')}</p>
+              <ol className="flex flex-col gap-3">
+                {project.gettingStarted.map((step, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-bold">
+                      {i + 1}
+                    </div>
+                    <p className="pt-0.5 text-sm text-muted-foreground">{step}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+
+          {/* Use Cases */}
+          {project.useCases && project.useCases.length > 0 && (
+            <div className="border-b px-5 py-5">
+              <p className="mb-3 text-sm font-semibold">{t('useCases')}</p>
+              <ul className="flex flex-wrap gap-2">
+                {project.useCases.map((u, i) => (
+                  <li
+                    key={i}
+                    className="rounded-full bg-secondary px-2.5 py-1 text-xs text-muted-foreground"
+                  >
+                    {u}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Caveats */}
+          {project.caveats && project.caveats.length > 0 && (
+            <div className="border-b px-5 py-5">
+              <p className="mb-3 text-sm font-semibold">{t('caveats')}</p>
+              <ul className="flex flex-col gap-2">
+                {project.caveats.map((c, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <Info className="mt-0.5 size-3.5 shrink-0 text-amber-500" />
+                    <span>{c}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Day-2 Info */}
           <div className="px-5 py-4">

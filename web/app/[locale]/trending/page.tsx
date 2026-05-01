@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { Flame, Clock, Trophy, Loader2 } from 'lucide-react'
 import { Footer } from '@/components/footer'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -14,6 +14,7 @@ import type { Project } from '@/lib/api'
 export default function TrendingPage() {
   const t = useTranslations('trending')
   const te = useTranslations('errors')
+  const locale = useLocale()
   const [period, setPeriod] = useState<'day' | 'week' | 'alltime'>('week')
   const [trendingProjects, setTrendingProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
@@ -23,7 +24,7 @@ export default function TrendingPage() {
     setLoading(true)
     setError(false)
     try {
-      const data = await getTrending(period)
+      const data = await getTrending(period, 10, locale)
       setTrendingProjects(data.map(transformAppForDisplay))
     } catch (err) {
       console.error('API request failed:', err)
@@ -31,7 +32,7 @@ export default function TrendingPage() {
     } finally {
       setLoading(false)
     }
-  }, [period])
+  }, [period, locale])
 
   useEffect(() => {
     loadData()
