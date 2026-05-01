@@ -33,7 +33,9 @@ const EMPTY_METRICS: ETLMetrics = {
 
 async function recordMetrics(env: Env, stats: BatchStats): Promise<void> {
   try {
-    const existing = (await env.KV.get<ETLMetrics>('etl_metrics', 'json')) || EMPTY_METRICS
+    // 与旧版 KV 数据兼容：缺失字段按 0 处理，避免 undefined + N = NaN（序列化为 null）
+    const raw = (await env.KV.get<Partial<ETLMetrics>>('etl_metrics', 'json')) || {}
+    const existing: ETLMetrics = { ...EMPTY_METRICS, ...raw }
     const updated: ETLMetrics = {
       totalProcessed: existing.totalProcessed + stats.fetched,
       totalSucceeded: existing.totalSucceeded + stats.succeeded,

@@ -19,8 +19,10 @@ import {
 } from './persistence'
 import type { BatchStats, Env, RawApp } from './types'
 
-const BATCH_SIZE = 50
-const CONCURRENCY = 5
+// Free plan 单次 invocation 上限 50 个 subrequest
+// 每个 repo ≈ 3 个 subrequest（fetchRepo + fetchReadme + AI），10 个 ≈ 30，留出余量给 KV/重试
+const BATCH_SIZE = 10
+const CONCURRENCY = 3
 const WORKER_BUDGET_MS = 14 * 60 * 1000
 
 const delay = (ms: number) => new Promise<void>(r => setTimeout(r, ms))
@@ -46,9 +48,34 @@ async function fetchDueBatch(env: Env): Promise<RawApp[]> {
 }
 
 /**
- * 处理单个 raw_app
+ * 处理单个 raw_app（顶层 try/catch 兜底，确保任何异常都落库为 failed 而非沉默）
  */
 async function processOne(
+  raw: RawApp,
+  github: GitHubClient,
+  ai: AIClient,
+  env: Env,
+  stats: BatchStats,
+): Promise<void> {
+  try {
+    await processOneInner(raw, github, ai, env, stats)
+  } catch (err) {
+    if ((err as Error).message === 'GITHUB_RATE_LIMIT') throw err
+    const msg = (err as Error).message || String(err)
+    // 子请求耗尽是 worker 级别的硬限制，本轮内重试无意义，下一次 cron 再试
+    const isSubrequestLimit = msg.includes('Too many subrequests')
+    await saveFailure(
+      env, raw.full_name, 'failed',
+      msg,
+      isSubrequestLimit
+        ? computeRetryNextCheck(0)
+        : computeRetryNextCheck(raw.retry_count + 1),
+    )
+    stats.failed++
+  }
+}
+
+async function processOneInner(
   raw: RawApp,
   github: GitHubClient,
   ai: AIClient,
