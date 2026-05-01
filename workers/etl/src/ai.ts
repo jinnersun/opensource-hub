@@ -110,11 +110,62 @@ export class AIClient {
       throw new Error('AI returned invalid JSON')
     }
 
+    normalizeAIResult(result)
+
     if (!validateAIResult(result)) {
       throw new Error('AI result validation failed (missing/invalid required fields)')
     }
     return result
   }
+}
+
+// AI 偶尔会把字符串字段返回成数组，统一规整以避免 D1 binding 时的 TYPE_ERROR
+function toStringField(v: unknown): string {
+  if (v == null) return ''
+  if (typeof v === 'string') return v
+  if (Array.isArray(v)) return v.map(x => String(x)).join('\n')
+  if (typeof v === 'object') return JSON.stringify(v)
+  return String(v)
+}
+
+function toStringArray(v: unknown): string[] {
+  if (v == null) return []
+  if (Array.isArray(v)) return v.map(x => String(x))
+  if (typeof v === 'string') return v.split(/\n|,/).map(s => s.trim()).filter(Boolean)
+  return [String(v)]
+}
+
+export function normalizeAIResult(r: AIResult): void {
+  // 字符串字段
+  r.name = toStringField(r.name)
+  r.slug = toStringField(r.slug)
+  r.description = toStringField(r.description)
+  r.fullDescription = toStringField(r.fullDescription)
+  r.category = toStringField(r.category)
+  r.license = toStringField(r.license)
+  r.homepage = toStringField(r.homepage)
+  r.summaryZh = toStringField(r.summaryZh)
+  r.summaryEn = toStringField(r.summaryEn)
+  r.descriptionEn = toStringField(r.descriptionEn)
+  r.quickStartGuideZh = toStringField(r.quickStartGuideZh)
+  r.quickStartGuideEn = toStringField(r.quickStartGuideEn)
+  r.uninstallGuideZh = toStringField(r.uninstallGuideZh)
+  r.uninstallGuideEn = toStringField(r.uninstallGuideEn)
+  r.caveatsZh = toStringField(r.caveatsZh)
+  r.caveatsEn = toStringField(r.caveatsEn)
+  r.modelVersion = toStringField(r.modelVersion) || 'deepseek-v4-flash'
+  // 数组字段
+  r.tags = toStringArray(r.tags)
+  r.featuresZh = toStringArray(r.featuresZh)
+  r.featuresEn = toStringArray(r.featuresEn)
+  r.useCasesZh = toStringArray(r.useCasesZh)
+  r.useCasesEn = toStringArray(r.useCasesEn)
+  // 数值字段
+  if (typeof r.qualityScore !== 'number') {
+    const n = Number(r.qualityScore)
+    r.qualityScore = Number.isFinite(n) ? n : 0.5
+  }
+  r.qualityScore = Math.max(0, Math.min(1, r.qualityScore))
 }
 
 export function validateAIResult(r: AIResult): boolean {
