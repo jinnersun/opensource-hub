@@ -20,9 +20,11 @@ import {
 import type { BatchStats, Env, RawApp } from './types'
 
 // Free plan 单次 invocation 上限 50 个 subrequest
-// 每个 repo ≈ 3 个 subrequest（fetchRepo + fetchReadme + AI），10 个 ≈ 30，留出余量给 KV/重试
+// 单批耗费：2（fetchDueBatch+lockBatch）+ N*4（fetch repo/readme/AI/D1 batch）+ N*1 KV/recordMetrics
+// 10 个 repo 约 42 subrequest，单 invocation 只跑一批，跨批由 cron 驱动
 const BATCH_SIZE = 10
 const CONCURRENCY = 3
+const MAX_BATCHES_PER_RUN = 1
 const WORKER_BUDGET_MS = 14 * 60 * 1000
 
 const delay = (ms: number) => new Promise<void>(r => setTimeout(r, ms))
@@ -189,7 +191,8 @@ export async function runEtl(env: Env): Promise<BatchStats> {
     fetched: 0, notModified: 0, skipped: 0, succeeded: 0, failed: 0, rateLimited: 0,
   }
 
-  while (Date.now() - start < WORKER_BUDGET_MS) {
+  let batchesRun = 0
+  while (Date.now() - start < WORKER_BUDGET_MS && batchesRun < MAX_BATCHES_PER_RUN) {
     let batchStats: BatchStats
     try {
       batchStats = await processBatch(env, github, ai)
@@ -207,6 +210,7 @@ export async function runEtl(env: Env): Promise<BatchStats> {
       console.log('[ETL] 无更多到期项目，本轮完成')
       break
     }
+    batchesRun++
     await delay(500)
   }
 
