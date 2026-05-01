@@ -50,3 +50,6 @@ Thumbs.db
 
 # Vercel
 .vercel/
+
+# 种子加载生成的 SQL 产物（由 npm run seed:load 重新生成）
+data/seed-repos.sql

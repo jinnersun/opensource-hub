@@ -212,7 +212,7 @@ async function getTrending(db: D1Database, params: URLSearchParams): Promise<Res
                a.stars_count, a.last_updated,
                c.name as category_name
         FROM apps a
-        LEFT JOIN categories c ON a.category = '#' || c.slug
+        LEFT JOIN categories c ON a.category = c.slug
         WHERE a.status = 'active'
         ORDER BY a.last_updated DESC
         LIMIT ?
@@ -224,7 +224,7 @@ async function getTrending(db: D1Database, params: URLSearchParams): Promise<Res
                a.stars_count, a.last_updated,
                c.name as category_name
         FROM apps a
-        LEFT JOIN categories c ON a.category = '#' || c.slug
+        LEFT JOIN categories c ON a.category = c.slug
         WHERE a.status = 'active'
         ORDER BY a.stars_count DESC
         LIMIT ?
@@ -236,7 +236,7 @@ async function getTrending(db: D1Database, params: URLSearchParams): Promise<Res
                a.stars_count, a.last_updated,
                c.name as category_name
         FROM apps a
-        LEFT JOIN categories c ON a.category = '#' || c.slug
+        LEFT JOIN categories c ON a.category = c.slug
         WHERE a.status = 'active'
         ORDER BY a.stars_count DESC
         LIMIT ?
@@ -274,7 +274,7 @@ async function searchApps(db: D1Database, params: URLSearchParams): Promise<Resp
           a.github_url, a.license, a.stars_count, a.last_updated,
           c.name as category_name
         FROM apps a
-        LEFT JOIN categories c ON a.category = '#' || c.slug
+        LEFT JOIN categories c ON a.category = c.slug
         WHERE a.status = 'active'
           AND (a.name LIKE ? OR a.description LIKE ? OR a.tags LIKE ?)
         ORDER BY 

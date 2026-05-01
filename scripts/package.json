@@ -6,7 +6,8 @@
     "harvest": "tsx github-harvester.ts",
     "harvest:default": "tsx github-harvester.ts --output ../data/harvested-apps.json",
     "harvest:raw": "tsx github-harvester-raw.ts --output ../data/harvested-raw.json",
-    "harvest:raw:file": "tsx github-harvester-raw.ts --repos repos.json --output ../data/harvested-raw.json"
+    "harvest:raw:file": "tsx github-harvester-raw.ts --repos repos.json --output ../data/harvested-raw.json",
+    "seed:load": "tsx seed-load-to-d1.ts"
   },
   "devDependencies": {
     "@types/node": "^22",

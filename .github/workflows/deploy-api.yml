@@ -1,0 +1,36 @@
+name: Deploy API Worker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'workers/api/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: workers/api/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd workers/api
+          npm ci
+
+      - name: Deploy to Cloudflare
+        run: |
+          cd workers/api
+          npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

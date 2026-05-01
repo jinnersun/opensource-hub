@@ -1,169 +1,9674 @@
 {
-  "source": "seed",
-  "lastUpdated": "2026-04-30",
-  "description": "种子项目列表 - 人工精选的高质量开源软件",
+  "source": "awesome-lists",
+  "lastUpdated": "2026-04-30T11:06:58.053Z",
+  "description": "从 awesome-windows, awesome-mac, awesome-selfhosted 提取的种子项目",
+  "totalCount": 1074,
   "repos": [
     {
-      "owner": "microsoft",
-      "repo": "PowerToys",
-      "category": "system",
-      "tags": ["效率工具", "窗口管理", "快捷键"]
+      "owner": "orangecoloured",
+      "repo": "analog",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "voidtools",
-      "repo": "Everything",
-      "category": "system",
-      "tags": ["文件搜索", "效率工具", "NTFS"]
+      "owner": "aptabase",
+      "repo": "aptabase",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "zhongyang219",
-      "repo": "TrafficMonitor",
-      "category": "system",
-      "tags": ["网速监控", "硬件监控", "任务栏"]
+      "owner": "eldy",
+      "repo": "awstats",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "ollama",
-      "repo": "ollama",
-      "category": "ai",
-      "tags": ["大模型", "本地AI", "LLM"]
+      "owner": "Countly",
+      "repo": "countly-server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "Bin-Huang",
-      "repo": "chatbox",
-      "category": "ai",
-      "tags": ["AI对话", "GPT", "Claude"]
+      "owner": "d8a-tech",
+      "repo": "d8a",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "janhq",
-      "repo": "jan",
-      "category": "ai",
-      "tags": ["本地AI", "隐私", "AI助手"]
+      "owner": "emanuelef",
+      "repo": "daily-stars-explorer",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "obsproject",
-      "repo": "obs-studio",
-      "category": "video",
-      "tags": ["直播", "录屏", "视频制作"]
+      "owner": "apache",
+      "repo": "druid",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "yt-dlp",
-      "repo": "yt-dlp",
-      "category": "video",
-      "tags": ["视频下载", "YouTube", "B站"]
+      "owner": "jortilles",
+      "repo": "EDA",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "HandBrake",
-      "repo": "HandBrake",
-      "category": "video",
-      "tags": ["视频转码", "格式转换", "压缩"]
+      "owner": "allinurl",
+      "repo": "goaccess",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "mltframework",
-      "repo": "shotcut",
-      "category": "video",
-      "tags": ["视频剪辑", "4K", "滤镜"]
+      "owner": "arp242",
+      "repo": "goatcounter",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "pbatard",
-      "repo": "rufus",
-      "category": "clean-install",
-      "tags": ["U盘启动", "系统安装", "PE制作"]
+      "owner": "pascalebeier",
+      "repo": "hitkeep",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "ventoy",
-      "repo": "Ventoy",
-      "category": "clean-install",
-      "tags": ["多系统", "U盘启动", "ISO"]
+      "owner": "Litlyx",
+      "repo": "litlyx",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "microsoft",
-      "repo": "vscode",
-      "category": "dev-tools",
-      "tags": ["代码编辑器", "IDE", "调试"]
+      "owner": "explodingcamera",
+      "repo": "liwan",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "git",
-      "repo": "git",
-      "category": "dev-tools",
-      "tags": ["版本控制", "Git", "代码管理"]
+      "owner": "matomo-org",
+      "repo": "matomo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "microsoft",
-      "repo": "terminal",
-      "category": "dev-tools",
-      "tags": ["终端", "命令行", "WSL"]
+      "owner": "medama-io",
+      "repo": "medama",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "jesseduffield",
-      "repo": "lazygit",
-      "category": "dev-tools",
-      "tags": ["Git", "终端UI", "效率工具"]
+      "owner": "metabase",
+      "repo": "metabase",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "gorhill",
-      "repo": "uBlock",
-      "category": "privacy",
-      "tags": ["广告拦截", "隐私保护", "浏览器扩展"]
+      "owner": "middlewarehq",
+      "repo": "middleware",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "bitwarden",
-      "repo": "clients",
-      "category": "privacy",
-      "tags": ["密码管理", "安全", "自动填充"]
+      "owner": "inovector",
+      "repo": "MixpostApp",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "veracrypt",
-      "repo": "VeraCrypt",
-      "category": "privacy",
-      "tags": ["磁盘加密", "文件保护", "隐私"]
+      "owner": "lutzroeder",
+      "repo": "netron",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "offen",
+      "repo": "offen",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "plausible",
+      "repo": "analytics",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "posthog",
+      "repo": "posthog",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "gitroomhq",
+      "repo": "postiz-app",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "prismelabs",
+      "repo": "analytics",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "getredash",
+      "repo": "redash",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "rybbit-io",
+      "repo": "rybbit",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "taleshape-com",
+      "repo": "shaper",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "socioboard",
+      "repo": "Socioboard-5.0",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "robiningelbrecht",
+      "repo": "statistics-for-strava",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "apache",
+      "repo": "superset",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Swetrix",
+      "repo": "selfhosting",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "umami-software",
+      "repo": "umami",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "vinceanalytics",
+      "repo": "vince",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ArchiveBox",
+      "repo": "ArchiveBox",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "archivesspace",
+      "repo": "archivesspace",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bitmagnet-io",
+      "repo": "bitmagnet",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ckan",
+      "repo": "ckan",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "collectiveaccess",
+      "repo": "providence",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Zibbp",
+      "repo": "ganymede",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "s1t5",
+      "repo": "mail-archiver",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "omeka",
+      "repo": "omeka-s",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "LogicLabs-OU",
+      "repo": "OpenArchiver?tab=readme-ov-file#-live-demo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "LogicLabs-OU",
+      "repo": "OpenArchiver",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jsuto",
+      "repo": "piler",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "wallabag",
+      "repo": "wallabag",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "wabarc",
+      "repo": "wayback",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "activepieces",
+      "repo": "activepieces",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "apache",
+      "repo": "airflow",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "automatisch",
+      "repo": "automatisch",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "TheWicklowWolf",
+      "repo": "BookBounty",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "dgtlmoon",
+      "repo": "changedetection.io",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "chiefonboarding",
+      "repo": "ChiefOnboarding",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jhuckaby",
+      "repo": "Cronicle",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "fccview",
+      "repo": "cronmaster",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "dagucloud",
+      "repo": "dagu",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Cybrarist",
+      "repo": "Discount-Bandit",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "dittofeed",
+      "repo": "dittofeed",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "cristoper",
+      "repo": "feedmixer",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "orangecoding",
+      "repo": "fredy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "BreizhHardware",
+      "repo": "ntfy_alerts",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "binwiederhier",
+      "repo": "ntfy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "flohoss",
+      "repo": "gocron",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "TheNickOfTime",
+      "repo": "handbrake-web",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "healthchecks",
+      "repo": "healthchecks",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "huginn",
+      "repo": "huginn",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "kestra-io",
+      "repo": "kestra",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "kibitzr",
+      "repo": "kibitzr",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "leon-ai",
+      "repo": "leon",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "sergree",
+      "repo": "matchering",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mylar3",
+      "repo": "mylar3",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "OliveTin",
+      "repo": "OliveTin",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pyload",
+      "repo": "pyload",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "StackStorm",
+      "repo": "st2",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ovh",
+      "repo": "utask",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "antville",
+      "repo": "antville",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "xenocrat",
+      "repo": "chyrp-lite",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "lin-snow",
+      "repo": "Ech0",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "flatpressblog",
+      "repo": "flatpress",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "rikhuijzer",
+      "repo": "fx",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "TryGhost",
+      "repo": "Ghost",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "havenweb",
+      "repo": "haven",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "danpros",
+      "repo": "htmly",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "idno",
+      "repo": "idno",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mataroablog",
+      "repo": "mataroa",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pluxml",
+      "repo": "PluXml",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "s9y",
+      "repo": "serendipity",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "writefreely",
+      "repo": "writefreely",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "alfio-event",
+      "repo": "alf.io",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "calcom",
+      "repo": "cal.diy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "alextselegidis",
+      "repo": "easyappointments",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "HiEventsDev",
+      "repo": "hi.events",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "LibreBooking",
+      "repo": "librebooking",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Qloapps",
+      "repo": "QloApps",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "lukevella",
+      "repo": "rallly",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "seatsurfing",
+      "repo": "seatsurfing",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ndom91",
+      "repo": "briefkasten",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jarun",
+      "repo": "Buku",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jonschoning",
+      "repo": "espial",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mozilla",
+      "repo": "fxa",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "goniszewski",
+      "repo": "grimoire",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "karakeep-app",
+      "repo": "karakeep",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Kovah",
+      "repo": "LinkAce",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "sissbruecker",
+      "repo": "linkding",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "linkwarden",
+      "repo": "linkwarden",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "AlexSciFier",
+      "repo": "neonlink",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "beromir",
+      "repo": "Servas",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "beromir",
+      "repo": "Servas#browser-extensions",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "shaarli",
+      "repo": "Shaarli",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "go-shiori",
+      "repo": "shiori",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "yourselfhosted",
+      "repo": "slash",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "sabre-io",
+      "repo": "Baikal",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "tchapi",
+      "repo": "davis",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "intri-in",
+      "repo": "manage-my-damn-life-nextjs",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Kozea",
+      "repo": "Radicale",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "sabre-io",
+      "repo": "dav",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jelmer",
+      "repo": "xandikos",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "anycable",
+      "repo": "anycable",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "caronc",
+      "repo": "apprise",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "centrifugal",
+      "repo": "centrifugo#demo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "centrifugal",
+      "repo": "centrifugo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jeremyckahn",
+      "repo": "chitchatter",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "balzack",
+      "repo": "databag",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "element-hq",
+      "repo": "element-web",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "globaleaks",
+      "repo": "globaleaks-whistleblowing-software",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "gotify",
+      "repo": "server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "gotify",
+      "repo": "android",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "hyphanet",
+      "repo": "fred",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "LiveHelperChat",
+      "repo": "livehelperchat",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mumble-voip",
+      "repo": "mumble",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "notifo-io",
+      "repo": "notifo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "novuhq",
+      "repo": "novu",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "binwiederhier",
+      "repo": "ntfy-android",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "onetimesecret",
+      "repo": "onetimesecret",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Luzifer",
+      "repo": "ots",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pushbits",
+      "repo": "server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "RetroShare",
+      "repo": "RetroShare",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "RocketChat",
+      "repo": "Rocket.Chat",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "SAMA-Communications",
+      "repo": "sama-server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "SAMA-Communications",
+      "repo": "sama-client",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "screego",
+      "repo": "server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "smallwat3r",
+      "repo": "shhh",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "simplex-chat",
+      "repo": "simplex-chat",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "SpectrumIM",
+      "repo": "spectrum2",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "stoatchat",
+      "repo": "self-hosted",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "element-hq",
+      "repo": "synapse",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Tiledesk",
+      "repo": "tiledesk",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "tinode",
+      "repo": "chat",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "tinode",
+      "repo": "webapp",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "TokTok",
+      "repo": "c-toxcore",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "matrix-construct",
+      "repo": "tuwunel",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "baptisteArno",
+      "repo": "typebot.io",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "lovasoa",
+      "repo": "whitebophir",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "zulip",
+      "repo": "zulip",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "anonaddy",
+      "repo": "anonaddy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "debops",
+      "repo": "debops",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "docker-mailserver",
+      "repo": "docker-mailserver",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "LukeSmithxyz",
+      "repo": "emailwiz",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "iredmail",
+      "repo": "iRedMail",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "foxcpp",
+      "repo": "maddy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mail-in-a-box",
+      "repo": "mailinabox",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mailcow",
+      "repo": "mailcow-dockerized",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Mailu",
+      "repo": "Mailu",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "modoboa",
+      "repo": "modoboa",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mjl-",
+      "repo": "mox",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "postalserver",
+      "repo": "postal",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "simple-login",
+      "repo": "app",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "stalwartlabs",
+      "repo": "stalwart",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "zone-eu",
+      "repo": "wildduck",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "cyrusimap",
+      "repo": "cyrus-imapd",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mguessan",
+      "repo": "davmail",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "dovecot",
+      "repo": "core",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "corecode",
+      "repo": "dma",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "haraka",
+      "repo": "Haraka",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "OpenSMTPD",
+      "repo": "OpenSMTPD",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "HaschekSolutions",
+      "repo": "opentrashmail",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pentacent",
+      "repo": "keila",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mautic",
+      "repo": "mautic",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "sympa-community",
+      "repo": "sympa",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "cypht-org",
+      "repo": "cypht",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "roundcube",
+      "repo": "roundcubemail",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "the-djmaze",
+      "repo": "snappymail",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ergochat",
+      "repo": "ergo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "glowing-bear",
+      "repo": "glowing-bear",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "inspircd",
+      "repo": "inspircd",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "kiwiirc",
+      "repo": "kiwiirc",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ngircd",
+      "repo": "ngircd",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "quassel",
+      "repo": "quassel",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "robustirc",
+      "repo": "robustirc",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "thelounge",
+      "repo": "thelounge",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "unrealircd",
+      "repo": "unrealircd",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "weechat",
+      "repo": "weechat",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "znc",
+      "repo": "znc",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "asterisk",
+      "repo": "asterisk",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "BelledonneCommunications",
+      "repo": "flexisip",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "signalwire",
+      "repo": "freeswitch",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "fusionpbx",
+      "repo": "fusionpbx",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "kamailio",
+      "repo": "kamailio",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "OpenSIPS",
+      "repo": "opensips",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "fonoster",
+      "repo": "routr",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "sipcapture",
+      "repo": "homer",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "apache",
+      "repo": "answer",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ArtalkJS",
+      "repo": "Artalk",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "buddypress",
+      "repo": "BuddyPress",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "devrsi0n",
+      "repo": "chirpy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "coralproject",
+      "repo": "talk",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "diaspora",
+      "repo": "diaspora",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "discourse",
+      "repo": "discourse",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Elgg",
+      "repo": "Elgg",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "NuSkooler",
+      "repo": "enigma-bbs",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "flarum",
+      "repo": "flarum",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "friendica",
+      "repo": "friendica",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "importantimport",
+      "repo": "hatsu",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "humhub",
+      "repo": "humhub",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "isso-comments",
+      "repo": "isso",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "LemmyNet",
+      "repo": "lemmy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "loomio",
+      "repo": "loomio",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mastodon",
+      "repo": "mastodon",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "rafalp",
+      "repo": "Misago",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "misskey-dev",
+      "repo": "misskey",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "movim",
+      "repo": "movim",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mybb",
+      "repo": "mybb",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "NodeBB",
+      "repo": "NodeBB",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "opensource-socialnetwork",
+      "repo": "opensource-socialnetwork",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "phpbb",
+      "repo": "phpbb",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pixelfed",
+      "repo": "pixelfed",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "codidact",
+      "repo": "qpixel",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "redlib-org",
+      "repo": "redlib",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "umputun",
+      "repo": "remark42",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Erudika",
+      "repo": "scoold",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "SimpleMachines",
+      "repo": "SMF",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jaywink",
+      "repo": "socialhome",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "debiki",
+      "repo": "talkyard",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bigbluebutton",
+      "repo": "bigbluebutton",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jech",
+      "repo": "galene",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "meetecho",
+      "repo": "janus-gateway",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jitsi",
+      "repo": "jitsi-meet",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jitsi",
+      "repo": "jitsi-videobridge",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "miroslavpejic85",
+      "repo": "mirotalkc2c",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "miroslavpejic85",
+      "repo": "mirotalk",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "miroslavpejic85",
+      "repo": "mirotalksfu",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mynaparrot",
+      "repo": "plugNmeet-server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "processone",
+      "repo": "ejabberd",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "esl",
+      "repo": "MongooseIM",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "igniterealtime",
+      "repo": "Openfire",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "snikket-im",
+      "repo": "snikket-server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "tigase",
+      "repo": "tigase-server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "conversejs",
+      "repo": "converse.js",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "csa-admin-org",
+      "repo": "csa-admin",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "filipecarneiro",
+      "repo": "ELabel",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "foodcoopshop",
+      "repo": "foodcoopshop",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "foodcoops",
+      "repo": "foodsoft",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "martinhrvn",
+      "repo": "hive-pal",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "juntagrico",
+      "repo": "juntagrico",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "openfoodfoundation",
+      "repo": "openfoodnetwork",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "OpenOlitor",
+      "repo": "openolitor-server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "teikei",
+      "repo": "teikei",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "indico",
+      "repo": "indico",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "CatoTH",
+      "repo": "antragsgruen",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "OpenSlides",
+      "repo": "OpenSlides",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "openSUSE",
+      "repo": "osem",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pretalx",
+      "repo": "pretalx",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Alfresco",
+      "repo": "alfresco-community-repo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "apostrophecms",
+      "repo": "apostrophe",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "marcantondahmen",
+      "repo": "automad",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "backdrop",
+      "repo": "backdrop",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bludit",
+      "repo": "bludit",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bolt",
+      "repo": "core",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Cockpit-HQ",
+      "repo": "Cockpit",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "concretecms",
+      "repo": "concretecms",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "contao",
+      "repo": "contao",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "CouchCMS",
+      "repo": "CouchCMS",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "elabftw",
+      "repo": "elabftw",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "thomas4019",
+      "repo": "expressa",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "joomla",
+      "repo": "joomla-cms",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "keystonejs",
+      "repo": "keystone",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Lessify",
+      "repo": "localess",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "modxcms",
+      "repo": "revolution",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "omeka",
+      "repo": "Omeka",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "payloadcms",
+      "repo": "payload",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pimcore",
+      "repo": "pimcore",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "publify",
+      "repo": "publify",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "redaxo",
+      "repo": "core",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Squidex",
+      "repo": "squidex",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "strapi",
+      "repo": "strapi",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "superdesk",
+      "repo": "superdesk",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "textpattern",
+      "repo": "textpattern",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "typemill",
+      "repo": "typemill",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "TYPO3",
+      "repo": "typo3",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "umbraco",
+      "repo": "Umbraco-CMS",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "givanz",
+      "repo": "Vvveb",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "wagtail",
+      "repo": "wagtail",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "wintercms",
+      "repo": "winter",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "WonderCMS",
+      "repo": "wondercms",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "WordPress",
+      "repo": "WordPress",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "cortezaproject",
+      "repo": "corteza",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "DjangoCRM",
+      "repo": "django-crm",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "espocrm",
+      "repo": "espocrm",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "krayin",
+      "repo": "laravel-crm",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "monicahq",
+      "repo": "monica",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "SuiteCRM",
+      "repo": "SuiteCRM",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "twentyhq",
+      "repo": "twenty",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "vrana",
+      "repo": "adminer",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "azimuttapp",
+      "repo": "azimutt",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bytebase",
+      "repo": "bytebase",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "chartbrew",
+      "repo": "chartbrew",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "chartdb",
+      "repo": "chartdb",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "dbeaver",
+      "repo": "cloudbeaver",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "securitybunker",
+      "repo": "databunker",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "simonw",
+      "repo": "datasette",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "evidence-dev",
+      "repo": "evidence",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "kottster",
+      "repo": "kottster",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "limbas",
+      "repo": "limbas",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mathesar-foundation",
+      "repo": "mathesar",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "AdguardTeam",
+      "repo": "AdGuardHome",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "0xERR0R",
+      "repo": "blocky",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "tanrax",
+      "repo": "maza-ad-blocking",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pi-hole",
+      "repo": "pi-hole",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "TechnitiumSoftware",
+      "repo": "DnsServer",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "eikek",
+      "repo": "docspell",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "documenso",
+      "repo": "documenso",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "docusealco",
+      "repo": "docuseal",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jonashellmann",
+      "repo": "everydocs-core",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "gotenberg",
+      "repo": "gotenberg",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mkucej",
+      "repo": "i-librarian-free",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "opensignlabs",
+      "repo": "opensign",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "paperless-ngx",
+      "repo": "paperless-ngx",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "papermerge",
+      "repo": "papermerge-core",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "papra-hq",
+      "repo": "papra",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mrmn2",
+      "repo": "PdfDing",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "24eme",
+      "repo": "signaturepdf",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Stirling-Tools",
+      "repo": "Stirling-PDF",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Atsumeru-xyz",
+      "repo": "Atsumeru",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Mozzo1000",
+      "repo": "booklogr",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "crocodilestick",
+      "repo": "Calibre-Web-Automated",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "janeczku",
+      "repo": "calibre-web",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "kovidgoyal",
+      "repo": "calibre",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Casvt",
+      "repo": "Kapowarr",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Kareadita",
+      "repo": "Kavita",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "kiwix",
+      "repo": "kiwix-tools",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "gotson",
+      "repo": "komga",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "FabianRolfMatthiasNoll",
+      "repo": "MyMangaDB",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "stumpapp",
+      "repo": "stump",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "DSpace",
+      "repo": "DSpace",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "eprints",
+      "repo": "eprints3.4",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "fcrepo",
+      "repo": "fcrepo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "inveniosoftware",
+      "repo": "invenio-app-rdm",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Islandora",
+      "repo": "islandora",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "samvera",
+      "repo": "hyrax",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "evergreen-library-system",
+      "repo": "Evergreen",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Koha-Community",
+      "repo": "Koha",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "rero",
+      "repo": "rero-ils",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "aimeos",
+      "repo": "aimeos",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bagisto",
+      "repo": "bagisto",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "coreshop",
+      "repo": "CoreShop",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "evershopcommerce",
+      "repo": "evershop",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "magento",
+      "repo": "magento2",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "medusajs",
+      "repo": "medusa",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "microweber",
+      "repo": "microweber",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "shurco",
+      "repo": "mycart",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "opensourcepos",
+      "repo": "opensourcepos",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "opencart",
+      "repo": "opencart",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "PrestaShop",
+      "repo": "PrestaShop",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pretix",
+      "repo": "pretix",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "gp247net",
+      "repo": "s-cart",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "saleor",
+      "repo": "saleor",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "shopware",
+      "repo": "shopware",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "solidusio",
+      "repo": "solidus",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "spree",
+      "repo": "spree",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Sylius",
+      "repo": "Sylius",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "thelia",
+      "repo": "thelia",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "vendurehq",
+      "repo": "vendure",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "woocommerce",
+      "repo": "woocommerce",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "georgemandis",
+      "repo": "bubo-rss",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Athou",
+      "repo": "commafeed",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Qolors",
+      "repo": "FeedCord",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ncarlier",
+      "repo": "feedpushr",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Tiendil",
+      "repo": "feeds.fun",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "FreshRSS",
+      "repo": "FreshRSS",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "0x2E",
+      "repo": "fusion",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jaesivsm",
+      "repo": "JARR",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "tontof",
+      "repo": "kriss_feed",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "LeedRSS",
+      "repo": "Leed",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "miniflux",
+      "repo": "v2",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "samuelclay",
+      "repo": "NewsBlur",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "lemon24",
+      "repo": "reader",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ncarlier",
+      "repo": "readflow",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "RSS-Bridge",
+      "repo": "rss-bridge",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pietheinstrengholt",
+      "repo": "rssmonster",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "rss2email",
+      "repo": "rss2email",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "DIYgod",
+      "repo": "RSSHub",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "fossar",
+      "repo": "selfoss",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "stringer-rss",
+      "repo": "stringer",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "tt-rss",
+      "repo": "tt-rss",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "TheBigRoomXXL",
+      "repo": "tinyfeed",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "johnwarne",
+      "repo": "upvote-rss",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "nkanaev",
+      "repo": "yarr",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bewcloud",
+      "repo": "bewcloud",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "cloudreve",
+      "repo": "cloudreve",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Kinto",
+      "repo": "kinto",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "nextcloud",
+      "repo": "server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "opencloud-eu",
+      "repo": "opencloud",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "owncloud",
+      "repo": "core",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Peergos",
+      "repo": "Peergos",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "heyputer",
+      "repo": "puter",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pydio",
+      "repo": "cells",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "haiwen",
+      "repo": "seafile",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Sync-in",
+      "repo": "server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Sync-in",
+      "repo": "desktop",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
       "owner": "syncthing",
       "repo": "syncthing",
-      "category": "file-management",
-      "tags": ["文件同步", "跨平台", "P2P"]
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "ip7z",
-      "repo": "7zip",
-      "category": "file-management",
-      "tags": ["压缩", "解压", "归档"]
+      "owner": "bcpierce00",
+      "repo": "unison",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "files-community",
-      "repo": "Files",
-      "category": "file-management",
-      "tags": ["文件管理器", "Windows", "现代化"]
+      "owner": "goharbor",
+      "repo": "harbor",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "GNOME",
-      "repo": "gimp",
-      "category": "creative",
-      "tags": ["图像编辑", "Photoshop替代品", "设计"]
+      "owner": "seaweedfs",
+      "repo": "seaweedfs",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "inkscape",
-      "repo": "inkscape",
-      "category": "creative",
-      "tags": ["矢量图", "Illustrator替代品", "设计"]
+      "owner": "scality",
+      "repo": "cloudserver",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "project-zot",
+      "repo": "zot",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "webtorrent",
+      "repo": "bittorrent-tracker",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "david-bai00",
+      "repo": "PrivyDrop",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "qbittorrent",
+      "repo": "qBittorrent",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "slskd",
+      "repo": "slskd",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "transmission",
+      "repo": "transmission",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "webtor-io",
+      "repo": "self-hosted",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "keven1024",
+      "repo": "015",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "chibisafe",
+      "repo": "chibisafe",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "CorentinTh",
+      "repo": "enclosed",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "axeloz",
+      "repo": "filesharing",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "FlintSH",
+      "repo": "Flare",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Forceu",
+      "repo": "gokapi",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Depado",
+      "repo": "goploader",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "onionshare",
+      "repo": "onionshare",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mtlynch",
+      "repo": "picoshare",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "CaramelFur",
+      "repo": "Picsur",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "HaschekSolutions",
+      "repo": "pictshare",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "root-gg",
+      "repo": "plik",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "projectsend",
+      "repo": "projectsend",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "psi-4ward",
+      "repo": "psitransfer",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ihexxa",
+      "repo": "quickshare",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "eikek",
+      "repo": "sharry",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "TobySuch",
+      "repo": "Shifter",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "andrii-kryvoviaz",
+      "repo": "slink",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "dutchcoders",
+      "repo": "transfer.sh",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "nokonoko",
+      "repo": "uguu",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "farisc0de",
+      "repo": "Uploady",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "SergiX44",
+      "repo": "XBackBone",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "diced",
+      "repo": "zipline",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "oupala",
+      "repo": "apaxy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "9001",
+      "repo": "copyparty",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "filebrowser",
+      "repo": "filebrowser",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "filegator",
+      "repo": "filegator",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "error311",
+      "repo": "FileRise",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "error311",
+      "repo": "FileRise?tab=readme-ov-file#live-demo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mickael-kerjean",
+      "repo": "filestash",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pldubouilh",
+      "repo": "gossa",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "misterunknown",
+      "repo": "ifm",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "zer0tonin",
+      "repo": "Mikochi",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "svenstaro",
+      "repo": "miniserve",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "tagspaces",
+      "repo": "tagspaces",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "prasathmani",
+      "repo": "tinyfilemanager",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "doublespeakgames",
+      "repo": "adarkroom",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "TeamHypersomnia",
+      "repo": "Hypersomnia",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "lichess-org",
+      "repo": "lila",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "luanti-org",
+      "repo": "luanti",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Anuken",
+      "repo": "Mindustry",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "multitheftauto",
+      "repo": "mtasa-blue",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "OpenTTD",
+      "repo": "OpenTTD",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "piqueserver",
+      "repo": "piqueserver",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "yvt",
+      "repo": "openspades",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "abrenaut",
+      "repo": "posio",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "redeclipse",
+      "repo": "base",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "scribble-rs",
+      "repo": "scribble.rs",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "HasangerGames",
+      "repo": "suroi",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "wesnoth",
+      "repo": "wesnoth",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ZeroK-RTS",
+      "repo": "Zero-K",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "macarooni-man",
+      "repo": "auto-mcs",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Drop-OSS",
+      "repo": "drop",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Drop-OSS",
+      "repo": "drop-app",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "easy-wi",
+      "repo": "developer",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "gameyfin",
+      "repo": "gameyfin",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "gaseous-project",
+      "repo": "gaseous-server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "lancachenet",
+      "repo": "monolithic",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "GameServerManagers",
+      "repo": "LinuxGSM",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Accessory",
+      "repo": "minus_games",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pelican-dev",
+      "repo": "panel",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pterodactyl",
+      "repo": "panel",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pufferpanel",
+      "repo": "pufferpanel",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "gorcon",
+      "repo": "rcon-cli",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "JMBeresford",
+      "repo": "retrom",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "rommapp",
+      "repo": "romm",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "sbpp",
+      "repo": "sourcebans-pp",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "LizardByte",
+      "repo": "Sunshine",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "genea-app",
+      "repo": "genea-app",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "MGeurts",
+      "repo": "genealogy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "geneweb",
+      "repo": "geneweb",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "gramps-project",
+      "repo": "gramps-web-api",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "fisharebest",
+      "repo": "webtrees",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "agenta-ai",
+      "repo": "agenta",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Mintplex-Labs",
+      "repo": "anything-llm",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "khoj-ai",
+      "repo": "khoj",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "av",
+      "repo": "harbor",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "defilantech",
+      "repo": "LLMKube",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "LearningCircuit",
+      "repo": "local-deep-research",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mudler",
+      "repo": "LocalAI",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ollama",
+      "repo": "ollama",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "onyx-dot-app",
+      "repo": "onyx",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "open-webui",
+      "repo": "open-webui",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "rasulkireev",
+      "repo": "TuxSEO",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ItzCrazyKns",
+      "repo": "Vane",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "colanode",
+      "repo": "colanode",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "cozy",
+      "repo": "cozy-store",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "EGroupware",
+      "repo": "egroupware",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Intermesh",
+      "repo": "groupoffice",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "apache",
+      "repo": "openmeetings",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Alinto",
+      "repo": "sogo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "tine-groupware",
+      "repo": "tine",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "tracim",
+      "repo": "tracim",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "endurain-project",
+      "repo": "endurain",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "fastenhealth",
+      "repo": "fasten-onprem",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "SamR1",
+      "repo": "FitTrackee",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "cfu288",
+      "repo": "mere-medical",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "openemr",
+      "repo": "openemr",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "wger-project",
+      "repo": "wger",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "itskovacs",
+      "repo": "wingfit",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Admidio",
+      "repo": "admidio",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "frappe",
+      "repo": "hrms",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "minthcm",
+      "repo": "minthcm",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "domoticz",
+      "repo": "domoticz",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "domoticz",
+      "repo": "domoticz-android",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "emqx",
+      "repo": "emqx",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "evcc-io",
+      "repo": "evcc",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "FlowFuse",
+      "repo": "flowfuse",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "GladysAssistant",
+      "repo": "Gladys",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "home-assistant",
+      "repo": "core",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ioBroker",
+      "repo": "ioBroker",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "javalikescript",
+      "repo": "lha",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "node-red",
+      "repo": "node-red",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "openhab",
+      "repo": "openhab-core",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "openremote",
+      "repo": "openremote",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Dan-in-CA",
+      "repo": "SIP",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "solectrus",
+      "repo": "solectrus",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "arendst",
+      "repo": "Tasmota",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "thingsboard",
+      "repo": "thingsboard",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "WebThingsIO",
+      "repo": "gateway",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "sysadminsmedia",
+      "repo": "homebox",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "inventree",
+      "repo": "InvenTree",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Epic-Breakfast-Productions",
+      "repo": "OpenQuarterMaster",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Part-DB",
+      "repo": "Part-DB-server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Shelf-nu",
+      "repo": "shelf.nu",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Donkie",
+      "repo": "Spoolman",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "toeverything",
+      "repo": "AFFiNE",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ontola",
+      "repo": "atomic-server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "michaelstaake",
+      "repo": "LibreKB",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "siyuan-note",
+      "repo": "siyuan",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "b310-digital",
+      "repo": "teammapper",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "instructure",
+      "repo": "canvas-lms",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "chamilo",
+      "repo": "chamilo-lms",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "GibbonEdu",
+      "repo": "core",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ILIAS-eLearning",
+      "repo": "ILIAS",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "INGInious",
+      "repo": "INGInious",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "INGInious",
+      "repo": "plugins",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "gunet",
+      "repo": "openeclass",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "OpenOLAT",
+      "repo": "OpenOLAT",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "inducer",
+      "repo": "relate",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "cncjs",
+      "repo": "cncjs",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "fluidd-core",
+      "repo": "fluidd",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mainsail-crew",
+      "repo": "mainsail",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "manyfold3d",
+      "repo": "manyfold",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "OctoPrint",
+      "repo": "OctoPrint",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "seanmorley15",
+      "repo": "AdventureLog",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "johanohly",
+      "repo": "AirTrail",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "knrdl",
+      "repo": "bicimon",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Freika",
+      "repo": "dawarich",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "noandrea",
+      "repo": "geo2tz",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "graphhopper",
+      "repo": "graphhopper",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "osm-search",
+      "repo": "Nominatim",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Project-OSRM",
+      "repo": "osrm-backend",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "GIScience",
+      "repo": "openrouteservice",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "openstreetmap",
+      "repo": "openstreetmap-website",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "opentripplanner",
+      "repo": "OpenTripPlanner",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "owntracks",
+      "repo": "recorder",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "maptiler",
+      "repo": "tileserver-gl",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "itskovacs",
+      "repo": "trip",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "open-wanderer",
+      "repo": "wanderer",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "TheWicklowWolf",
+      "repo": "ChannelTube",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "rfsbraz",
+      "repo": "deleterr",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "rembo10",
+      "repo": "headphones",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Lidarr",
+      "repo": "Lidarr",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "TheWicklowWolf",
+      "repo": "LidaTube",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "TheWicklowWolf",
+      "repo": "Lidify",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pymedusa",
+      "repo": "Medusa",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "medusajs",
+      "repo": "nextjs-starter-medusa",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "alexta69",
+      "repo": "metube",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "kennethsible",
+      "repo": "mkvpriority",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "lardbit",
+      "repo": "nefarious",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Ombi-app",
+      "repo": "Ombi",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "kieraneglin",
+      "repo": "pinchflat",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "SamTV12345",
+      "repo": "PodFetch",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Radarr",
+      "repo": "Radarr",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Reaparr",
+      "repo": "Reaparr",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "seerr-team",
+      "repo": "seerr",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Sonarr",
+      "repo": "Sonarr",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Raiper34",
+      "repo": "spooty",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "emlopezr",
+      "repo": "trackwatch",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "meeb",
+      "repo": "tubesync",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "sbondCo",
+      "repo": "Watcharr",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Totonyus",
+      "repo": "ydl_api_ng",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "nbr23",
+      "repo": "youtube-dl-server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "marcopiovanello",
+      "repo": "yt-dlp-web-ui",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ampache",
+      "repo": "ampache",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "advplyr",
+      "repo": "audiobookshelf",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "advplyr",
+      "repo": "audiobookshelf-app",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "izderadicka",
+      "repo": "audioserve",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "AzuraCast",
+      "repo": "AzuraCast",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "beetbox",
+      "repo": "beets",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "blackcandy-org",
+      "repo": "blackcandy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "sentriz",
+      "repo": "gonic",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "koel",
+      "repo": "koel",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "sourcefabric",
+      "repo": "Airtime",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "LibreTime",
+      "repo": "libretime",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "epoupon",
+      "repo": "lms",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "lms-community",
+      "repo": "slimserver",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "krateng",
+      "repo": "maloja",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "moode-player",
+      "repo": "moode",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mopidy",
+      "repo": "mopidy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "MusicPlayerDaemon",
+      "repo": "MPD",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "IrosTheBeggar",
+      "repo": "mStream",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "FoxxMD",
+      "repo": "multi-scrobbler",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "clangen",
+      "repo": "musikcube",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "navidrome",
+      "repo": "navidrome",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "madeofpendletonwool",
+      "repo": "PinePods",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "agersant",
+      "repo": "polaris",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "snapcast",
+      "repo": "snapcast",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "benkaiser",
+      "repo": "stretto",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "benkaiser",
+      "repo": "stretto-mobile-next",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "spl0k",
+      "repo": "supysonic",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "swingmx",
+      "repo": "swingmusic",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "madiele",
+      "repo": "vod2pod-rss",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "MacWarrior",
+      "repo": "clipbucket-v5",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "farfalleflickan",
+      "repo": "cmyflix",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "gerbera",
+      "repo": "gerbera",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jellyfin",
+      "repo": "jellyfin",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bhj",
+      "repo": "KaraokeEternal",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "xbmc",
+      "repo": "xbmc",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "zoriya",
+      "repo": "kyoo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bluenviron",
+      "repo": "mediamtx",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Arthi-chaud",
+      "repo": "Meelo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "DDVTECH",
+      "repo": "mistserver",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "MayaPosch",
+      "repo": "NymphCast",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "stashapp",
+      "repo": "stash",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pikvm",
+      "repo": "ustreamer",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "calzoneman",
+      "repo": "sync",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "iv-org",
+      "repo": "invidious",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mediacms-io",
+      "repo": "mediacms",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "OvenMediaLabs",
+      "repo": "OvenMediaEngine",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "owncast",
+      "repo": "owncast",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Chocobozzz",
+      "repo": "PeerTube",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "hauxir",
+      "repo": "rapidbay",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "datarhei",
+      "repo": "restreamer",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ossrs",
+      "repo": "srs",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "RblSb",
+      "repo": "SyncTube",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "tubearchivist",
+      "repo": "tubearchivist",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Bubka",
+      "repo": "2FAuth",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "muety",
+      "repo": "anchr",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "TecharoHQ",
+      "repo": "anubis",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "asciinema",
+      "repo": "asciinema-server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "babybuddy",
+      "repo": "babybuddy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "babybuddy",
+      "repo": "babybuddy#-demo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Sathvik-Rao",
+      "repo": "ClipCascade",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "magicbug",
+      "repo": "cloudlog",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "C4illin",
+      "repo": "ConvertX",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "OpenPrinting",
+      "repo": "cups",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "gchq",
+      "repo": "CyberChef",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "docat-org",
+      "repo": "docat",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "lissy93",
+      "repo": "domain-locker",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "DOMjudge",
+      "repo": "domjudge",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "KL-Psychological-Methodology",
+      "repo": "ESMira",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "flyimg",
+      "repo": "flyimg",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "majodev",
+      "repo": "google-webfonts-helper",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "HabitRPG",
+      "repo": "habitica",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "danielbrendel",
+      "repo": "hortusfox-web",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Infisical",
+      "repo": "infisical",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "dmunozv04",
+      "repo": "iSponsorBlockTV",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "sharevb",
+      "repo": "it-tools",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "CorentinTh",
+      "repo": "it-tools",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bayang",
+      "repo": "jelu",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pbogre",
+      "repo": "jetlog",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "benjaminjonard",
+      "repo": "koillection",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "languagetool-org",
+      "repo": "languagetool",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "LibreTranslate",
+      "repo": "LibreTranslate",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "hargata",
+      "repo": "lubelog?tab=readme-ov-file#demo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "hargata",
+      "repo": "lubelog",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mosparo",
+      "repo": "mosparo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "leepeuker",
+      "repo": "movary",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "leepeuker",
+      "repo": "movary?tab=readme-ov-file#demo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "m1k1o",
+      "repo": "neko",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "iib0011",
+      "repo": "omni-tools",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "open-meteo",
+      "repo": "open-meteo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "richardr1126",
+      "repo": "openreader",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "openziti",
+      "repo": "ziti",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "operational-co",
+      "repo": "operational.co",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "penpot",
+      "repo": "penpot",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "joho1968",
+      "repo": "POMjs",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "AmruthPillai",
+      "repo": "Reactive-Resume",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "hakimel",
+      "repo": "reveal.js",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "revive-adserver",
+      "repo": "revive-adserver",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "recurser",
+      "repo": "string-is",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "gravitational",
+      "repo": "teleport",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "teslamate-org",
+      "repo": "teslamate",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jasonraimondi",
+      "repo": "url-to-png",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "usertour",
+      "repo": "usertour",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "sassanix",
+      "repo": "Warracker",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "wavelog",
+      "repo": "wavelog",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "weewx",
+      "repo": "weewx",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "butlerx",
+      "repo": "wetty",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "FuzzyGrim",
+      "repo": "Yamtrack",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "FuzzyGrim",
+      "repo": "Yamtrack?tab=readme-ov-file#demo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "SeaweedbrainCY",
+      "repo": "zero-totp",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "actualbudget",
+      "repo": "actual",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bigcapitalhq",
+      "repo": "bigcapital",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bitcart",
+      "repo": "bitcart",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "btcpayserver",
+      "repo": "btcpayserver",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "depayfi",
+      "repo": "widgets",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "econumo",
+      "repo": "econumo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "tanq16",
+      "repo": "expenseowl",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mayswind",
+      "repo": "ezbookkeeping",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "nymanjens",
+      "repo": "facto",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "beancount",
+      "repo": "fava",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "firefly-iii",
+      "repo": "firefly-iii",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "FOSSBilling",
+      "repo": "FOSSBilling",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "galette",
+      "repo": "galette",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ghostfolio",
+      "repo": "ghostfolio",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "JeromeDevome",
+      "repo": "GRR",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "juspay",
+      "repo": "hyperswitch",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "spiral-project",
+      "repo": "ihatemoney",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "InvoicePlane",
+      "repo": "InvoicePlane",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "InvoiceShelf",
+      "repo": "InvoiceShelf",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "killbill",
+      "repo": "killbill",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "kresusapp",
+      "repo": "kresus",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "getlago",
+      "repo": "lago",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "monetr",
+      "repo": "monetr",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mybucks-online",
+      "repo": "app",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "afaneca",
+      "repo": "myfin?tab=readme-ov-file#demo-account---try-it-for-yourself",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "afaneca",
+      "repo": "myfin",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "afaneca",
+      "repo": "myfin-api",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Drakkar-Software",
+      "repo": "OctoBot",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "simonwep",
+      "repo": "ocular",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "TheAxelander",
+      "repo": "OpenBudgeteer",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Receipt-Wrangler",
+      "repo": "receipt-wrangler",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "r3-team",
+      "repo": "r3",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "vsys-host",
+      "repo": "shkeeper.io?tab=readme-ov-file#11-demo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "vsys-host",
+      "repo": "shkeeper.io",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "SolidInvoice",
+      "repo": "SolidInvoice",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "we-promise",
+      "repo": "sure",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "l4rm4nd",
+      "repo": "VoucherVault",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ellite",
+      "repo": "wallos?tab=readme-ov-file#demo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ellite",
+      "repo": "wallos",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "eitchtee",
+      "repo": "WYGIWYH",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "kantorge",
+      "repo": "yaffa",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "beelzebub-labs",
+      "repo": "beelzebub",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "thinkst",
+      "repo": "opencanary",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jason5ng32",
+      "repo": "MyIP",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "gnmyt",
+      "repo": "myspeed",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "netalertx",
+      "repo": "NetAlertX",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "openspeedtest",
+      "repo": "Speed-Test",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "alexjustesen",
+      "repo": "speedtest-tracker",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "seriousm4x",
+      "repo": "UpSnap",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Gibus21250",
+      "repo": "Wakupator",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "aceberg",
+      "repo": "WatchYourLAN",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "blinkospace",
+      "repo": "blinko",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "PhiTux",
+      "repo": "DailyTxT",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "suitenumerique",
+      "repo": "docs",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
       "owner": "jgraph",
-      "repo": "drawio-desktop",
-      "category": "productivity",
-      "tags": ["流程图", "图表", "Visio替代品"]
+      "repo": "drawio",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "sumatrapdfreader",
-      "repo": "sumatrapdf",
-      "category": "productivity",
-      "tags": ["PDF阅读器", "轻量", "开源"]
+      "owner": "dullage",
+      "repo": "flatnotes",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     },
     {
-      "owner": "marktext",
-      "repo": "marktext",
-      "category": "productivity",
-      "tags": ["Markdown编辑器", "写作", "笔记"]
+      "owner": "hedgedoc",
+      "repo": "hedgedoc",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "laurent22",
+      "repo": "joplin",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "fccview",
+      "repo": "jotty",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "livebook-dev",
+      "repo": "livebook",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "brufdev",
+      "repo": "many-notes",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "usememos",
+      "repo": "memos",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "enchant97",
+      "repo": "note-mark",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "overleaf",
+      "repo": "overleaf",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "alextselegidis",
+      "repo": "plainpad",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "silverbulletmd",
+      "repo": "silverbullet",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "standardnotes",
+      "repo": "app",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "TriliumNext",
+      "repo": "Trilium",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "josephernest",
+      "repo": "writing",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "cryptpad",
+      "repo": "cryptpad",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ether",
+      "repo": "etherpad",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "gristlabs",
+      "repo": "grist-core",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ONLYOFFICE",
+      "repo": "DocumentServer",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "aliasvault",
+      "repo": "aliasvault",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bitwarden",
+      "repo": "server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "passbolt",
+      "repo": "passbolt_api",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "nilsteampassnet",
+      "repo": "TeamPass",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "dani-garcia",
+      "repo": "vaultwarden",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "w4",
+      "repo": "bin",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "querwurzel",
+      "repo": "BinPastes",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jordan-dalby",
+      "repo": "ByteStash",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jordan-dalby",
+      "repo": "ByteStash?tab=readme-ov-file#demo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "rhee876527",
+      "repo": "chiyogami",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "DarrenOfficial",
+      "repo": "dpaste",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "HemmeligOrg",
+      "repo": "Hemmelig.app",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Tanq16",
+      "repo": "local-content-share",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "not-three",
+      "repo": "main",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "thomiceli",
+      "repo": "opengist",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "WardPearce",
+      "repo": "paaster",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pglombardo",
+      "repo": "PasswordPusher",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "interaapps",
+      "repo": "pastefy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "topics",
+      "repo": "pastefy-addon",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "PrivateBin",
+      "repo": "PrivateBin",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "orhun",
+      "repo": "rustypaste",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "algolia",
+      "repo": "sup3rS3cretMes5age",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "matze",
+      "repo": "wastebin",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jhaals",
+      "repo": "yopass",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "lissy93",
+      "repo": "dashy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "glanceapp",
+      "repo": "glance",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "arran4",
+      "repo": "gobookmarks",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "linuxserver",
+      "repo": "Heimdall",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ashwin-pc",
+      "repo": "hiccup",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "homarr-labs",
+      "repo": "homarr",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "gethomepage",
+      "repo": "homepage",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "tomershvueli",
+      "repo": "homepage",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bastienwirtz",
+      "repo": "homer",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "knrdl",
+      "repo": "hubleys-dashboard",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "LinkStackOrg",
+      "repo": "LinkStack",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "sethcottle",
+      "repo": "littlelink",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "hywax",
+      "repo": "mafl",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Volmarg",
+      "repo": "personal-management-system#documentation--demo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Volmarg",
+      "repo": "personal-management-system",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "kodehat",
+      "repo": "portkey",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ignisda",
+      "repo": "ryot",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "IgnisDa",
+      "repo": "ryot?tab=readme-ov-file#-demo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "notclickable-jordan",
+      "repo": "starbase-80",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Yooooomi",
+      "repo": "your_spotify",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "chevereto",
+      "repo": "chevereto",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "HoshinoSuzumi",
+      "repo": "chronoframe",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "webreaper",
+      "repo": "damselfly",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ente-io",
+      "repo": "ente",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "xemle",
+      "repo": "home-gallery",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "damongolding",
+      "repo": "immich-kiosk",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "immich-app",
+      "repo": "immich#demo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "immich-app",
+      "repo": "immich",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "LibrePhotos",
+      "repo": "librephotos",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "LycheeOrg",
+      "repo": "Lychee",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "dmpop",
+      "repo": "pellicola",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Memtly",
+      "repo": "Memtly.Community",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pulsejet",
+      "repo": "memories",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "SmilyOrg",
+      "repo": "photofield",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "photoprism",
+      "repo": "photoprism",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "photoview",
+      "repo": "photoview",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bpatrik",
+      "repo": "pigallery2",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Piwigo",
+      "repo": "Piwigo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "saimn",
+      "repo": "sigal",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "gbbirkisson",
+      "repo": "spis",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "RouHim",
+      "repo": "this-week-in-past",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "thumbor",
+      "repo": "thumbor",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "zenphoto",
+      "repo": "zenphoto",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "fsinfuhh",
+      "repo": "Bitpoll",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "evroon",
+      "repo": "bracket",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Wingysam",
+      "repo": "Christmas-Community",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ClaperCo",
+      "repo": "Claper",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "clearflask",
+      "repo": "clearflask",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jhpyle",
+      "repo": "docassemble",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "getfider",
+      "repo": "fider",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "formbricks",
+      "repo": "formbricks",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "lowercasename",
+      "repo": "gathio",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "heyform",
+      "repo": "heyform",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "hitobito",
+      "repo": "hitobito",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "LimeSurvey",
+      "repo": "LimeSurvey",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "aaronpk",
+      "repo": "Meetable",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "OpnForm",
+      "repo": "OpnForm",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "letsrevel",
+      "repo": "revel-backend",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bytedance",
+      "repo": "g3",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "imgproxy",
+      "repo": "imgproxy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "yarrick",
+      "repo": "iodine",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "OutlineFoundation",
+      "repo": "outline-server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "antoniomika",
+      "repo": "sish",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "nskondratev",
+      "repo": "socks5-proxy-server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "tinyproxy",
+      "repo": "tinyproxy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "TempoWorks",
+      "repo": "txtdot",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "karlomikus",
+      "repo": "bar-assistant",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "cooklang",
+      "repo": "CookCLI",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mikebgrep",
+      "repo": "fork.recipes",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "managemeals",
+      "repo": "manage-meals-web",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mealie-recipes",
+      "repo": "mealie",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "julianpoy",
+      "repo": "recipesage",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "reaper47",
+      "repo": "recipya",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "davideshay",
+      "repo": "groceries",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "alexbates",
+      "repo": "Tamari",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jt196",
+      "repo": "vanilla-cookbook",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "kassner",
+      "repo": "whattocook",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "engity-com",
+      "repo": "bifroest",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "firezone",
+      "repo": "firezone",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "apache",
+      "repo": "guacamole-server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Ylianst",
+      "repo": "MeshCentral",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "shellhub-io",
+      "repo": "shellhub",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "nirui",
+      "repo": "sshwifty",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Termix-SSH",
+      "repo": "Termix",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "warp-tech",
+      "repo": "warpgate",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Dolibarr",
+      "repo": "dolibarr",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "frappe",
+      "repo": "erpnext",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "farmOS",
+      "repo": "farmOS",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "grocy",
+      "repo": "grocy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ledgersmb",
+      "repo": "LedgerSMB",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "odoo",
+      "repo": "odoo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "apache",
+      "repo": "ofbiz-framework",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "alephdata",
+      "repo": "aleph",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "apache",
+      "repo": "solr",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "codelibs",
+      "repo": "fess",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "manticoresoftware",
+      "repo": "manticoresearch",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "meilisearch",
+      "repo": "MeiliSearch",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "neonwatty",
+      "repo": "meme-search",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "opensearch-project",
+      "repo": "OpenSearch",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "searxng",
+      "repo": "searxng",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "sist2app",
+      "repo": "sist2",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "typesense",
+      "repo": "typesense",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "neon-mmd",
+      "repo": "websurfx",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "yacy",
+      "repo": "yacy_search_server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "zinclabs",
+      "repo": "zinc#playground-server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "zincsearch",
+      "repo": "zincsearch",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "DaveStephens",
+      "repo": "ansible-nas",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "IceWhaleTech",
+      "repo": "CasaOS",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "MichaIng",
+      "repo": "DietPi",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "GhostWriters",
+      "repo": "DockSTARTer",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "teleclimber",
+      "repo": "Dropserver",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "homeserverhq",
+      "repo": "hshq",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bashrc2",
+      "repo": "libreserver",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "nextcloud",
+      "repo": "nextcloudpi",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "openmediavault",
+      "repo": "openmediavault",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "sandstorm-io",
+      "repo": "sandstorm",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ibizaman",
+      "repo": "selfhostblocks",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Start9Labs",
+      "repo": "start-os",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "syncloud",
+      "repo": "platform",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "runtipi",
+      "repo": "runtipi",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "websoft9",
+      "repo": "websoft9",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "nodiscc",
+      "repo": "xsrv",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "dreamfactorysoftware",
+      "repo": "dreamfactory",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "apioo",
+      "repo": "fusio",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "exogee-technology",
+      "repo": "graphweaver",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "hasura",
+      "repo": "graphql-engine",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "hoppscotch",
+      "repo": "hoppscotch",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Kong",
+      "repo": "kong",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "luraproject",
+      "repo": "lura",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "comet-ml",
+      "repo": "opik",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "erudika",
+      "repo": "para",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "svix",
+      "repo": "svix-webhooks",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "TykTechnologies",
+      "repo": "tyk",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "featbit",
+      "repo": "featbit",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "flagsmith",
+      "repo": "flagsmith",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "flipt-io",
+      "repo": "flipt",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "thomaspoignant",
+      "repo": "go-feature-flag",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Atheos",
+      "repo": "Atheos",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "coder",
+      "repo": "code-server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "coder",
+      "repo": "coder",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "eclipse-che",
+      "repo": "che",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "judge0",
+      "repo": "judge0",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jupyterlab",
+      "repo": "jupyterlab",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "langfuse",
+      "repo": "langfuse",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "live-codes",
+      "repo": "livecodes",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "lowdefy",
+      "repo": "lowdefy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "rapidforge-io",
+      "repo": "rapidforge",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "rstudio",
+      "repo": "rstudio",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mirego",
+      "repo": "accent",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "tolgee",
+      "repo": "tolgee-platform",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ever-co",
+      "repo": "ever-traduora",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "WeblateOrg",
+      "repo": "weblate",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "appsmithorg",
+      "repo": "appsmith",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "appwrite",
+      "repo": "appwrite",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "autokitteh",
+      "repo": "autokitteh",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "halo-dev",
+      "repo": "halo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mnfst",
+      "repo": "manifest",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pocketbase",
+      "repo": "pocketbase",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "saltcorn",
+      "repo": "saltcorn",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "sqlpage",
+      "repo": "SQLPage",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ToolJet",
+      "repo": "ToolJet",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "trailbaseio",
+      "repo": "trailbase",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "GerritCodeReview",
+      "repo": "gerrit",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "gitbucket",
+      "repo": "gitbucket",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "go-gitea",
+      "repo": "gitea",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "gogs",
+      "repo": "gogs",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "hcengineering",
+      "repo": "platform",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "usekaneo",
+      "repo": "kaneo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "leantime",
+      "repo": "leantime",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pvcnt",
+      "repo": "mergeable",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "b310-digital",
+      "repo": "mindwendel",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mcarbonne",
+      "repo": "minimal-git-server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "octobox",
+      "repo": "octobox",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "opf",
+      "repo": "openproject",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "makeplane",
+      "repo": "plane",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "reviewboard",
+      "repo": "reviewboard",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "w4",
+      "repo": "rgit",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "scm-manager",
+      "repo": "scm-manager",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "GauthierNelkinsky",
+      "repo": "ShipShipShip",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "titraio",
+      "repo": "titra",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "nirix",
+      "repo": "traq",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "uvdesk",
+      "repo": "community-skeleton",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "easysoft",
+      "repo": "zentaopms",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bencherdev",
+      "repo": "bencher",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "tarampampam",
+      "repo": "webhook-tester",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "RARgames",
+      "repo": "4gaBoards",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "AppFlowy-IO",
+      "repo": "appflowy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "donetick",
+      "repo": "donetick",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mattermost-community",
+      "repo": "focalboard",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "kanboard",
+      "repo": "kanboard",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "maxpozdeev",
+      "repo": "mytinytodo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "apankrat",
+      "repo": "nullboard",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Jinjinov",
+      "repo": "OpenHabitTracker",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "super-productivity",
+      "repo": "super-productivity",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "nymanjens",
+      "repo": "piga",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "BaldissaraMatheus",
+      "repo": "Tasks.md",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "TracksApp",
+      "repo": "tracks",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "chrisvel",
+      "repo": "tududi",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "wekan",
+      "repo": "wekan",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bugzilla",
+      "repo": "bugzilla",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "frappe",
+      "repo": "helpdesk",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "freescout-help-desk",
+      "repo": "freescout",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "itflow-org",
+      "repo": "itflow",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "abhinavxd",
+      "repo": "libredesk",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "mantisbt",
+      "repo": "mantisbt",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "RotherOSS",
+      "repo": "otobo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bestpractical",
+      "repo": "rt",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "zammad",
+      "repo": "zammad",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ActivityWatch",
+      "repo": "activitywatch",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "daya0576",
+      "repo": "beaverhabits",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ever-co",
+      "repo": "ever-gauzy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "kimai",
+      "repo": "kimai",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "solidtime-io",
+      "repo": "solidtime",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "almarklein",
+      "repo": "timetagger",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "traggo",
+      "repo": "server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "muety",
+      "repo": "wakapi",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "0pandadev",
+      "repo": "ziit",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "sjdonado",
+      "repo": "bit",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "SinTan1729",
+      "repo": "chhoto-url",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "SinTan1729",
+      "repo": "chhoto-url?tab=readme-ov-file#demo",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "thedevs-network",
+      "repo": "kutt",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "shlinkio",
+      "repo": "shlink",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "azlux",
+      "repo": "Simple-URL-Shortener",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "YOURLS",
+      "repo": "YOURLS",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bluecherrydvr",
+      "repo": "bluecherry-apps",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "blakeblackshear",
+      "repo": "frigate",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "motioneye-project",
+      "repo": "motioneye",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "roflcoopter",
+      "repo": "viseron",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ZoneMinder",
+      "repo": "ZoneMinder",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "xyproto",
+      "repo": "algernon",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bunkerity",
+      "repo": "bunkerweb",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "caddyserver",
+      "repo": "caddy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "yusing",
+      "repo": "godoxy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "NginxProxyManager",
+      "repo": "nginx-proxy-manager",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "nginx",
+      "repo": "nginx",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "fosrl",
+      "repo": "pangolin",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "pomerium",
+      "repo": "pomerium",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "chaitin",
+      "repo": "SafeLine",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "static-web-server",
+      "repo": "static-web-server",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "linuxserver",
+      "repo": "docker-swag",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "traefik",
+      "repo": "traefik",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Safe3",
+      "repo": "uusec-waf",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "tobychui",
+      "repo": "zoraxy",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "melmothx",
+      "repo": "amusewiki",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "django-wiki",
+      "repo": "django-wiki",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "docmost",
+      "repo": "docmost",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "documize",
+      "repo": "community",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "dokuwiki",
+      "repo": "dokuwiki",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "jgm",
+      "repo": "gitit",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "gollum",
+      "repo": "gollum",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "bouncepaw",
+      "repo": "mycorrhiza",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "kensanata",
+      "repo": "oddmuse",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "redimp",
+      "repo": "otterwiki",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "ryanlelek",
+      "repo": "Raneto",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "TiddlyWiki",
+      "repo": "TiddlyWiki5",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "vincent-peugnet",
+      "repo": "wcms",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "WackoWiki",
+      "repo": "wackowiki",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "leomoon-studios",
+      "repo": "wiki-go",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Requarks",
+      "repo": "wiki",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "Zavy86",
+      "repo": "WikiDocs",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "xwiki",
+      "repo": "xwiki-platform",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "zim-desktop-wiki",
+      "repo": "zim-desktop-wiki",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
+    },
+    {
+      "owner": "GilbN",
+      "repo": "theme.park",
+      "category": "selfhosted",
+      "tags": [
+        "selfhosted"
+      ],
+      "source": "awesome"
     }
   ]
 }

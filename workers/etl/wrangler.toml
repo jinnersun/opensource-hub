@@ -2,9 +2,9 @@ name = "opensource-hub-etl"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 
-# 定时触发：每 2 小时运行一次
+# 定时触发：每 30 分钟运行一次（首次种子消化期；稳定后可改回 "0 */2 * * *"）
 [triggers]
-crons = ["0 */2 * * *"]
+crons = ["*/30 * * * *"]
 
 # D1 数据库绑定
 [[d1_databases]]
@@ -20,3 +20,8 @@ id = "4a1bc5fb651342528766c6f4248d4e69"
 # 环境变量
 [vars]
 ENVIRONMENT = "production"
+
+# 需要通过 wrangler secret 配置：
+#   wrangler secret put OPENAI_API_KEY   # DeepSeek/OpenAI API Key
+#   wrangler secret put GITHUB_TOKEN     # GitHub PAT，用于提升限流到 5000/h
+#   wrangler secret put ALERT_WEBHOOK_URL # 可选：失败告警 Webhook
