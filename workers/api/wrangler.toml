@@ -1,6 +1,7 @@
 name = "opensource-hub-api"
 main = "index.ts"
 compatibility_date = "2024-04-01"
+account_id = "063b426850c4c65d45b0809040ec8a71"
 
 # 公网已关闭，仅通过 Service Binding 内网访问
 workers_dev = false
