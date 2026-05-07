@@ -152,22 +152,14 @@ async function processOneInner(
     console.warn(`[ETL] fetchLatestRelease ${fullName} failed:`, (err as Error).message)
   }
 
-  // 4.1 准入校验：必须有可安装的 release asset
-  // 但如果该项目已经存在于 apps 表中（重处理），跳过此检查以确保翻译数据能更新
+  // 4.1 准入校验：必须有可安装的 release asset（识别到 windows/macos/linux 平台的安装包）
   if (!releaseAssets || releaseAssets.length === 0) {
-    const existingApp = await env.DB.prepare(
-      `SELECT id FROM apps WHERE id = ?`
-    ).bind(`app_${repo.id}`).first()
-
-    if (!existingApp) {
-      await saveSkipped(
-        env, fullName, 'no_installable_release', nextOk,
-        repo.id, fetchResult.etag, repo.pushed_at, repo.archived,
-      )
-      stats.skipped++
-      return
-    }
-    // 已有项目：继续处理以更新翻译，但不写入版本
+    await saveSkipped(
+      env, fullName, 'no_installable_release', nextOk,
+      repo.id, fetchResult.etag, repo.pushed_at, repo.archived,
+    )
+    stats.skipped++
+    return
   }
 
   // 5. 入库
