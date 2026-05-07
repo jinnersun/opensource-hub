@@ -25,7 +25,8 @@ import type { BatchStats, Env, RawApp, ReleaseAssetView } from './types'
 // 10 个 repo 约 42 subrequest，单 invocation 只跑一批，跨批由 cron 驱动
 const BATCH_SIZE = 10
 const CONCURRENCY = 3
-const MAX_BATCHES_PER_RUN = 1
+// 临时提高到 7 批/次，加速 665 项目全量重处理翻译数据（完成后改回 1）
+const MAX_BATCHES_PER_RUN = 7
 const WORKER_BUDGET_MS = 14 * 60 * 1000
 
 const delay = (ms: number) => new Promise<void>(r => setTimeout(r, ms))
@@ -149,6 +150,24 @@ async function processOneInner(
     }
   } catch (err) {
     console.warn(`[ETL] fetchLatestRelease ${fullName} failed:`, (err as Error).message)
+  }
+
+  // 4.1 准入校验：必须有可安装的 release asset
+  // 但如果该项目已经存在于 apps 表中（重处理），跳过此检查以确保翻译数据能更新
+  if (!releaseAssets || releaseAssets.length === 0) {
+    const existingApp = await env.DB.prepare(
+      `SELECT id FROM apps WHERE id = ?`
+    ).bind(`app_${repo.id}`).first()
+
+    if (!existingApp) {
+      await saveSkipped(
+        env, fullName, 'no_installable_release', nextOk,
+        repo.id, fetchResult.etag, repo.pushed_at, repo.archived,
+      )
+      stats.skipped++
+      return
+    }
+    // 已有项目：继续处理以更新翻译，但不写入版本
   }
 
   // 5. 入库

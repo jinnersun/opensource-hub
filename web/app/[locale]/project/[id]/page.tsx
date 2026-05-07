@@ -11,6 +11,7 @@ import { OSDownload } from "@/components/project-detail/os-download"
 import { SafeAuditCard } from "@/components/project-detail/safe-audit-card"
 import { EnvironmentGuide } from "@/components/project-detail/environment-guide"
 import { MetaInfoCard } from "@/components/project-detail/meta-info-card"
+import { GettingStartedCard } from "@/components/project-detail/getting-started-card"
 import { ErrorState } from "@/components/error-state"
 import { getApp, getApps, transformAppForDisplay } from "@/lib/api"
 import type { Project } from "@/lib/api"
@@ -308,24 +309,8 @@ export default function ProjectPage() {
               </section>
             )}
 
-            {/* Getting Started */}
-            {project.gettingStarted.length > 0 && (
-              <section>
-                <h2 className="text-xl font-bold mb-4">{t('gettingStarted')}</h2>
-                <div className="rounded-xl border bg-card">
-                  <ol className="divide-y">
-                    {project.gettingStarted.map((step, index) => (
-                      <li key={index} className="flex items-start gap-4 p-4">
-                        <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-foreground text-background text-sm font-bold">
-                          {index + 1}
-                        </div>
-                        <p className="pt-1 text-muted-foreground">{step}</p>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              </section>
-            )}
+            {/* Getting Started - 分系统展示 + OSDownload 联动 */}
+            <GettingStartedCard project={project} />
 
             {/* Release Notes */}
             {project.latestReleaseNotes && (

@@ -239,7 +239,8 @@ function buildAiContentStmt(env: Env, appId: string, ai: AIResult) {
 
 function buildTranslationStmt(env: Env, appId: string, locale: 'zh' | 'en', ai: AIResult) {
   const sum = locale === 'zh' ? ai.summaryZh : ai.summaryEn
-  const desc = locale === 'zh' ? ai.description : ai.descriptionEn
+  const desc = locale === 'zh' ? (ai.descriptionZh || ai.description) : (ai.descriptionEn || ai.description)
+  const fullDesc = locale === 'zh' ? (ai.fullDescriptionZh || ai.fullDescription) : (ai.fullDescriptionEn || ai.fullDescription)
   const features = locale === 'zh' ? ai.featuresZh : ai.featuresEn
   const useCases = locale === 'zh' ? ai.useCasesZh : ai.useCasesEn
   const quickStart = locale === 'zh' ? ai.quickStartGuideZh : ai.quickStartGuideEn
@@ -253,7 +254,7 @@ function buildTranslationStmt(env: Env, appId: string, locale: 'zh' | 'en', ai: 
        translated_by, ai_model_version, quality_score
      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ai', ?, ?)`,
   ).bind(
-    generateId(), appId, locale, sum, desc, ai.fullDescription,
+    generateId(), appId, locale, sum, desc, fullDesc,
     JSON.stringify(features), JSON.stringify(useCases),
     JSON.stringify(quickStart), uninstall, caveats,
     ai.modelVersion, ai.qualityScore,

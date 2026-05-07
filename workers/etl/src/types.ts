@@ -64,6 +64,9 @@ export interface AIResult {
   slug: string
   description: string
   fullDescription: string
+  fullDescriptionZh: string
+  fullDescriptionEn: string
+  descriptionZh: string
   category: string
   tags: string[]
   license: string

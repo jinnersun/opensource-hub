@@ -23,15 +23,18 @@ README 内容：
 请以 JSON 格式返回以下字段（必须全部包含）：
 
 {
-  "name": "项目名称",
+  "name": "项目名称（保留原始英文名）",
   "slug": "url-friendly-name",
-  "description": "简短描述（50 字以内）",
-  "fullDescription": "完整描述（200 字以内）",
+  "description": "Short description in English (under 50 words, used as canonical/fallback)",
+  "fullDescription": "Full description in English (under 200 words, used as canonical/fallback)",
+  "fullDescriptionZh": "完整描述（中文，200字以内）",
+  "fullDescriptionEn": "Full description in English (under 200 words)",
   "category": "分类 slug（system/ai/video/privacy/clean-install/dev-tools/file-management/design/office）",
   "tags": ["标签1", "标签2", "标签3"],
   "license": "开源协议",
   "homepage": "官方主页",
 
+  "descriptionZh": "简短描述（中文，50字以内）",
   "summaryZh": "一句话白话总结（中文，30 字以内）",
   "featuresZh": ["功能1", "功能2", "功能3"],
   "useCasesZh": ["场景1", "场景2"],
@@ -57,7 +60,9 @@ README 内容：
 3. 明确说明不能做什么（避坑）
 4. 质量评分 0-1，基于 README 完整度和项目活跃度
 5. 必须返回合法的 JSON，不要包含 markdown 代码块标记
-6. quickStartGuideZh / quickStartGuideEn 必须是字符串数组（每一步一个元素），不要使用换行符或编号前缀`
+6. quickStartGuideZh / quickStartGuideEn 必须是字符串数组（每一步一个元素），不要使用换行符或编号前缀
+7. 无论 README 原文是中文还是英文，都必须生成完整的中英双语内容。中文字段必须是地道中文，英文字段必须是地道英文，严禁混用
+8. description/fullDescription（顶层）必须是英文；descriptionZh/fullDescriptionZh 必须是中文`
 
 export class AIClient {
   constructor(private apiKey: string) {}
@@ -148,6 +153,9 @@ export function normalizeAIResult(r: AIResult): void {
   r.summaryZh = toStringField(r.summaryZh)
   r.summaryEn = toStringField(r.summaryEn)
   r.descriptionEn = toStringField(r.descriptionEn)
+  r.fullDescriptionZh = toStringField(r.fullDescriptionZh)
+  r.fullDescriptionEn = toStringField(r.fullDescriptionEn)
+  r.descriptionZh = toStringField(r.descriptionZh)
   r.uninstallGuideZh = toStringField(r.uninstallGuideZh)
   r.uninstallGuideEn = toStringField(r.uninstallGuideEn)
   r.caveatsZh = toStringField(r.caveatsZh)

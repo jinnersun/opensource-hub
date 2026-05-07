@@ -16,7 +16,7 @@ export function SafeAuditCard({ project }: SafeAuditCardProps) {
   const [copied, setCopied] = useState(false)
   const t = useTranslations('project')
 
-  const hasChecksum = !!project.checksum && project.checksum !== '—'
+  const hasChecksum = !!project.checksum && project.checksum !== '—' && project.checksum !== ''
   const isPassed = project.securityScan === 'passed'
 
   const copyChecksum = () => {
@@ -55,10 +55,10 @@ export function SafeAuditCard({ project }: SafeAuditCardProps) {
               "text-sm font-medium",
               isPassed ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"
             )}>
-              {isPassed ? t('securityScanPassed') : t('sha256Pending')}
+              {isPassed ? t('securityScanPassed') : t('securityScanPending')}
             </p>
             <p className="text-xs text-muted-foreground">
-              {isPassed ? t('passedMultiCheck') : t('scanning')}
+              {isPassed ? t('passedMultiCheck') : t('securityScanPendingDesc')}
             </p>
           </div>
         </div>
@@ -138,8 +138,13 @@ export function SafeAuditCard({ project }: SafeAuditCardProps) {
               </p>
             </>
           ) : (
-            <div className="rounded-lg border border-dashed p-2.5 text-xs text-muted-foreground">
-              {t('sha256Pending')}
+            <div className="rounded-lg border border-dashed p-2.5 space-y-1.5">
+              <p className="text-xs text-muted-foreground">
+                {t('sha256Missing')}
+              </p>
+              <p className="text-xs text-muted-foreground/80">
+                {t('sha256MissingDesc')}
+              </p>
             </div>
           )}
         </div>

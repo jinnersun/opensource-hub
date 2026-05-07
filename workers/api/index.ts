@@ -41,6 +41,14 @@ function handleOptions() {
 }
 
 // ==========================================
+// locale fallback SQL 片段（参数化，严禁拼接 lang）
+// 语义：优先命中请求语言的翻译；若该语言没有记录，COALESCE 回退到 'zh'
+// 安全要点：使用 ? 占位符，由调用方 bind(lang, ...) 传入，防 SQL 注入
+// ==========================================
+const LOCALE_FALLBACK_SQL =
+  `COALESCE((SELECT locale FROM app_translations WHERE app_id = a.id AND locale = ? LIMIT 1), 'zh')`
+
+// ==========================================
 // API 路由处理
 // ==========================================
 
@@ -60,12 +68,13 @@ async function getApps(db: D1Database, params: URLSearchParams): Promise<Respons
         a.github_url, a.license, a.homepage_url, a.is_featured,
         a.status, a.stars_count, a.last_updated, a.created_at,
         c.name as category_name,
-        t.summary, t.description as trans_desc, t.full_description, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats
+        t.summary, t.description as trans_desc, t.full_description as trans_full_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats
       FROM apps a
       LEFT JOIN categories c ON a.category = c.slug
-      LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ?
+      LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ${LOCALE_FALLBACK_SQL}
       WHERE a.status = 'active'
     `
+    // 第一个绑定参数始终是 locale fallback 子查询使用的 lang
     const bindings: (string | number)[] = [lang]
 
     if (category) {
@@ -105,6 +114,7 @@ async function getApps(db: D1Database, params: URLSearchParams): Promise<Respons
         return {
           ...app,
           description: app.trans_desc || app.description,
+          full_description: app.trans_full_desc || app.full_description,
           ai_content: {
             summary: app.summary,
             features: app.features,
@@ -162,11 +172,50 @@ async function getAppById(db: D1Database, id: string, lang: string): Promise<Res
       .bind(app.id)
       .all()
 
-    // 获取 AI 内容
-    const aiContent = await db
+    // 获取 AI 内容：优先请求的语言，fallback 到 zh，再 fallback 到 app_ai_content
+    let aiContent = await db
       .prepare(`SELECT * FROM app_translations WHERE app_id = ? AND locale = ?`)
       .bind(app.id, lang)
       .first()
+
+    // 如果请求的语言翻译不存在，fallback 到中文
+    if (!aiContent && lang !== 'zh') {
+      aiContent = await db
+        .prepare(`SELECT * FROM app_translations WHERE app_id = ? AND locale = 'zh'`)
+        .bind(app.id)
+        .first()
+    }
+
+    // 如果 app_translations 完全没有记录，fallback 到 app_ai_content 表
+    if (!aiContent) {
+      const legacyAi = await db
+        .prepare(`SELECT * FROM app_ai_content WHERE app_id = ?`)
+        .bind(app.id)
+        .first()
+      if (legacyAi) {
+        // 将 app_ai_content 格式映射为 app_translations 格式
+        aiContent = {
+          id: (legacyAi as any).id,
+          app_id: app.id,
+          locale: 'zh',
+          summary: (legacyAi as any).summary,
+          description: app.description,
+          full_description: (app as any).full_description,
+          features: (legacyAi as any).what_it_does,
+          use_cases: (legacyAi as any).use_cases,
+          quick_start_guide: (legacyAi as any).quick_start_guide,
+          uninstall_guide: (legacyAi as any).uninstall_guide,
+          caveats: (legacyAi as any).what_it_cant_do,
+          is_portable: (legacyAi as any).is_portable,
+          requirements: (legacyAi as any).requirements,
+          requirement_links: (legacyAi as any).requirement_links,
+          has_registry_residual: (legacyAi as any).has_registry_residual,
+          translated_by: 'legacy',
+          ai_model_version: (legacyAi as any).ai_model_version,
+          quality_score: (legacyAi as any).confidence_score,
+        }
+      }
+    }
 
     // 获取安全信息
     const security = await db
@@ -177,6 +226,7 @@ async function getAppById(db: D1Database, id: string, lang: string): Promise<Res
     return jsonResponse({
       ...app,
       description: (aiContent as any)?.description || app.description,
+      full_description: (aiContent as any)?.full_description || (app as any).full_description,
       versions: versions || [],
       ai_content: aiContent,
       security,
@@ -217,57 +267,32 @@ async function getTrending(db: D1Database, params: URLSearchParams): Promise<Res
   const lang = params.get('lang') || 'zh'
 
   try {
+    const selectFields = `
+      a.id, a.name, a.slug, a.description, a.full_description, a.category,
+      a.stars_count, a.last_updated,
+      c.name as category_name,
+      t.summary, t.description as trans_desc, t.full_description as trans_full_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats`
+    const joinClause = `
+      LEFT JOIN categories c ON a.category = c.slug
+      LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ${LOCALE_FALLBACK_SQL}`
+
     let query: string
 
     if (period === 'day') {
-      // 按24小时增长排序（这里用 stars_count 模拟）
-      query = `
-        SELECT a.id, a.name, a.slug, a.description, a.category,
-               a.stars_count, a.last_updated,
-               c.name as category_name,
-               t.summary, t.description as trans_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats
-        FROM apps a
-        LEFT JOIN categories c ON a.category = c.slug
-        LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ?
-        WHERE a.status = 'active'
-        ORDER BY a.last_updated DESC
-        LIMIT ?
-      `
+      query = `SELECT ${selectFields} FROM apps a ${joinClause} WHERE a.status = 'active' ORDER BY a.last_updated DESC LIMIT ?`
     } else if (period === 'week') {
-      // 按周增长排序
-      query = `
-        SELECT a.id, a.name, a.slug, a.description, a.category,
-               a.stars_count, a.last_updated,
-               c.name as category_name,
-               t.summary, t.description as trans_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats
-        FROM apps a
-        LEFT JOIN categories c ON a.category = c.slug
-        LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ?
-        WHERE a.status = 'active'
-        ORDER BY a.stars_count DESC
-        LIMIT ?
-      `
+      query = `SELECT ${selectFields} FROM apps a ${joinClause} WHERE a.status = 'active' ORDER BY a.stars_count DESC LIMIT ?`
     } else {
-      // alltime - 按总 stars 排序
-      query = `
-        SELECT a.id, a.name, a.slug, a.description, a.category,
-               a.stars_count, a.last_updated,
-               c.name as category_name,
-               t.summary, t.description as trans_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats
-        FROM apps a
-        LEFT JOIN categories c ON a.category = c.slug
-        LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ?
-        WHERE a.status = 'active'
-        ORDER BY a.stars_count DESC
-        LIMIT ?
-      `
+      query = `SELECT ${selectFields} FROM apps a ${joinClause} WHERE a.status = 'active' ORDER BY a.stars_count DESC LIMIT ?`
     }
 
+    // 绑定顺序：locale fallback 的 lang，然后是 limit
     const { results } = await db.prepare(query).bind(lang, limit).all()
 
     const mappedResults = (results || []).map((app: any) => ({
       ...app,
       description: app.trans_desc || app.description,
+      full_description: app.trans_full_desc || app.full_description,
       ai_content: {
         summary: app.summary,
         features: app.features,
@@ -304,13 +329,13 @@ async function searchApps(db: D1Database, params: URLSearchParams): Promise<Resp
     const { results } = await db
       .prepare(`
         SELECT
-          a.id, a.name, a.slug, a.description, a.category, a.tags,
+          a.id, a.name, a.slug, a.description, a.full_description, a.category, a.tags,
           a.github_url, a.license, a.stars_count, a.last_updated,
           c.name as category_name,
-          t.summary, t.description as trans_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats
+          t.summary, t.description as trans_desc, t.full_description as trans_full_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats
         FROM apps a
         LEFT JOIN categories c ON a.category = c.slug
-        LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ?
+        LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ${LOCALE_FALLBACK_SQL}
         WHERE a.status = 'active'
           AND (a.name LIKE ? OR a.description LIKE ? OR a.tags LIKE ?)
         ORDER BY
@@ -318,6 +343,7 @@ async function searchApps(db: D1Database, params: URLSearchParams): Promise<Resp
           a.stars_count DESC
         LIMIT ?
       `)
+      // 绑定顺序：locale、三个 LIKE、ORDER BY 中的 LIKE、limit
       .bind(lang, searchPattern, searchPattern, searchPattern, `%${query}%`, limit)
       .all()
 
@@ -338,6 +364,7 @@ async function searchApps(db: D1Database, params: URLSearchParams): Promise<Resp
     const mappedResults = (results || []).map((app: any) => ({
       ...app,
       description: app.trans_desc || app.description,
+      full_description: app.trans_full_desc || app.full_description,
       ai_content: {
         summary: app.summary,
         features: app.features,
@@ -363,7 +390,13 @@ async function searchApps(db: D1Database, params: URLSearchParams): Promise<Resp
 async function getHomeData(db: D1Database, params: URLSearchParams): Promise<Response> {
   const lang = params.get('lang') || 'zh'
   try {
-    // 并行获取各类数据
+    const appSelectFields = `
+      a.id, a.name, a.slug, a.description, a.full_description, a.category, a.stars_count,
+      t.summary, t.description as trans_desc, t.full_description as trans_full_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats`
+    const appJoinClause = `
+      LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ${LOCALE_FALLBACK_SQL}`
+
+    // 并行获取各类数据（每条含 locale fallback 的 SQL 都必须 bind(lang)）
     const [
       featuredApps,
       categories,
@@ -372,16 +405,15 @@ async function getHomeData(db: D1Database, params: URLSearchParams): Promise<Res
     ] = await Promise.all([
       // 推荐应用
       db.prepare(`
-        SELECT a.id, a.name, a.slug, a.description, a.category, a.stars_count,
-               t.summary, t.description as trans_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats
+        SELECT ${appSelectFields}
         FROM apps a
-        LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ?
+        ${appJoinClause}
         WHERE a.status = 'active' AND a.is_featured = 1
         ORDER BY a.stars_count DESC
         LIMIT 6
       `).bind(lang).all(),
 
-      // 分类列表
+      // 分类列表（无 locale JOIN，不需要绑定）
       db.prepare(`
         SELECT c.*, COUNT(a.id) as app_count
         FROM categories c
@@ -393,10 +425,9 @@ async function getHomeData(db: D1Database, params: URLSearchParams): Promise<Res
 
       // 热门应用
       db.prepare(`
-        SELECT a.id, a.name, a.slug, a.description, a.category, a.stars_count,
-               t.summary, t.description as trans_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats
+        SELECT ${appSelectFields}
         FROM apps a
-        LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ?
+        ${appJoinClause}
         WHERE a.status = 'active'
         ORDER BY a.stars_count DESC
         LIMIT 10
@@ -404,10 +435,9 @@ async function getHomeData(db: D1Database, params: URLSearchParams): Promise<Res
 
       // 最新添加
       db.prepare(`
-        SELECT a.id, a.name, a.slug, a.description, a.category, a.stars_count,
-               t.summary, t.description as trans_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats
+        SELECT ${appSelectFields}
         FROM apps a
-        LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ?
+        ${appJoinClause}
         WHERE a.status = 'active'
         ORDER BY a.created_at DESC
         LIMIT 6
@@ -417,6 +447,7 @@ async function getHomeData(db: D1Database, params: URLSearchParams): Promise<Res
     const mapApp = (app: any) => ({
       ...app,
       description: app.trans_desc || app.description,
+      full_description: app.trans_full_desc || app.full_description,
       ai_content: {
         summary: app.summary,
         features: app.features,
