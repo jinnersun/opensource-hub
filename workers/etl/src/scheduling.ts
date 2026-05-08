@@ -94,6 +94,50 @@ export function computeRetryNextCheck(retryCount: number): string {
 }
 
 /**
+ * Skip 类项目按 reason 分级退避，避免每天对永远不会翻盘的项目重复拉 GitHub。
+ *
+ * 背景数据（raw_apps 879 skipped中）：
+ *   no_installable_release = 496   不发 release 的项目短期不会突然发
+ *   stars_below_500        = 208   暂时星数不足，可能未来涨
+ *   no_license             = 142   大多数永久无 license
+ *   inactive_over_6_months = 25    只会更 inactive
+ *   is_fork                = 7     fork 身份几乎不可变
+ *
+ * 退避策略（灵敏度与资源浪费权衡）：
+ *   is_fork                → 365 天（近似永久，保留恢复可能）
+ *   inactive_over_6_months → 180 天
+ *   no_license             → 90  天
+ *   no_installable_release → 30  天
+ *   stars_below_500        → 30  天
+ *   gate_failed / fallback → 30  天
+ *
+ * 附加 0~0.5 天随机抖动，避免同时到期雪崩。
+ */
+export function computeSkipNextCheck(reason: string | undefined): string {
+  let addDays: number
+  switch (reason) {
+    case 'is_fork':
+      addDays = 365
+      break
+    case 'inactive_over_6_months':
+      addDays = 180
+      break
+    case 'no_license':
+      addDays = 90
+      break
+    case 'no_installable_release':
+    case 'stars_below_500':
+      addDays = 30
+      break
+    default:
+      // 包括 gate_failed、stars_below_N 变数以及未知 reason
+      addDays = 30
+  }
+  const jitterMs = Math.random() * 12 * 3600 * 1000 // ±12h 抖动
+  return toSqliteDateTime(new Date(Date.now() + addDays * 86400_000 + jitterMs))
+}
+
+/**
  * D1 datetime 字段格式：'YYYY-MM-DD HH:MM:SS'
  */
 export function toSqliteDateTime(d: Date): string {
