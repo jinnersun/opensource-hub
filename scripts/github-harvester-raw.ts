@@ -485,7 +485,7 @@ function parseTrendingHtml(html: string): Array<{ owner: string; repo: string }>
   const results: Array<{ owner: string; repo: string }> = []
   const seen = new Set<string>()
   const articleRe = /<article[^>]*class="[^"]*Box-row[^"]*"[^>]*>([\s\S]*?)<\/article>/g
-  const blacklistOwner = new Set(['search', 'explore', 'trending', 'topics', 'collections', 'marketplace', 'login', 'signup'])
+  const blacklistOwner = new Set(['search', 'explore', 'trending', 'topics', 'collections', 'marketplace', 'login', 'signup', 'sponsors'])
 
   let m: RegExpExecArray | null
   while ((m = articleRe.exec(html))) {
