@@ -36,6 +36,8 @@ interface GitHubRepoInfo {
   pushed_at: string
   topics: string[]
   homepage: string | null
+  language: string | null
+  created_at: string
 }
 
 interface GitHubRelease {
@@ -413,55 +415,98 @@ async function loadReposFromFile(filePath: string): Promise<GitHubRepo[]> {
 }
 
 async function discoverTrendingRepos(token?: string): Promise<GitHubRepo[]> {
-  console.log('🔥 发现趋势项目...')
-  
-  // 使用 GitHub Search API 发现热门项目
-  const queries = [
-    'stars:>1000 language:typescript created:>2026-01-01',
-    'stars:>5000 language:python created:>2025-06-01',
-    'stars:>3000 language:rust created:>2025-06-01'
+  // GitHub 官方无 Trending API，直接抓 https://github.com/trending HTML 页面解析。
+  // 为什么不用 Search API：
+  //   1) Search 结果偏纯按 stars 排名，和真实 "Trending" 基于时间窗口的增长动态不同
+  //   2) 内容海抽样不适用（不需要历史顶项目）
+  //   3) Search API 配额比仓库 API 更小（30 req/min）
+  // HTML 解析结构稳定：article.Box-row > h2 > a[href="/owner/repo"]，注意对结构变动保持宽容
+  console.log('\uD83D\uDD25 从 GitHub Trending 页面发现新项目...')
+  const discovered = new Map<string, GitHubRepo>()
+
+  const windows: Array<{ since: 'daily' | 'weekly' | 'monthly'; label: string }> = [
+    { since: 'daily',   label: '今日' },
+    { since: 'weekly',  label: '本周' },
+    { since: 'monthly', label: '本月' },
   ]
-  
-  const discovered: GitHubRepo[] = []
-  const headers: Record<string, string> = {
-    'Accept': 'application/vnd.github.v3+json',
-    'User-Agent': 'OpenSource-Hub-Harvester'
-  }
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`
-  }
-  
-  for (const query of queries) {
+
+  for (const { since, label } of windows) {
     try {
-      const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}&sort=stars&order=desc&per_page=5`
-      const response = await fetch(url, { headers })
-      
-      if (response.ok) {
-        const data = await response.json()
-        
-        if (data?.items) {
-          for (const item of data.items) {
-            // 过滤：非 Fork、有描述、有 Release
-            if (!item.fork && item.description && item.stargazers_count > 1000) {
-              discovered.push({
-                owner: item.owner.login,
-                repo: item.name,
-                category: 'discovered',
-                tags: item.topics?.slice(0, 3) || ['trending']
-              })
-            }
-          }
+      const url = `https://github.com/trending?since=${since}`
+      const res = await fetch(url, {
+        headers: {
+          // GitHub 对空 UA 会拒绝，用浏览器型 UA 避免触发防抓取
+          'User-Agent': 'Mozilla/5.0 (compatible; OpenSource-Hub-Harvester/2.0)',
+          'Accept': 'text/html,application/xhtml+xml',
+          'Accept-Language': 'en-US,en;q=0.9',
+        },
+      })
+
+      if (!res.ok) {
+        console.warn(`⚠️ Trending ${since} HTTP ${res.status}，跳过`)
+        continue
+      }
+
+      const html = await res.text()
+      const repos = parseTrendingHtml(html)
+      console.log(`   [${label}] 发现 ${repos.length} 个`)
+
+      for (const r of repos) {
+        const key = `${r.owner}/${r.repo}`
+        if (!discovered.has(key)) {
+          discovered.set(key, {
+            owner: r.owner,
+            repo: r.repo,
+            category: 'trending',
+            tags: [`trending-${since}`],
+          })
         }
       }
-      
-      await delay(1000) // 搜索 API 也有速率限制
-    } catch (error) {
-      console.warn(`搜索失败: ${query}`, error)
+    } catch (err) {
+      console.warn(`❌ Trending ${since} 解析失败:`, (err as Error).message)
+    }
+
+    await delay(1500) // 给 GitHub CDN 留间隙
+  }
+
+  const list = Array.from(discovered.values())
+  console.log(`✅ Trending 合计发现 ${list.length} 个独立仓库`)
+  return list
+}
+
+/**
+ * 从 GitHub Trending HTML 中抽取 owner/repo 列表。
+ * 解析策略：宽容短语区配（避免因 GitHub 改结构一处点就翻）
+ *   1) 按 <article[^>]*class="...Box-row..."> 切分每个仓库卡片
+ *   2) 在卡片内找第一个 href="/owner/repo" 的链接（通常在 h2 标题位置）
+ *   3) 必须确保 href 符合 /owner/repo 结构（排除 /search?、/explore 等黑名单）
+ */
+function parseTrendingHtml(html: string): Array<{ owner: string; repo: string }> {
+  const results: Array<{ owner: string; repo: string }> = []
+  const seen = new Set<string>()
+  const articleRe = /<article[^>]*class="[^"]*Box-row[^"]*"[^>]*>([\s\S]*?)<\/article>/g
+  const blacklistOwner = new Set(['search', 'explore', 'trending', 'topics', 'collections', 'marketplace', 'login', 'signup'])
+
+  let m: RegExpExecArray | null
+  while ((m = articleRe.exec(html))) {
+    const body = m[1]
+    // 优先匹配 h2 中的链接（表示仓库主标题），其次 fallback 到卡片内第一个符合的链接
+    const linkRe = /<a[^>]*href="\/([A-Za-z0-9][A-Za-z0-9._-]*)\/([A-Za-z0-9][A-Za-z0-9._-]*?)"(?![^>]*\/stargazers)/g
+    let linkMatch: RegExpExecArray | null
+    while ((linkMatch = linkRe.exec(body))) {
+      const owner = linkMatch[1]
+      const repo = linkMatch[2]
+      if (blacklistOwner.has(owner.toLowerCase())) continue
+      if (repo.length < 1 || repo.length > 100) continue
+      const key = `${owner}/${repo}`
+      if (seen.has(key)) continue
+      seen.add(key)
+      results.push({ owner, repo })
+      break // 每个 article 只取第一个合法链接
     }
   }
-  
-  console.log(`✅ 发现 ${discovered.length} 个趋势项目`)
-  return discovered
+
+  return results
 }
 
 async function loadReposFromSubmissions(d1: D1Client): Promise<GitHubRepo[]> {

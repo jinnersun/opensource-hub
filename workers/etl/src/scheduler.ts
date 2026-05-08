@@ -9,6 +9,7 @@ import {
   computeNextCheckAt,
   computeNextCheckAt304,
   computeRetryNextCheck,
+  computeSkipNextCheck,
   checkQualityGate,
 } from './scheduling'
 import {
@@ -129,8 +130,10 @@ async function processOneInner(
   const nextOk = computeNextCheckAt(repo.pushed_at, repo.archived)
 
   if (!gate.passed) {
+    // gate 不过的项目按 reason 分级长退避（永久/180d/90d/30d），避免每 1~7 天无效轮询
+    const nextSkip = computeSkipNextCheck(gate.reason)
     await saveSkipped(
-      env, fullName, gate.reason || 'gate_failed', nextOk,
+      env, fullName, gate.reason || 'gate_failed', nextSkip,
       repo.id, fetchResult.etag, repo.pushed_at, repo.archived,
     )
     stats.skipped++
@@ -154,8 +157,10 @@ async function processOneInner(
 
   // 4.1 准入校验：必须有可安装的 release asset（识别到 windows/macos/linux 平台的安装包）
   if (!releaseAssets || releaseAssets.length === 0) {
+    // 未发 release 的仓库短期不会突然发：退避 30 天而非默认 1~7 天
+    const nextSkip = computeSkipNextCheck('no_installable_release')
     await saveSkipped(
-      env, fullName, 'no_installable_release', nextOk,
+      env, fullName, 'no_installable_release', nextSkip,
       repo.id, fetchResult.etag, repo.pushed_at, repo.archived,
     )
     stats.skipped++
