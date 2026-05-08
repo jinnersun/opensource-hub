@@ -64,10 +64,10 @@ export function Leaderboard({ projects, period }: LeaderboardProps) {
               <ProjectIcon name={project.name} />
             </div>
 
-            {/* Name & Description */}
+            {/* Name & Description（名称完整展示；描述放开至 2 行） */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="font-semibold text-sm truncate group-hover:text-primary transition-colors">{project.humanTitle}</h3>
+                <h3 className="font-semibold text-sm group-hover:text-primary transition-colors break-words">{project.name}</h3>
                 {project.controversy && (
                   <span className="inline-flex items-center gap-1 text-xs bg-red-100/50 text-red-700 dark:bg-red-900/30 dark:text-red-400 px-2 py-0.5 rounded">
                     <AlertCircle className="h-3 w-3" />
@@ -80,7 +80,7 @@ export function Leaderboard({ projects, period }: LeaderboardProps) {
                   </span>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{project.description}</p>
+              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{project.description}</p>
             </div>
 
             {/* Growth Metric */}

@@ -524,14 +524,26 @@ async function getHomeData(db: D1Database, params: URLSearchParams): Promise<Res
       trendingApps,
       newApps,
     ] = await Promise.all([
-      // 推荐应用：有 is_featured=1 的优先返回；不足 6 条时用 stars 前列补齐
-      // fallback 验证过 is_featured 优先级：第一排序键确保人工置顶的项目始终在前
+      // 精选推荐 v1 评分模型：
+      //   featured_score =
+      //       stars_norm  * 0.5   // 星数平滑归一：x/(x+5000)，避免超大仓库排方独占
+      //     + recency    * 0.3   // 距今更新：近30天近1.0，180天后接近0
+      //     + quality    * 0.2   // 质量信号：有 AI 摘要（summary 非空且 >20 字）+1
+      //   硬性准入：stars≥200 + 最近 180 天内更新 + status='active'
+      //   排序关键字：is_featured(人工置顶) DESC, featured_score DESC
       db.prepare(`
-        SELECT ${appSelectFields}, a.is_featured
+        SELECT ${appSelectFields}, a.is_featured,
+          (
+            (CAST(a.stars_count AS REAL) / (a.stars_count + 5000.0)) * 0.5 +
+            (1.0 / (1.0 + MAX(0.0, julianday('now') - julianday(COALESCE(a.last_updated, a.created_at))) / 30.0)) * 0.3 +
+            (CASE WHEN t.summary IS NOT NULL AND LENGTH(t.summary) > 20 THEN 1.0 ELSE 0.0 END) * 0.2
+          ) AS featured_score
         FROM apps a
         ${appJoinClause}
         WHERE a.status = 'active'
-        ORDER BY a.is_featured DESC, a.stars_count DESC
+          AND a.stars_count >= 200
+          AND COALESCE(a.last_updated, a.created_at) >= datetime('now', '-180 days')
+        ORDER BY a.is_featured DESC, featured_score DESC
         LIMIT 6
       `).bind(lang).all(),
 

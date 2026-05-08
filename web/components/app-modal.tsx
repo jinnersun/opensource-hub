@@ -124,7 +124,7 @@ export function AppModal({ project, open, onClose }: AppModalProps) {
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <h2 className="truncate text-lg font-bold leading-tight">
+                <h2 className="text-lg font-bold leading-tight break-words">
                   {project.humanTitle}
                 </h2>
                 <div className="mt-1 flex flex-wrap items-center gap-2">

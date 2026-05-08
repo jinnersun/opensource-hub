@@ -7,7 +7,7 @@ import { Footer } from "@/components/footer"
 import { SearchBox } from "@/components/search-box"
 import { CategoryTags } from "@/components/category-tags"
 import { ProjectCard } from "@/components/project-card"
-import { SecurityDashboard } from "@/components/security-dashboard"
+// import { SecurityDashboard } from "@/components/security-dashboard" // 暂时隐藏，保留组件以便后续接入真实安全扫描
 import { CategoryCard } from "@/components/category-card"
 import { SubmitRequestDialog } from "@/components/submit-request-dialog"
 import { ErrorState } from "@/components/error-state"
@@ -246,22 +246,22 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Right: security report sticky sidebar */}
-              <div className="hidden w-72 shrink-0 xl:block">
+              {/* Right: security report sticky sidebar（暂时隐藏，待安全扫描基建上线后恢复） */}
+              {/* <div className="hidden w-72 shrink-0 xl:block">
                 <div className="sticky top-20 space-y-6">
                   <SecurityDashboard />
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </section>
 
-        {/* Mobile security report */}
-        <section className="border-t px-4 py-10 xl:hidden">
+        {/* Mobile security report（暂时隐藏） */}
+        {/* <section className="border-t px-4 py-10 xl:hidden">
           <div className="mx-auto max-w-lg">
             <SecurityDashboard />
           </div>
-        </section>
+        </section> */}
 
         {/* CTA Section */}
         <section className="border-t bg-secondary/30 px-4 py-14 sm:py-18">

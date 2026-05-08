@@ -41,12 +41,17 @@ export function ProjectCard({ project }: ProjectCardProps) {
               </span>
             </div>
 
-            {/* Title & description */}
+            {/* Title & description（名称完整展示；描述 3 行夹断，兼顾卡片高度与信息密度） */}
             <div className="flex flex-col gap-1">
               <h3 className="font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
-                {project.humanTitle}
+                {project.name}
               </h3>
-              <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+              {project.summary ? (
+                <p className="line-clamp-1 text-xs font-medium text-muted-foreground/90">
+                  {project.summary}
+                </p>
+              ) : null}
+              <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
                 {project.description}
               </p>
             </div>

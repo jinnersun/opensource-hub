@@ -158,9 +158,9 @@
   },
   "trending": {
     "title": "Trending",
-    "subtitle": "Discover what's hot in the open source community. Track project growth, security updates, and developer activity in real time.",
-    "day": "24h Surge",
-    "dayShort": "24h",
+    "subtitle": "Discover what's moving in the open-source community. Curated by recent updates, star momentum and long-term staying power.",
+    "day": "Recently Updated",
+    "dayShort": "Today",
     "week": "This Week",
     "weekShort": "Week",
     "alltime": "All Time",
