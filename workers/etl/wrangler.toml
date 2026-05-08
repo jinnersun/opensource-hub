@@ -3,9 +3,10 @@ main = "src/index.ts"
 compatibility_date = "2024-01-01"
 account_id = "063b426850c4c65d45b0809040ec8a71"
 
-# 定时触发：每 30 分钟运行一次（首次种子消化期；稳定后可改回 "0 */2 * * *"）
+# 定时触发：每 15 分钟运行一次（Paid plan 批量消化期；稳定后可改回 "0 */2 * * *"）
+# 单次 invocation 处理 150 项目，15 分钟间隔充分预留 AI 调用耗时与验证窗口
 [triggers]
-crons = ["*/30 * * * *"]
+crons = ["*/15 * * * *"]
 
 # D1 数据库绑定
 [[d1_databases]]

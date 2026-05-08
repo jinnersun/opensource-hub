@@ -67,13 +67,61 @@ README 内容：
 export class AIClient {
   constructor(private apiKey: string) {}
 
+  /**
+   * 生成 AI 内容，带内部重试
+   * 重试场景：
+   * - 429 限流：重试 2 次，指数退避 2s/5s
+   * - 5xx 服务端错误：重试 2 次，指数退避 1s/3s
+   * - JSON 解析失败：重试 2 次，提高 temperature 触发重新生成
+   * - 校验失败：重试 1 次
+   * 代价：最差情况下一个项目耗费 3 个 DeepSeek subrequest
+   */
   async generate(repo: GitHubRepoInfo, readme: string, timeoutMs = 60_000): Promise<AIResult> {
+    const MAX_ATTEMPTS = 3
+    let lastErr: Error | null = null
+
+    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+      try {
+        return await this.generateOnce(repo, readme, timeoutMs, attempt)
+      } catch (err) {
+        const e = err as Error
+        lastErr = e
+        const msg = e.message || ''
+        const isRetryable =
+          msg.includes('AI rate limit') ||        // 429
+          msg.includes('AI API error: 5') ||      // 5xx
+          msg === 'AI returned invalid JSON' ||
+          msg.startsWith('AI result validation failed')
+
+        if (!isRetryable || attempt === MAX_ATTEMPTS - 1) throw e
+
+        // 指数退避：429 更长等待，其他更短
+        const isRateLimit = msg.includes('AI rate limit')
+        const waitMs = isRateLimit
+          ? (attempt === 0 ? 2000 : 5000)
+          : (attempt === 0 ? 1000 : 3000)
+        await new Promise(r => setTimeout(r, waitMs))
+        console.warn(`[AI retry ${attempt + 1}/${MAX_ATTEMPTS - 1}] ${repo.full_name}: ${msg.slice(0, 120)}`)
+      }
+    }
+    throw lastErr || new Error('AI generate failed after retries')
+  }
+
+  private async generateOnce(
+    repo: GitHubRepoInfo,
+    readme: string,
+    timeoutMs: number,
+    attempt: number,
+  ): Promise<AIResult> {
     const prompt = PROMPT_TEMPLATE
       .replace('{name}', repo.name)
       .replace('{description}', repo.description || '')
       .replace('{stars}', String(repo.stargazers_count))
       .replace('{license}', repo.license?.spdx_id || 'Unknown')
       .replace('{readme}', readme.slice(0, 10_000))
+
+    // 重试时适当提高 temperature，避免确定性重复产出同样的失败结果
+    const temperature = attempt === 0 ? 0.3 : Math.min(0.6, 0.3 + attempt * 0.15)
 
     const resp = await fetch('https://api.deepseek.com/chat/completions', {
       method: 'POST',
@@ -87,7 +135,7 @@ export class AIClient {
           { role: 'system', content: '你是一个专业的开源软件分析师。' },
           { role: 'user', content: prompt },
         ],
-        temperature: 0.3,
+        temperature,
         max_tokens: 2000,
         stream: false,
       }),

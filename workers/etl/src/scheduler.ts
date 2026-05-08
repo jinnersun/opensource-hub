@@ -20,13 +20,13 @@ import {
 } from './persistence'
 import type { BatchStats, Env, RawApp, ReleaseAssetView } from './types'
 
-// Free plan 单次 invocation 上限 50 个 subrequest
-// 单批耗费：2（fetchDueBatch+lockBatch）+ N*4（fetch repo/readme/AI/D1 batch）+ N*1 KV/recordMetrics
-// 10 个 repo 约 42 subrequest，单 invocation 只跑一批，跨批由 cron 驱动
-const BATCH_SIZE = 10
-const CONCURRENCY = 3
-// 临时提高到 7 批/次，加速 665 项目全量重处理翻译数据（完成后改回 1）
-const MAX_BATCHES_PER_RUN = 7
+// Cloudflare Workers Paid plan 单次 invocation 上限 1000 subrequest
+// 单批耗费：2（fetchDueBatch+lockBatch）+ N*5～8（fetchRepo/fetchReadme/AI/release/D1/可选SHA256）+ 1 KV
+// 150 repos/run 约 750～1050 subrequest（AI 重试会括大上界）
+// BATCH_SIZE=15, MAX_BATCHES_PER_RUN=10, CONCURRENCY=5 → 150 repos/invocation
+const BATCH_SIZE = 15
+const CONCURRENCY = 5
+const MAX_BATCHES_PER_RUN = 10
 const WORKER_BUDGET_MS = 14 * 60 * 1000
 
 const delay = (ms: number) => new Promise<void>(r => setTimeout(r, ms))
