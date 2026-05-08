@@ -3,10 +3,12 @@
  * - 不再进行本地 Mock 存储
  * - 所有数据进入 D1 user_submissions 表，等待人工审核
  * - source=request
+ *
+ * 注意：不声明 runtime='edge'。OpenNext Cloudflare 会把默认（Node）路由打包到
+ * Workers 运行时执行，Service Binding 的 Symbol.for('__cloudflare-context__')
+ * 访问方式在该环境下同样有效。设置 edge runtime 会触发 OpenNext 构建失败。
  */
 import { NextResponse } from 'next/server'
-
-export const runtime = 'edge'
 
 async function callApiWorker(body: unknown, headers: Headers): Promise<Response> {
   const apiPath = '/api/submissions'
