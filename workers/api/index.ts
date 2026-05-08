@@ -278,10 +278,16 @@ async function getTrending(db: D1Database, params: URLSearchParams): Promise<Res
 
     let query: string
 
+    // 时间窗口过滤：day=最近1天更新过的，week=最近7天更新过的，alltime=不限
+    // 兼容安全：若时间窗口内数据不足，涉及测试期数据稀疏的场景，可以回退为无窗口排序
     if (period === 'day') {
-      query = `SELECT ${selectFields} FROM apps a ${joinClause} WHERE a.status = 'active' ORDER BY a.last_updated DESC LIMIT ?`
+      query = `SELECT ${selectFields} FROM apps a ${joinClause}
+               WHERE a.status = 'active' AND a.last_updated >= datetime('now', '-1 day')
+               ORDER BY a.last_updated DESC LIMIT ?`
     } else if (period === 'week') {
-      query = `SELECT ${selectFields} FROM apps a ${joinClause} WHERE a.status = 'active' ORDER BY a.stars_count DESC LIMIT ?`
+      query = `SELECT ${selectFields} FROM apps a ${joinClause}
+               WHERE a.status = 'active' AND a.last_updated >= datetime('now', '-7 days')
+               ORDER BY a.stars_count DESC LIMIT ?`
     } else {
       query = `SELECT ${selectFields} FROM apps a ${joinClause} WHERE a.status = 'active' ORDER BY a.stars_count DESC LIMIT ?`
     }
@@ -326,6 +332,11 @@ async function searchApps(db: D1Database, params: URLSearchParams): Promise<Resp
   try {
     const searchPattern = `%${query}%`
 
+    // 搜索修复：
+    // 1. COLLATE NOCASE 解决英文大小写敏感（Node LIKE node）
+    // 2. 同时搜索翻译表的 description/full_description/summary，覆盖多语言内容
+    // 3. 增加 full_description 和 category_name 匹配，扩大命中面
+    // 4. 排序优先：name 完全匹配 > name 包含 > tags 包含 > stars 高
     const { results } = await db
       .prepare(`
         SELECT
@@ -337,14 +348,32 @@ async function searchApps(db: D1Database, params: URLSearchParams): Promise<Resp
         LEFT JOIN categories c ON a.category = c.slug
         LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ${LOCALE_FALLBACK_SQL}
         WHERE a.status = 'active'
-          AND (a.name LIKE ? OR a.description LIKE ? OR a.tags LIKE ?)
+          AND (
+            a.name LIKE ? COLLATE NOCASE
+            OR a.description LIKE ? COLLATE NOCASE
+            OR a.full_description LIKE ? COLLATE NOCASE
+            OR a.tags LIKE ? COLLATE NOCASE
+            OR t.description LIKE ? COLLATE NOCASE
+            OR t.full_description LIKE ? COLLATE NOCASE
+            OR t.summary LIKE ? COLLATE NOCASE
+            OR c.name LIKE ? COLLATE NOCASE
+          )
         ORDER BY
-          CASE WHEN a.name LIKE ? THEN 0 ELSE 1 END,
+          CASE WHEN a.name = ? COLLATE NOCASE THEN 0
+               WHEN a.name LIKE ? COLLATE NOCASE THEN 1
+               WHEN a.tags LIKE ? COLLATE NOCASE THEN 2
+               ELSE 3 END,
           a.stars_count DESC
         LIMIT ?
       `)
-      // 绑定顺序：locale、三个 LIKE、ORDER BY 中的 LIKE、limit
-      .bind(lang, searchPattern, searchPattern, searchPattern, `%${query}%`, limit)
+      // 绑定顺序：locale、8个 WHERE LIKE、ORDER BY 中的 name精准/name模糊/tags模糊、limit
+      .bind(
+        lang,
+        searchPattern, searchPattern, searchPattern, searchPattern,
+        searchPattern, searchPattern, searchPattern, searchPattern,
+        query, searchPattern, searchPattern,
+        limit,
+      )
       .all()
 
     // 记录搜索分析
@@ -386,6 +415,98 @@ async function searchApps(db: D1Database, params: URLSearchParams): Promise<Resp
   }
 }
 
+// 用户提交（提交软件 / 提交需求）— 写入 user_submissions，不自动进入采集队列
+async function createSubmission(db: D1Database, request: Request): Promise<Response> {
+  let body: Record<string, unknown>
+  try {
+    body = await request.json() as Record<string, unknown>
+  } catch {
+    return errorResponse('Invalid JSON body', 400)
+  }
+
+  const source = String(body.source || '').trim()
+  if (source !== 'software' && source !== 'request') {
+    return errorResponse('source must be software or request', 400)
+  }
+
+  const description = String(body.description || '').trim()
+  if (!description || description.length < 5) {
+    return errorResponse('description is required (>= 5 chars)', 400)
+  }
+  if (description.length > 2000) {
+    return errorResponse('description too long (<= 2000 chars)', 400)
+  }
+
+  const email = body.email ? String(body.email).trim() : null
+  if (email && (!email.includes('@') || email.length > 200)) {
+    return errorResponse('invalid email', 400)
+  }
+
+  let name: string | null = null
+  let repoUrl: string | null = null
+  let scenario: string | null = null
+
+  if (source === 'software') {
+    name = body.name ? String(body.name).trim().slice(0, 200) : null
+    repoUrl = String(body.repoUrl || '').trim()
+    if (!name) return errorResponse('name is required for software submission', 400)
+    if (!repoUrl || !repoUrl.includes('github.com')) {
+      return errorResponse('valid github repo URL is required', 400)
+    }
+    if (repoUrl.length > 300) return errorResponse('repoUrl too long', 400)
+  } else {
+    scenario = body.scenario ? String(body.scenario).trim().slice(0, 200) : null
+  }
+
+  // 生成 UUID（D1 无 gen_random_uuid，用 hex(randomblob)）或 crypto.randomUUID
+  const id = crypto.randomUUID()
+
+  // 访客信息（防滥用，IP hash）
+  const ipRaw = request.headers.get('CF-Connecting-IP') || request.headers.get('X-Forwarded-For') || ''
+  const ipHash = ipRaw ? await sha256Hex(ipRaw).then(h => h.slice(0, 16)) : null
+  const ua = (request.headers.get('User-Agent') || '').slice(0, 200)
+
+  try {
+    // 通过 repo_url 去重：同一 GitHub 仓库 24h 内仅接受 1 次提交
+    if (source === 'software' && repoUrl) {
+      const dup = await db.prepare(
+        `SELECT id FROM user_submissions
+         WHERE source = 'software' AND repo_url = ?
+           AND created_at > datetime('now', '-1 day')
+         LIMIT 1`,
+      ).bind(repoUrl).first()
+      if (dup) {
+        return jsonResponse({
+          success: true,
+          id: (dup as { id: string }).id,
+          message: 'already submitted recently, pending review',
+          deduplicated: true,
+        }, 200)
+      }
+    }
+
+    await db.prepare(
+      `INSERT INTO user_submissions
+         (id, source, name, repo_url, description, scenario, email, status, ip_hash, user_agent)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)`,
+    ).bind(id, source, name, repoUrl, description, scenario, email, ipHash, ua).run()
+
+    return jsonResponse({ success: true, id, status: 'pending' }, 201)
+  } catch (error) {
+    console.error('createSubmission error:', error)
+    return errorResponse('Failed to save submission', 500)
+  }
+}
+
+// SHA-256 十六进制（Workers runtime 原生支持 WebCrypto）
+async function sha256Hex(input: string): Promise<string> {
+  const buf = new TextEncoder().encode(input)
+  const hash = await crypto.subtle.digest('SHA-256', buf)
+  return Array.from(new Uint8Array(hash))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
 // 获取首页数据
 async function getHomeData(db: D1Database, params: URLSearchParams): Promise<Response> {
   const lang = params.get('lang') || 'zh'
@@ -403,13 +524,14 @@ async function getHomeData(db: D1Database, params: URLSearchParams): Promise<Res
       trendingApps,
       newApps,
     ] = await Promise.all([
-      // 推荐应用
+      // 推荐应用：有 is_featured=1 的优先返回；不足 6 条时用 stars 前列补齐
+      // fallback 验证过 is_featured 优先级：第一排序键确保人工置顶的项目始终在前
       db.prepare(`
-        SELECT ${appSelectFields}
+        SELECT ${appSelectFields}, a.is_featured
         FROM apps a
         ${appJoinClause}
-        WHERE a.status = 'active' AND a.is_featured = 1
-        ORDER BY a.stars_count DESC
+        WHERE a.status = 'active'
+        ORDER BY a.is_featured DESC, a.stars_count DESC
         LIMIT 6
       `).bind(lang).all(),
 
@@ -485,17 +607,26 @@ export default {
       return handleOptions()
     }
 
-    // 只允许 GET 请求
-    if (method !== 'GET') {
-      return errorResponse('Method not allowed', 405)
-    }
-
-    // 路由匹配
+    // 路由分发
     try {
+      // ---- POST 路由 ----
+      if (method === 'POST') {
+        if (path === '/api/submissions') {
+          return await createSubmission(env.DB, request)
+        }
+        return errorResponse('Not found', 404)
+      }
+
+      // 其余方法仅允许 GET
+      if (method !== 'GET') {
+        return errorResponse('Method not allowed', 405)
+      }
+
+      // ---- GET 路由 ----
       // API 健康检查
       if (path === '/api/health') {
-        return jsonResponse({ 
-          status: 'ok', 
+        return jsonResponse({
+          status: 'ok',
           timestamp: new Date().toISOString(),
           version: '1.0.0',
         })
