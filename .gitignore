@@ -41,7 +41,7 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
-
+PROJECT_INFO.md
 # Qoder 缓存
 .qoder/
 

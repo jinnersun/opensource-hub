@@ -608,11 +608,9 @@ async function getHomeData(db: D1Database, params: URLSearchParams): Promise<Res
 // 代码宝库 (apps_library) 路由
 // ==========================================
 
-// locale fallback for library: 优先命中请求语言，否则 fallback 到 'zh'
-const LIBRARY_LOCALE_FALLBACK_SQL =
-  `COALESCE((SELECT locale FROM apps_library_translations WHERE library_id = l.id AND locale = ? LIMIT 1), 'zh')`
-
 // 获取代码宝库列表
+// 翻译策略：优先请求 locale 的翻译 → 回back 到 zh 翻译 → 最后回back 到主表原始字段
+// 不用 correlated subquery（D1/SQLite 对 JOIN ON 里的相关子查询处理不稳定，会静默 fallback）
 async function getLibrary(db: D1Database, params: URLSearchParams): Promise<Response> {
   const projectType = params.get('project_type')
   const category = params.get('category')
@@ -630,10 +628,16 @@ async function getLibrary(db: D1Database, params: URLSearchParams): Promise<Resp
         l.tags, l.language, l.project_type, l.category,
         l.stars_count, l.html_url, l.homepage, l.license, l.last_updated, l.status,
         c.name as category_name,
-        t.summary as trans_summary, t.full_description as trans_full_description
+        t_req.summary as trans_summary_req,
+        t_req.full_description as trans_full_description_req,
+        t_zh.summary as trans_summary_zh,
+        t_zh.full_description as trans_full_description_zh
       FROM apps_library l
       LEFT JOIN categories c ON l.category = c.slug
-      LEFT JOIN apps_library_translations t ON t.library_id = l.id AND t.locale = ${LIBRARY_LOCALE_FALLBACK_SQL}
+      LEFT JOIN apps_library_translations t_req
+        ON t_req.library_id = l.id AND t_req.locale = ?
+      LEFT JOIN apps_library_translations t_zh
+        ON t_zh.library_id = l.id AND t_zh.locale = 'zh'
       WHERE l.status = 'active'
     `
     const bindings: (string | number)[] = [lang]
@@ -661,8 +665,17 @@ async function getLibrary(db: D1Database, params: URLSearchParams): Promise<Resp
 
     const mapped = (results || []).map((r: any) => ({
       ...r,
-      summary: r.trans_summary || r.summary,
-      full_description: r.trans_full_description || r.full_description,
+      // 优先级：请求 locale 翻译 > zh 翻译 > 主表原始值（英文）
+      summary: r.trans_summary_req || r.trans_summary_zh || r.summary,
+      full_description:
+        r.trans_full_description_req ||
+        r.trans_full_description_zh ||
+        r.full_description,
+      // 堆减内部字段，避免泄露给前端
+      trans_summary_req: undefined,
+      trans_summary_zh: undefined,
+      trans_full_description_req: undefined,
+      trans_full_description_zh: undefined,
     }))
 
     return jsonResponse({
