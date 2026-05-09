@@ -663,20 +663,27 @@ async function getLibrary(db: D1Database, params: URLSearchParams): Promise<Resp
 
     const { results } = await db.prepare(query).bind(...bindings).all()
 
-    const mapped = (results || []).map((r: any) => ({
-      ...r,
-      // 优先级：请求 locale 翻译 > zh 翻译 > 主表原始值（英文）
-      summary: r.trans_summary_req || r.trans_summary_zh || r.summary,
-      full_description:
-        r.trans_full_description_req ||
-        r.trans_full_description_zh ||
-        r.full_description,
-      // 堆减内部字段，避免泄露给前端
-      trans_summary_req: undefined,
-      trans_summary_zh: undefined,
-      trans_full_description_req: undefined,
-      trans_full_description_zh: undefined,
-    }))
+    const mapped = (results || []).map((r: any) => {
+      // 修复: 与详情页逻辑保持一致
+      // 优先级: 请求语言翻译 > 主表原始值(英文) > 中文翻译
+      // 原逻辑错误: t_req 为 NULL 时直接选 t_zh(中文),导致英文页面显示中文
+      const hasReqTranslation = r.trans_summary_req !== null || r.trans_full_description_req !== null
+      
+      return {
+        ...r,
+        summary: hasReqTranslation
+          ? (r.trans_summary_req || r.summary)  // 有请求语言翻译就用,否则用主表
+          : (lang === 'zh' ? r.trans_summary_zh || r.summary : r.summary),  // 非中文请求且无翻译时,不用中文
+        full_description: hasReqTranslation
+          ? (r.trans_full_description_req || r.full_description)
+          : (lang === 'zh' ? r.trans_full_description_zh || r.full_description : r.full_description),
+        // 堆减内部字段,避免泄露给前端
+        trans_summary_req: undefined,
+        trans_summary_zh: undefined,
+        trans_full_description_req: undefined,
+        trans_full_description_zh: undefined,
+      }
+    })
 
     return jsonResponse({
       data: mapped,
