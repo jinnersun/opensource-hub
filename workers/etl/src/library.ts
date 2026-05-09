@@ -24,6 +24,9 @@ const BATCH_SIZE = 10
 const MAX_BATCHES_PER_RUN = 5
 const README_PREVIEW_MAX = 2000
 const README_FOR_AI_MAX = 8000
+// 方案 B 熔断阈值：AI 失败累积到一定量立即退出，把 waitUntil 配额让给下一个 invocation
+const MAX_CONSECUTIVE_AI_FAILURES = 3
+const MAX_TOTAL_AI_FAILURES = 5
 
 const VALID_PROJECT_TYPES = [
   'framework', 'library', 'cli-tool', 'application',
@@ -154,7 +157,11 @@ Rules:
 - tags: 3-6 items, merge GitHub topics + your additions, lowercase, kebab-case
 - summary/fullDescription MUST be English; summaryZh/fullDescriptionZh MUST be Chinese
 - No installation instructions, no download links, no version mentions
-- Do not include markdown code fences in output`
+- Do not include markdown code fences, explanatory text, or any content outside the JSON object
+- Your response MUST start with { and end with }
+
+Example of a valid response (format reference, content unrelated to current project):
+{"projectType":"cli-tool","category":"dev-tools","tags":["git","cli","terminal","productivity"],"summary":"A fast terminal-based Git repository browser with fuzzy search.","summaryZh":"终端系 Git 仓库浏览器，支持模糊搜索。","fullDescription":"Lightweight TUI that lets developers navigate commit history, diffs and branches without leaving the shell. Supports keyboard-driven workflows and integrates with common Git commands.","fullDescriptionZh":"轻量级 TUI 工具，让开发者在命令行内浏览提交历史、diff 与分支，支持键盘快捷操作，与常用 Git 命令无缝集成。"}`
 
 export class LibraryAIClient {
   constructor(private apiKey: string) {}
@@ -221,10 +228,9 @@ export class LibraryAIClient {
 
     const data = await resp.json() as { choices: Array<{ message: { content: string } }> }
     const raw = data.choices?.[0]?.message?.content || ''
-    const cleaned = raw.replace(/^```json\s*/i, '').replace(/\s*```$/i, '').trim()
 
     let result: LibraryAIResult
-    try { result = JSON.parse(cleaned) as LibraryAIResult }
+    try { result = parseLibraryAIJson(raw) }
     catch { throw new Error('AI returned invalid JSON') }
 
     normalizeLibraryResult(result, repo)
@@ -233,6 +239,47 @@ export class LibraryAIClient {
     if (err) throw new Error(`AI result validation failed: ${err}`)
     return result
   }
+}
+
+/**
+ * 鲁棒解析 AI 返回的 JSON：
+ * 1. 先剥离 markdown fence 并 trim
+ * 2. 直接试 JSON.parse
+ * 3. 失败时用括号计数法提取首个平衡的 { ... } 块再试
+ */
+function parseLibraryAIJson(raw: string): LibraryAIResult {
+  const stripped = raw
+    .replace(/^```json\s*/i, '')
+    .replace(/^```\s*/i, '')
+    .replace(/\s*```\s*$/i, '')
+    .trim()
+  try { return JSON.parse(stripped) as LibraryAIResult } catch { /* fallthrough */ }
+
+  // 提取首个平衡的 { ... }，尽量忽略字符串里的 { }
+  const start = stripped.indexOf('{')
+  if (start < 0) throw new Error('no JSON object found')
+  let depth = 0
+  let inStr = false
+  let escape = false
+  for (let i = start; i < stripped.length; i++) {
+    const ch = stripped[i]
+    if (escape) { escape = false; continue }
+    if (inStr) {
+      if (ch === '\\') escape = true
+      else if (ch === '"') inStr = false
+      continue
+    }
+    if (ch === '"') { inStr = true; continue }
+    if (ch === '{') depth++
+    else if (ch === '}') {
+      depth--
+      if (depth === 0) {
+        const slice = stripped.slice(start, i + 1)
+        return JSON.parse(slice) as LibraryAIResult
+      }
+    }
+  }
+  throw new Error('unbalanced JSON braces')
 }
 
 function normalizeLibraryResult(r: LibraryAIResult, repo: GitHubRepoInfo): void {
@@ -321,8 +368,9 @@ async function persistLibraryEntry(
 export async function promoteToLibrary(env: Env): Promise<LibraryBatchStats> {
   const stats: LibraryBatchStats = { scanned: 0, promoted: 0, aiFailed: 0, dbFailed: 0, noData: 0 }
   const ai = new LibraryAIClient(env.OPENAI_API_KEY)
+  let consecutiveAIFailures = 0
 
-  for (let batchIdx = 0; batchIdx < MAX_BATCHES_PER_RUN; batchIdx++) {
+  outer: for (let batchIdx = 0; batchIdx < MAX_BATCHES_PER_RUN; batchIdx++) {
     const candidates = await fetchLibraryCandidates(env, BATCH_SIZE)
     if (candidates.length === 0) {
       console.log(`[Library] no more candidates after ${batchIdx} batches`)
@@ -348,7 +396,21 @@ export async function promoteToLibrary(env: Env): Promise<LibraryBatchStats> {
           stats.aiFailed++
           return null
         })
-        if (!aiResult) continue
+        if (!aiResult) {
+          consecutiveAIFailures++
+          // AI 连续失败时熔断退出，保留 waitUntil 配额且不改变 fetch 条件（失败项下次 cron 再试，避免在 raw_apps 状态里锁死）
+          if (
+            consecutiveAIFailures >= MAX_CONSECUTIVE_AI_FAILURES ||
+            stats.aiFailed >= MAX_TOTAL_AI_FAILURES
+          ) {
+            console.warn(
+              `[Library] AI failure threshold hit (consecutive=${consecutiveAIFailures}, total=${stats.aiFailed}), breaking early to preserve waitUntil budget`,
+            )
+            break outer
+          }
+          continue
+        }
+        consecutiveAIFailures = 0
 
         const preview = buildReadmePreview(readme)
         try {
