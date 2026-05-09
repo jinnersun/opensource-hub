@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
+import { useParams } from 'next/navigation'
 import { Link } from '@/i18n/routing'
 import {
   Library as LibraryIcon,
@@ -57,7 +58,10 @@ function formatStars(n: number): string {
 export default function LibraryPage() {
   const t = useTranslations('library')
   const te = useTranslations('errors')
-  const locale = useLocale()
+  // 用 URL 上的 [locale] 段作为真实 locale，避免 provider 在 client 导航后仍返回旧值
+  const params = useParams<{ locale?: string }>()
+  const intlLocale = useLocale()
+  const locale = (params?.locale as string) || intlLocale
 
   const [projectType, setProjectType] = useState<ProjectTypeTab>('all')
   const [sort, setSort] = useState<'stars' | 'updated'>('stars')

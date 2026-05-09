@@ -46,9 +46,11 @@ function formatDate(iso: string | null, locale: string): string {
 export default function LibraryDetailPage() {
   const t = useTranslations('library')
   const te = useTranslations('errors')
-  const locale = useLocale()
-  const params = useParams<{ slug: string }>()
+  const intlLocale = useLocale()
+  const params = useParams<{ slug: string; locale?: string }>()
   const slug = params?.slug
+  // 和列表页保持一致：优先用 URL 段 locale，回back provider locale
+  const locale = (params?.locale as string) || intlLocale
 
   const [item, setItem] = useState<LibraryItem | null>(null)
   const [loading, setLoading] = useState(true)

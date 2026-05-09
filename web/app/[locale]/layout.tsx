@@ -63,7 +63,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} suppressHydrationWarning className={isCJK ? 'font-noto-sans-sc' : ''}>
       <body className={fontClass}>
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
