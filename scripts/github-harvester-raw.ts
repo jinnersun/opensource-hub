@@ -326,11 +326,15 @@ class RawDataHarvester {
       
       // 截断 README 避免 SQL 过长（限制 50000 字符）
       const readmeContent = (readme?.content || '').substring(0, 50000)
-      
+
+      // source 标记：Trending 发现的仓库 category 为 'trending'（来自 discoverTrendingRepos），
+      // 其余来自 awesome 种子。后续 ETL 的 Trending 分流逻辑依赖此字段。
+      const source = repo.category === 'trending' ? 'trending' : 'awesome'
+
       const insertSQL = `
         INSERT INTO raw_apps (
           github_repo_id, full_name, raw_api_data, readme_content,
-          has_releases, release_count, readme_length, etl_status
+          has_releases, release_count, readme_length, etl_status, source
         ) VALUES (
           ${repoInfo.id},
           '${fullName.replace(/'/g, "''")}',
@@ -339,7 +343,8 @@ class RawDataHarvester {
           ${hasReleases},
           ${releases.length},
           ${readmeContent.length},
-          'pending'
+          'pending',
+          '${source}'
         )
       `
 

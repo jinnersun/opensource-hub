@@ -311,6 +311,90 @@ export async function healthCheck(): Promise<{ status: string; timestamp: string
 }
 
 // ==========================================
+// 代码宝库 (Code Library)
+// ==========================================
+
+export interface LibraryItem {
+  id: number
+  github_repo_id: number
+  slug: string
+  name: string
+  full_name: string
+  description: string | null
+  summary: string | null
+  full_description: string | null
+  readme_preview: string | null
+  tags: string | null              // JSON array string
+  language: string | null
+  project_type: 'framework' | 'library' | 'cli-tool' | 'application' | 'tutorial' | 'awesome-list' | 'dataset-model' | 'other'
+  category: string | null
+  category_name?: string
+  stars_count: number
+  html_url: string
+  homepage: string | null
+  license: string | null
+  last_updated: string | null
+  status: 'active' | 'archived' | 'removed'
+}
+
+export interface LibraryFacets {
+  projectTypes: { project_type: string; count: number }[]
+  languages: { language: string; count: number }[]
+}
+
+/**
+ * 获取代码宝库列表
+ */
+export async function getLibrary(params?: {
+  projectType?: string
+  category?: string
+  language?: string
+  limit?: number
+  offset?: number
+  sort?: 'stars' | 'updated'
+  locale?: string
+}): Promise<PaginatedResponse<LibraryItem[]>> {
+  const sp = new URLSearchParams()
+  if (params?.projectType) sp.set('project_type', params.projectType)
+  if (params?.category) sp.set('category', params.category)
+  if (params?.language) sp.set('language', params.language)
+  if (params?.limit) sp.set('limit', String(params.limit))
+  if (params?.offset) sp.set('offset', String(params.offset))
+  if (params?.sort) sp.set('sort', params.sort)
+  if (params?.locale) sp.set('lang', params.locale)
+  const qs = sp.toString()
+  return apiRequest<PaginatedResponse<LibraryItem[]>>(`/api/library${qs ? `?${qs}` : ''}`)
+}
+
+/**
+ * 获取代码宝库项目详情
+ */
+export async function getLibraryItem(idOrSlug: string, locale?: string): Promise<LibraryItem> {
+  const q = locale ? `?lang=${encodeURIComponent(locale)}` : ''
+  return apiRequest<LibraryItem>(`/api/library/${idOrSlug}${q}`)
+}
+
+/**
+ * 获取代码宝库筛选 facets (project_type / language 分布)
+ */
+export async function getLibraryFacets(): Promise<LibraryFacets> {
+  return apiRequest<LibraryFacets>('/api/library/facets')
+}
+
+/**
+ * 解析 LibraryItem.tags (JSON 字符串) 为 string[]
+ */
+export function parseLibraryTags(tags: string | null): string[] {
+  if (!tags) return []
+  try {
+    const arr = JSON.parse(tags)
+    return Array.isArray(arr) ? arr.map(t => String(t)) : []
+  } catch {
+    return []
+  }
+}
+
+// ==========================================
 // 数据转换辅助函数
 // ==========================================
 

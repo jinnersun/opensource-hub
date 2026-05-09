@@ -11,6 +11,7 @@
 import { runEtl } from './scheduler'
 import { fetchLatestRelease } from './release'
 import { saveVersionsOnly } from './persistence'
+import { promoteToLibrary } from './library'
 import type { BatchStats, Env } from './types'
 
 interface ETLMetrics {
@@ -58,6 +59,14 @@ async function recordMetrics(env: Env, stats: BatchStats): Promise<void> {
 async function executeAndRecord(env: Env): Promise<void> {
   const stats = await runEtl(env)
   await recordMetrics(env, stats)
+  // 主 ETL 跑完后自动触发 Library 分支：处理 Trending 高星无 Release 的候选者
+  // 独立 try/catch，Library 分支的失败不影响主指标
+  try {
+    const libStats = await promoteToLibrary(env)
+    console.log('[ETL scheduled] library stats:', libStats)
+  } catch (err) {
+    console.error('[ETL scheduled] promoteToLibrary failed:', (err as Error).message)
+  }
 }
 
 /**
@@ -131,6 +140,16 @@ export default {
       return new Response('ETL job started in background', { status: 202 })
     }
 
+    if (url.pathname === '/etl/promote-library' && request.method === 'POST') {
+      // 手动触发 Library 分支，不跑主 ETL
+      ctx.waitUntil(
+        promoteToLibrary(env)
+          .then(s => console.log('[promote-library] done:', s))
+          .catch(e => console.error('[promote-library] failed:', (e as Error).message)),
+      )
+      return new Response('promote-library started', { status: 202 })
+    }
+
     if (url.pathname === '/etl/refresh-versions' && request.method === 'POST') {
       const limit = Math.max(1, Math.min(50, parseInt(url.searchParams.get('limit') || '20')))
       ctx.waitUntil(refreshVersions(env, limit))
@@ -158,6 +177,7 @@ export default {
         status: 'ok',
         endpoints: [
           'POST /etl/trigger',
+          'POST /etl/promote-library',
           'POST /etl/refresh-versions?limit=20',
           'GET /etl/status',
           'GET /etl/metrics',

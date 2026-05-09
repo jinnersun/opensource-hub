@@ -35,6 +35,7 @@
   "nav": {
     "discover": "Discover",
     "trending": "Trending",
+    "library": "Code Library",
     "categories": "Categories",
     "submitSoftware": "Submit Software"
   },
@@ -268,5 +269,38 @@
     "placeholder": "e.g., I need a tool to merge PDFs...",
     "search": "Search",
     "tip": "Tip: We use vector search to understand your description — no exact keyword matching needed."
+  },
+  "library": {
+    "title": "Code Library",
+    "subtitle": "Curated high-star GitHub open-source code projects — frameworks, libraries, CLI tools, tutorials and awesome lists, focused on code ecosystems and developer value.",
+    "searchPlaceholder": "Search by project name, description, language or tag...",
+    "loadMore": "Load more",
+    "empty": "No matching projects yet",
+    "viewDetail": "View details",
+    "backToList": "Back to Code Library",
+    "visitRepo": "Visit Repo",
+    "visitHomepage": "Homepage",
+    "readmePreview": "README Preview",
+    "stars": "Stars",
+    "language": "Language",
+    "license": "License",
+    "lastUpdated": "Last Updated",
+    "tags": "Tags",
+    "overview": "Overview",
+    "type": {
+      "all": "All",
+      "framework": "Framework",
+      "library": "Library",
+      "cli-tool": "CLI Tool",
+      "application": "Application",
+      "tutorial": "Tutorial",
+      "awesome-list": "Awesome List",
+      "dataset-model": "Dataset & Model",
+      "other": "Other"
+    },
+    "sort": {
+      "stars": "Sort by stars",
+      "updated": "Sort by updated"
+    }
   }
 }

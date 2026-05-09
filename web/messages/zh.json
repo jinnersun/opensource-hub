@@ -35,6 +35,7 @@
   "nav": {
     "discover": "发现",
     "trending": "热门动态",
+    "library": "代码宝库",
     "categories": "分类浏览",
     "submitSoftware": "提交软件"
   },
@@ -268,5 +269,38 @@
     "placeholder": "比如：我需要一个能合并 PDF 的工具...",
     "search": "搜索",
     "tip": "提示：我们使用向量搜索来理解你的描述，不需要精确词汇匹配。"
+  },
+  "library": {
+    "title": "代码宝库",
+    "subtitle": "精选 GitHub 高星开源代码项目——框架、库、命令行工具、教程与资源汇总，聚焦代码生态与开发者价值。",
+    "searchPlaceholder": "搜索项目名称、描述、语言或标签...",
+    "loadMore": "加载更多",
+    "empty": "暂时没有符合条件的项目",
+    "viewDetail": "查看详情",
+    "backToList": "返回代码宝库",
+    "visitRepo": "访问仓库",
+    "visitHomepage": "项目主页",
+    "readmePreview": "README 预览",
+    "stars": "Stars",
+    "language": "语言",
+    "license": "许可证",
+    "lastUpdated": "最近更新",
+    "tags": "标签",
+    "overview": "项目简介",
+    "type": {
+      "all": "全部",
+      "framework": "框架",
+      "library": "库",
+      "cli-tool": "命令行工具",
+      "application": "应用程序",
+      "tutorial": "教程",
+      "awesome-list": "资源汇总",
+      "dataset-model": "数据集与模型",
+      "other": "其他"
+    },
+    "sort": {
+      "stars": "按星标排序",
+      "updated": "按更新排序"
+    }
   }
 }

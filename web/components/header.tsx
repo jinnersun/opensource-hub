@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useTranslations } from 'next-intl'
 import { Link, usePathname } from '@/i18n/routing'
-import { Package2, Flame, LayoutGrid, Compass } from "lucide-react"
+import { Package2, Flame, LayoutGrid, Compass, Library } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { LanguageToggle } from "@/components/language-toggle"
 import { SubmitSoftwareDialog } from "@/components/submit-software-dialog"
@@ -20,6 +20,11 @@ const navItems = [
     href: "/trending",
     labelKey: "trending",
     icon: Flame,
+  },
+  {
+    href: "/library",
+    labelKey: "library",
+    icon: Library,
   },
   {
     href: "/category",

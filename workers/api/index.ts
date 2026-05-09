@@ -605,6 +605,132 @@ async function getHomeData(db: D1Database, params: URLSearchParams): Promise<Res
 }
 
 // ==========================================
+// 代码宝库 (apps_library) 路由
+// ==========================================
+
+// locale fallback for library: 优先命中请求语言，否则 fallback 到 'zh'
+const LIBRARY_LOCALE_FALLBACK_SQL =
+  `COALESCE((SELECT locale FROM apps_library_translations WHERE library_id = l.id AND locale = ? LIMIT 1), 'zh')`
+
+// 获取代码宝库列表
+async function getLibrary(db: D1Database, params: URLSearchParams): Promise<Response> {
+  const projectType = params.get('project_type')
+  const category = params.get('category')
+  const language = params.get('language')
+  const limit = Math.min(parseInt(params.get('limit') || '24'), 100)
+  const offset = parseInt(params.get('offset') || '0')
+  const sort = params.get('sort') || 'stars'   // stars | updated
+  const lang = params.get('lang') || 'zh'
+
+  try {
+    let query = `
+      SELECT
+        l.id, l.github_repo_id, l.slug, l.name, l.full_name,
+        l.description, l.summary, l.full_description, l.readme_preview,
+        l.tags, l.language, l.project_type, l.category,
+        l.stars_count, l.html_url, l.homepage, l.license, l.last_updated, l.status,
+        c.name as category_name,
+        t.summary as trans_summary, t.full_description as trans_full_description
+      FROM apps_library l
+      LEFT JOIN categories c ON l.category = c.slug
+      LEFT JOIN apps_library_translations t ON t.library_id = l.id AND t.locale = ${LIBRARY_LOCALE_FALLBACK_SQL}
+      WHERE l.status = 'active'
+    `
+    const bindings: (string | number)[] = [lang]
+
+    if (projectType) {
+      query += ` AND l.project_type = ?`
+      bindings.push(projectType)
+    }
+    if (category) {
+      query += ` AND l.category = ?`
+      bindings.push(category)
+    }
+    if (language) {
+      query += ` AND l.language = ?`
+      bindings.push(language)
+    }
+
+    const orderBy = sort === 'updated'
+      ? `l.last_updated DESC`
+      : `l.stars_count DESC`
+    query += ` ORDER BY ${orderBy} LIMIT ? OFFSET ?`
+    bindings.push(limit, offset)
+
+    const { results } = await db.prepare(query).bind(...bindings).all()
+
+    const mapped = (results || []).map((r: any) => ({
+      ...r,
+      summary: r.trans_summary || r.summary,
+      full_description: r.trans_full_description || r.full_description,
+    }))
+
+    return jsonResponse({
+      data: mapped,
+      pagination: { limit, offset, hasMore: mapped.length === limit },
+    })
+  } catch (error) {
+    console.error('Error fetching library:', error)
+    return errorResponse('Failed to fetch library', 500)
+  }
+}
+
+// 获取代码宝库项目详情
+async function getLibraryItem(db: D1Database, idOrSlug: string, lang: string): Promise<Response> {
+  try {
+    const item = await db.prepare(
+      `SELECT l.*, c.name as category_name
+       FROM apps_library l
+       LEFT JOIN categories c ON l.category = c.slug
+       WHERE l.slug = ? OR l.id = ?`,
+    ).bind(idOrSlug, idOrSlug).first()
+    if (!item) return errorResponse('Library item not found', 404)
+
+    let tr = await db.prepare(
+      `SELECT summary, full_description FROM apps_library_translations WHERE library_id = ? AND locale = ?`,
+    ).bind((item as any).id, lang).first()
+    if (!tr && lang !== 'zh') {
+      tr = await db.prepare(
+        `SELECT summary, full_description FROM apps_library_translations WHERE library_id = ? AND locale = 'zh'`,
+      ).bind((item as any).id).first()
+    }
+
+    return jsonResponse({
+      ...item,
+      summary: (tr as any)?.summary || (item as any).summary,
+      full_description: (tr as any)?.full_description || (item as any).full_description,
+    })
+  } catch (error) {
+    console.error('Error fetching library item:', error)
+    return errorResponse('Failed to fetch library item', 500)
+  }
+}
+
+// 获取代码宝库的 project_type 分布 (用于前端筛选器)
+async function getLibraryFacets(db: D1Database): Promise<Response> {
+  try {
+    const [types, languages] = await Promise.all([
+      db.prepare(
+        `SELECT project_type, COUNT(*) as count FROM apps_library
+         WHERE status = 'active' GROUP BY project_type ORDER BY count DESC`,
+      ).all(),
+      db.prepare(
+        `SELECT language, COUNT(*) as count FROM apps_library
+         WHERE status = 'active' AND language IS NOT NULL
+         GROUP BY language ORDER BY count DESC LIMIT 20`,
+      ).all(),
+    ])
+    return jsonResponse({
+      projectTypes: types.results || [],
+      languages: languages.results || [],
+    })
+  } catch (error) {
+    console.error('Error fetching library facets:', error)
+    return errorResponse('Failed to fetch facets', 500)
+  }
+}
+
+// ==========================================
 // 主入口
 // ==========================================
 
@@ -673,6 +799,22 @@ export default {
       // 搜索
       if (path === '/api/search') {
         return await searchApps(env.DB, url.searchParams)
+      }
+
+      // 代码宝库列表
+      if (path === '/api/library') {
+        return await getLibrary(env.DB, url.searchParams)
+      }
+
+      // 代码宝库 facets (project_type / language 分布)
+      if (path === '/api/library/facets') {
+        return await getLibraryFacets(env.DB)
+      }
+
+      // 代码宝库项目详情
+      const libraryDetailMatch = path.match(/^\/api\/library\/([^/]+)$/)
+      if (libraryDetailMatch) {
+        return await getLibraryItem(env.DB, libraryDetailMatch[1], url.searchParams.get('lang') || 'zh')
       }
 
       // 404
