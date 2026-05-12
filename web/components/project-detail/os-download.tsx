@@ -44,7 +44,16 @@ export function OSDownload({ project, variant = "default" }: OSDownloadProps) {
   React.useEffect(() => {
     const os = detectOS()
     setDetectedOS(os)
-    setSelectedOS(os)
+    // 如果检测到的系统有对应安装包则选中，否则回退到第一个可用平台
+    const hasDetected = project.platforms[os]
+    if (hasDetected) {
+      setSelectedOS(os)
+    } else {
+      const keys = Object.keys(project.platforms) as OS[]
+      const first = keys.find(k => k !== 'unknown' && project.platforms[k])
+      setSelectedOS(first || os)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const availablePlatforms = (Object.keys(project.platforms) as OS[]).filter(
