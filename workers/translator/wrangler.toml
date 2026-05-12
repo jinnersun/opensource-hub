@@ -1,0 +1,22 @@
+name = "opensource-hub-translator"
+main = "src/index.ts"
+compatibility_date = "2024-04-01"
+account_id = "063b426850c4c65d45b0809040ec8a71"
+
+# 每 5 分钟扫描翻译任务队列
+[triggers]
+crons = ["*/5 * * * *"]
+
+# D1 数据库绑定
+[[d1_databases]]
+binding = "DB"
+database_name = "opensource-hub-db"
+database_id = "9989fa14-ca29-46ef-8c9f-9ab55f6b47d7"
+
+# Workers AI 绑定（用于翻译）
+[ai]
+binding = "AI"
+
+[vars]
+BATCH_SIZE = "5"
+TARGET_LOCALES = "ja,ko,es,pt-BR"
