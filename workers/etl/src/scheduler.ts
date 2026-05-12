@@ -183,6 +183,15 @@ async function processOneInner(
       aiResult.tags, aiResult.category,
     )
   } catch { /* embedding 失败静默 */ }
+  // 多语言翻译任务
+  try {
+    const appId = `app_${repo.id}`
+    for (const tl of ['ja', 'ko', 'es', 'pt-BR']) {
+      await env.DB.prepare(
+        `INSERT OR IGNORE INTO translation_tasks (app_id, source_locale, target_locale) VALUES (?, 'zh', ?)`,
+      ).bind(appId, tl).run()
+    }
+  } catch { /* 忽略 */ }
   stats.succeeded++
 }
 

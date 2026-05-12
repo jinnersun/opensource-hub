@@ -7,6 +7,7 @@ export interface Env {
   DB: D1Database
   VECTORIZE?: VectorizeIndex
   AI?: Ai
+  ADMIN_TOKEN?: string
 }
 
 // CORS 响应头
@@ -922,6 +923,43 @@ export default {
         if (path === '/api/submissions') {
           return await createSubmission(env.DB, request)
         }
+        if (path === '/admin/login') {
+          const body = await request.json().catch(() => ({})) as { token?: string }
+          if (body.token && body.token === env.ADMIN_TOKEN && body.token.length > 0) {
+            return jsonResponse({ ok: true })
+          }
+          return errorResponse('Invalid token', 401)
+        }
+        // Admin POST routes
+        if (path === '/admin/jobs/bulk-retry') {
+          const auth = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '')
+          if (auth !== env.ADMIN_TOKEN || !auth) return errorResponse('Unauthorized', 401)
+          const b = await request.json().catch(() => ({})) as { ids?: number[]; status?: string }
+          let affected = 0
+          if (b.ids?.length) {
+            const ph = b.ids.map(() => '?').join(',')
+            const r = await env.DB.prepare(`UPDATE raw_apps SET etl_status='pending', retry_count=0, next_check_at=NULL WHERE id IN (${ph})`).bind(...b.ids).run()
+            affected = r.meta?.changes || 0
+          } else if (b.status) {
+            const r = await env.DB.prepare(`UPDATE raw_apps SET etl_status='pending', retry_count=0, next_check_at=NULL WHERE etl_status=?`).bind(b.status).run()
+            affected = r.meta?.changes || 0
+          }
+          return jsonResponse({ affected })
+        }
+        if (path.match(/^\/admin\/submissions\/([^/]+)\/approve$/)) {
+          const auth = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '')
+          if (auth !== env.ADMIN_TOKEN || !auth) return errorResponse('Unauthorized', 401)
+          const id = path.split('/')[3]
+          await env.DB.prepare(`UPDATE user_submissions SET status='approved', reviewed_at=CURRENT_TIMESTAMP WHERE id=?`).bind(id).run()
+          return jsonResponse({ ok: true })
+        }
+        if (path.match(/^\/admin\/submissions\/([^/]+)\/reject$/)) {
+          const auth = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '')
+          if (auth !== env.ADMIN_TOKEN || !auth) return errorResponse('Unauthorized', 401)
+          const id = path.split('/')[3]
+          await env.DB.prepare(`UPDATE user_submissions SET status='rejected', reviewed_at=CURRENT_TIMESTAMP WHERE id=?`).bind(id).run()
+          return jsonResponse({ ok: true })
+        }
         return errorResponse('Not found', 404)
       }
 
@@ -985,6 +1023,48 @@ export default {
       const libraryDetailMatch = path.match(/^\/api\/library\/([^/]+)$/)
       if (libraryDetailMatch) {
         return await getLibraryItem(env.DB, libraryDetailMatch[1], url.searchParams.get('lang') || 'zh')
+      }
+
+      // ---- Admin 路由（仅 GET） ----
+      const adminAuth = (r: Request) => {
+        const auth = r.headers.get('Authorization') || ''
+        const token = auth.replace(/^Bearer\s+/i, '')
+        return token === env.ADMIN_TOKEN && token.length > 0
+      }
+
+      if (path === '/admin/stats' && adminAuth(request)) {
+        const [appCount, libCount, etlStats, submissions] = await Promise.all([
+          env.DB.prepare(`SELECT COUNT(*) as c FROM apps WHERE status = 'active'`).first<{c:number}>(),
+          env.DB.prepare(`SELECT COUNT(*) as c FROM apps_library WHERE status = 'active'`).first<{c:number}>(),
+          env.DB.prepare(`SELECT etl_status, COUNT(*) as c FROM raw_apps GROUP BY etl_status`).all<{etl_status:string;c:number}>(),
+          env.DB.prepare(`SELECT status, COUNT(*) as c FROM user_submissions GROUP BY status`).all<{status:string;c:number}>(),
+        ])
+        const etl: Record<string,number> = {}; (etlStats.results||[]).forEach(r => etl[r.etl_status]=r.c)
+        const sub: Record<string,number> = {}; (submissions.results||[]).forEach(r => sub[r.status]=r.c)
+        return jsonResponse({ apps: appCount?.c||0, library: libCount?.c||0, etl, submissions: sub })
+      }
+
+      if (path === '/admin/jobs' && adminAuth(request)) {
+        const st = url.searchParams.get('status')
+        const page = parseInt(url.searchParams.get('page') || '1')
+        const limit = 30; const offset = (page - 1) * limit
+        let sql = `SELECT * FROM raw_apps`; const binds: (string|number)[] = []
+        if (st) { sql += ` WHERE etl_status = ?`; binds.push(st) }
+        sql += ` ORDER BY last_processed_at DESC LIMIT ? OFFSET ?`; binds.push(limit, offset)
+        const { results } = await env.DB.prepare(sql).bind(...binds).all()
+        const { c } = await env.DB.prepare(`SELECT COUNT(*) as c FROM raw_apps`).first<{c:number}>() || {c:0}
+        return jsonResponse({ data: results||[], total: c||0, page, limit })
+      }
+
+      if (path === '/admin/submissions' && adminAuth(request)) {
+        const st = url.searchParams.get('status') || 'pending'
+        const page = parseInt(url.searchParams.get('page') || '1')
+        const limit = 20; const offset = (page - 1) * limit
+        const { results } = await env.DB.prepare(
+          `SELECT * FROM user_submissions WHERE status = ? ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+        ).bind(st, limit, offset).all()
+        const { c } = await env.DB.prepare(`SELECT COUNT(*) as c FROM user_submissions WHERE status = ?`).bind(st).first<{c:number}>() || {c:0}
+        return jsonResponse({ data: results||[], total: c||0, page, limit })
       }
 
       // 404

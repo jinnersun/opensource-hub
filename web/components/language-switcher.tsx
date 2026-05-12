@@ -1,7 +1,7 @@
 "use client"
 
 import { useLocale } from 'next-intl'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter } from '@/i18n/routing'
 import { Languages } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -14,7 +14,11 @@ import {
 const localeNames: Record<string, string> = {
   zh: '中文',
   en: 'English',
+  ja: '日本語',
+  ko: '한국어',
 }
+
+const locales = Object.keys(localeNames)
 
 export function LanguageSwitcher() {
   const locale = useLocale()
@@ -22,13 +26,10 @@ export function LanguageSwitcher() {
   const pathname = usePathname()
 
   const switchLocale = (newLocale: string) => {
-    // Replace the locale prefix in the pathname
     const segments = pathname.split('/')
-    // Current path is like /zh/... or /en/...
-    if (segments.length > 1 && (segments[1] === 'zh' || segments[1] === 'en')) {
+    if (segments.length > 1 && locales.includes(segments[1])) {
       segments[1] = newLocale
     } else {
-      // Fallback: prepend locale
       segments.splice(1, 0, newLocale)
     }
     router.replace(segments.join('/'))
