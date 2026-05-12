@@ -541,7 +541,7 @@ async function searchApps(db: D1Database, params: URLSearchParams, env: Env): Pr
           caveats: item.caveats,
         },
       }
-    }))
+    })
 
     return jsonResponse({
       data: mappedResults,
