@@ -95,7 +95,7 @@ export default function ContactPage() {
                 我们的代码完全开源，欢迎提交 Issue、PR 或参与讨论。
               </p>
               <a
-                href="https://github.com/opensource-hub"
+                href="https://github.com/jinnersun/opensource-hub"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-sm font-medium transition-colors hover:text-primary"
