@@ -183,6 +183,49 @@ async function backfillEmbeddings(
   return { done, failed, errors, hasMore, nextOffset }
 }
 
+/**
+ * 库项目向量回填：对 apps_library 表生成 embedding
+ */
+async function backfillLibraryEmbeddings(
+  env: Env, batchSize: number, offset: number,
+): Promise<{ done: number; failed: number; errors: string[]; hasMore: boolean; nextOffset: number }> {
+  let done = 0; let failed = 0; const errors: string[] = []
+  const rows = await env.DB.prepare(
+    `SELECT l.github_repo_id, l.name, l.description, l.tags, l.category,
+            t_zh.summary as summaryZh, t_en.summary as summaryEn
+     FROM apps_library l
+     LEFT JOIN apps_library_translations t_zh ON t_zh.library_id = l.id AND t_zh.locale = 'zh'
+     LEFT JOIN apps_library_translations t_en ON t_en.library_id = l.id AND t_en.locale = 'en'
+     WHERE l.status = 'active'
+     ORDER BY l.id
+     LIMIT ? OFFSET ?`,
+  ).bind(batchSize, offset).all<{
+    github_repo_id: number; name: string; description: string | null;
+    tags: string | null; category: string | null;
+    summaryZh: string | null; summaryEn: string | null;
+  }>()
+  if (!rows.results || rows.results.length === 0) {
+    return { done: 0, failed: 0, errors: [], hasMore: false, nextOffset: offset }
+  }
+  for (const r of rows.results) {
+    try {
+      let tags: string[] = []
+      if (r.tags) { try { tags = JSON.parse(r.tags) } catch { tags = [r.tags] } }
+      await upsertEmbedding(
+        env, `lib_${r.github_repo_id}`, r.name, r.description || '',
+        r.summaryZh || '', r.summaryEn || '', tags, r.category || '',
+      )
+      done++
+    } catch (err) {
+      failed++
+      errors.push(`lib_${r.github_repo_id}: ${(err as Error).message}`)
+    }
+  }
+  const hasMore = rows.results.length === batchSize
+  console.log(`[backfill-lib] offset=${offset} done=${done} failed=${failed} hasMore=${hasMore}`)
+  return { done, failed, errors, hasMore, nextOffset: offset + rows.results.length }
+}
+
 export default {
   async scheduled(_controller: ScheduledController, env: Env, ctx: ExecutionContext) {
     console.log('[ETL] scheduled 触发')
@@ -225,6 +268,17 @@ export default {
     }
 
     // 诊断端点：测试 AI + Vectorize 绑定是否正常
+    if (url.pathname === '/etl/backfill-library-embeddings' && request.method === 'POST') {
+      const batchSize = Math.max(1, Math.min(20, parseInt(url.searchParams.get('batch') || '10')))
+      const offset = Math.max(0, parseInt(url.searchParams.get('offset') || '0'))
+      try {
+        const result = await backfillLibraryEmbeddings(env, batchSize, offset)
+        return Response.json(result)
+      } catch (err) {
+        return new Response(`backfill error: ${(err as Error).message}`, { status: 500 })
+      }
+    }
+
     if (url.pathname === '/etl/diag' && request.method === 'GET') {
       const diag: Record<string, unknown> = {}
       // Test AI binding
@@ -271,6 +325,7 @@ export default {
           'POST /etl/promote-library',
           'POST /etl/refresh-versions?limit=20',
           'POST /etl/backfill-embeddings?batch=10&offset=0',
+          'POST /etl/backfill-library-embeddings?batch=10&offset=0',
           'GET /etl/diag',
           'GET /etl/status',
           'GET /etl/metrics',

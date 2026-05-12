@@ -226,42 +226,22 @@ export default function HomePage() {
           </section>
         )}
 
-        {/* Main: Featured Projects + Security Sidebar */}
+        {/* Featured Projects */}
         <section id="featured" className="border-t bg-secondary/10 px-4 py-12 sm:py-16">
           <div className="mx-auto max-w-7xl">
-            <div className="flex gap-8 xl:gap-10">
-              {/* Left: grid */}
-              <div className="min-w-0 flex-1">
-                <div className="mb-8">
-                  <h2 className="text-2xl font-bold sm:text-3xl">{t('featuredTitle')}</h2>
-                  <p className="mt-1 text-muted-foreground">
-                    {t('featuredSubtitle')}
-                  </p>
-                </div>
-
-                <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                  {featuredProjects.map((project) => (
-                    <ProjectCard key={project.id} project={project} />
-                  ))}
-                </div>
-              </div>
-
-              {/* Right: security report sticky sidebar（暂时隐藏，待安全扫描基建上线后恢复） */}
-              {/* <div className="hidden w-72 shrink-0 xl:block">
-                <div className="sticky top-20 space-y-6">
-                  <SecurityDashboard />
-                </div>
-              </div> */}
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold sm:text-3xl">{t('featuredTitle')}</h2>
+              <p className="mt-1 text-muted-foreground">
+                {t('featuredSubtitle')}
+              </p>
+            </div>
+            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              {featuredProjects.map((project) => (
+                <ProjectCard key={project.id} project={project} />
+              ))}
             </div>
           </div>
         </section>
-
-        {/* Mobile security report（暂时隐藏） */}
-        {/* <section className="border-t px-4 py-10 xl:hidden">
-          <div className="mx-auto max-w-lg">
-            <SecurityDashboard />
-          </div>
-        </section> */}
 
         {/* CTA Section */}
         <section className="border-t bg-secondary/30 px-4 py-14 sm:py-18">

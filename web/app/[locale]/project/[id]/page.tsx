@@ -334,18 +334,6 @@ export default function ProjectPage() {
               </section>
             )}
 
-            {/* Visual Assets Placeholder */}
-            <section>
-              <h2 className="text-xl font-bold mb-4">{t('screenshots')}</h2>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="aspect-video rounded-xl border-2 border-dashed border-muted flex items-center justify-center text-muted-foreground text-sm">
-                  {t('screenshotPlaceholder')}
-                </div>
-                <div className="aspect-video rounded-xl border-2 border-dashed border-muted flex items-center justify-center text-muted-foreground text-sm">
-                  {t('demoPlaceholder')}
-                </div>
-              </div>
-            </section>
           </div>
 
           {/* Right Sidebar */}

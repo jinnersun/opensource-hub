@@ -20,6 +20,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { ErrorState } from '@/components/error-state'
 import {
   getLibraryItem,
+  getLibrary,
   parseLibraryTags,
   type LibraryItem,
 } from '@/lib/api'
@@ -53,6 +54,7 @@ export default function LibraryDetailPage() {
   const locale = (params?.locale as string) || intlLocale
 
   const [item, setItem] = useState<LibraryItem | null>(null)
+  const [related, setRelated] = useState<LibraryItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
@@ -63,6 +65,16 @@ export default function LibraryDetailPage() {
     try {
       const data = await getLibraryItem(slug, locale)
       setItem(data)
+      // fetch related items by same project_type
+      if (data?.project_type) {
+        const rel = await getLibrary({
+          projectType: data.project_type,
+          limit: 6,
+          sort: 'stars',
+          locale,
+        })
+        setRelated((rel.data || []).filter((r: LibraryItem) => r.slug !== data.slug).slice(0, 4))
+      }
     } catch (e) {
       console.error('getLibraryItem failed:', e)
       setError(true)
@@ -239,6 +251,34 @@ export default function LibraryDetailPage() {
           </aside>
         </div>
       </main>
+
+      {related.length > 0 && (
+        <section className="border-t bg-secondary/10 px-4 py-12">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-xl font-bold mb-6">同类型项目</h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {related.map(r => (
+                <Link
+                  key={r.id}
+                  href={`/library/${r.slug}`}
+                  className="rounded-xl border bg-card p-4 hover:shadow-md transition-shadow"
+                >
+                  <h3 className="font-semibold text-sm truncate mb-1">{r.name}</h3>
+                  <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
+                    {r.summary || r.description}
+                  </p>
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <Star className="h-3 w-3" />{formatStars(r.stars_count)}
+                    </span>
+                    {r.language && <span>{r.language}</span>}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <Footer />
     </div>

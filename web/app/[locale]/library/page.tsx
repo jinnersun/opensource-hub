@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { useParams } from 'next/navigation'
 import { Link } from '@/i18n/routing'
@@ -66,12 +66,21 @@ export default function LibraryPage() {
   const [projectType, setProjectType] = useState<ProjectTypeTab>('all')
   const [sort, setSort] = useState<'stars' | 'updated'>('stars')
   const [keyword, setKeyword] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')  // debounced, sent to API
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>()
   const [items, setItems] = useState<LibraryItem[]>([])
   const [facets, setFacets] = useState<LibraryFacets | null>(null)
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
   const [hasMore, setHasMore] = useState(false)
   const [error, setError] = useState(false)
+
+  // debounce keyword → searchQuery
+  useEffect(() => {
+    clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => setSearchQuery(keyword.trim()), 300)
+    return () => clearTimeout(debounceRef.current)
+  }, [keyword])
 
   const loadList = useCallback(
     async (reset = true) => {
@@ -85,6 +94,7 @@ export default function LibraryPage() {
         const offset = reset ? 0 : items.length
         const resp = await getLibrary({
           projectType: projectType === 'all' ? undefined : projectType,
+          q: searchQuery || undefined,
           limit: PAGE_SIZE,
           offset,
           sort,
@@ -102,7 +112,7 @@ export default function LibraryPage() {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [projectType, sort, locale],
+    [projectType, sort, locale, searchQuery],
   )
 
   const loadFacets = useCallback(async () => {
@@ -121,24 +131,6 @@ export default function LibraryPage() {
   useEffect(() => {
     loadFacets()
   }, [loadFacets])
-
-  const filtered = useMemo(() => {
-    if (!keyword.trim()) return items
-    const kw = keyword.trim().toLowerCase()
-    return items.filter(it => {
-      const hay = [
-        it.name,
-        it.full_name,
-        it.description || '',
-        it.summary || '',
-        it.language || '',
-        it.tags || '',
-      ]
-        .join(' ')
-        .toLowerCase()
-      return hay.includes(kw)
-    })
-  }, [items, keyword])
 
   const typeCountMap = useMemo(() => {
     const map = new Map<string, number>()
@@ -250,14 +242,14 @@ export default function LibraryPage() {
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
-        ) : filtered.length === 0 ? (
+        ) : items.length === 0 ? (
           <div className="py-20 text-center text-muted-foreground">
             {t('empty')}
           </div>
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {filtered.map(it => (
+              {items.map(it => (
                 <LibraryCard key={it.id} item={it} t={t} />
               ))}
             </div>
