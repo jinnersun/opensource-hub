@@ -1,11 +1,12 @@
 /**
  * API 代理路由
- * 通过 ?path= 参数转发到 API Worker
+ * 通过 ?path= 参数转发到 API Worker（支持 GET + POST）
  *
  * Cloudflare Pages 生产环境：通过 Service Binding 内网直连
  * 开发环境：fallback 到 localhost:8787
  */
-export async function GET(request: Request) {
+
+async function forward(request: Request, method: string, body?: string) {
   const url = new URL(request.url)
   const apiPath = url.searchParams.get('path')
 
@@ -19,26 +20,26 @@ export async function GET(request: Request) {
   try {
     let response: Response
 
-    // 优先尝试 Service Binding 内网直连
     try {
       const cloudflareContext = (globalThis as any)[Symbol.for("__cloudflare-context__")]
       const apiBinding = cloudflareContext?.env?.API
       if (apiBinding && typeof apiBinding.fetch === 'function') {
-        const apiRequest = new Request(`http://internal${apiPath}`, {
-          method: 'GET',
+        const init: RequestInit = {
+          method,
           headers: { 'Content-Type': 'application/json' },
-        })
+        }
+        if (body) init.body = body
+        const apiRequest = new Request(`http://internal${apiPath}`, init)
         response = await apiBinding.fetch(apiRequest)
       } else {
-        throw new Error(`Service binding not available, context=${typeof cloudflareContext}, api=${typeof apiBinding}`)
+        throw new Error(`Service binding not available`)
       }
     } catch (sbErr: any) {
-      // Fallback: 开发环境直连本地 API Worker
       console.warn('Service Binding failed:', sbErr?.message || sbErr)
       const devUrl = `http://localhost:8787${apiPath}`
-      response = await fetch(devUrl, {
-        headers: { 'Content-Type': 'application/json' },
-      })
+      const init: RequestInit = { method, headers: { 'Content-Type': 'application/json' } }
+      if (body) init.body = body
+      response = await fetch(devUrl, init)
     }
 
     const data = await response.text()
@@ -46,7 +47,7 @@ export async function GET(request: Request) {
       status: response.status,
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=60',
+        'Cache-Control': method === 'GET' ? 'public, max-age=60' : 'no-store',
       },
     })
   } catch (error: any) {
@@ -56,4 +57,13 @@ export async function GET(request: Request) {
       headers: { 'Content-Type': 'application/json' },
     })
   }
+}
+
+export async function GET(request: Request) {
+  return forward(request, 'GET')
+}
+
+export async function POST(request: Request) {
+  const body = await request.text().catch(() => undefined)
+  return forward(request, 'POST', body)
 }
