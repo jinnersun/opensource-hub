@@ -11,6 +11,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [checking, setChecking] = useState(true)
 
   useEffect(() => {
+    // 登录页不需要鉴权
+    if (pathname === '/admin/login') {
+      setAuthed(true)
+      setChecking(false)
+      return
+    }
     const token = sessionStorage.getItem('admin_token')
     if (!token) {
       router.replace('/admin/login')

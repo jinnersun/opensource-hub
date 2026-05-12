@@ -18,8 +18,6 @@ const localeNames: Record<string, string> = {
   ko: '한국어',
 }
 
-const locales = Object.keys(localeNames)
-
 export function LanguageSwitcher() {
   const locale = useLocale()
   const router = useRouter()
