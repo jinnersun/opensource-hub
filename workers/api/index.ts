@@ -333,7 +333,7 @@ async function getTrending(db: D1Database, params: URLSearchParams): Promise<Res
 }
 
 // 搜索应用
-async function searchApps(db: D1Database, params: URLSearchParams): Promise<Response> {
+async function searchApps(db: D1Database, params: URLSearchParams, env: Env): Promise<Response> {
   const query = params.get('q')
   const limit = Math.min(parseInt(params.get('limit') || '20'), 50)
   const lang = params.get('lang') || 'zh'
@@ -868,7 +868,7 @@ export default {
 
       // 搜索
       if (path === '/api/search') {
-        return await searchApps(env.DB, url.searchParams)
+        return await searchApps(env.DB, url.searchParams, env)
       }
 
       // 代码宝库列表
