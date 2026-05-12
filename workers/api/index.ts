@@ -586,7 +586,7 @@ async function getHomeData(db: D1Database, params: URLSearchParams): Promise<Res
           (
             (CAST(a.stars_count AS REAL) / (a.stars_count + 5000.0)) * 0.5 +
             (1.0 / (1.0 + MAX(0.0, julianday('now') - julianday(COALESCE(a.last_updated, a.created_at))) / 30.0)) * 0.3 +
-            (CASE WHEN t.summary IS NOT NULL AND LENGTH(t.summary) > 20 THEN 1.0 ELSE 0.0 END) * 0.2
+            (CASE WHEN COALESCE(t_req.summary, t_zh.summary) IS NOT NULL AND LENGTH(COALESCE(t_req.summary, t_zh.summary)) > 20 THEN 1.0 ELSE 0.0 END) * 0.2
           ) AS featured_score
         FROM apps a
         ${appJoinClause}
