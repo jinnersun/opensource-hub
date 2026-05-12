@@ -533,12 +533,13 @@ async function searchApps(db: D1Database, params: URLSearchParams, env: Env): Pr
         description: item.trans_desc || item.description,
         full_description: item.trans_full_desc || item.full_description,
         ai_content: {
-        summary: item.summary,
-        features: item.features,
-        use_cases: item.use_cases,
-        quick_start_guide: item.quick_start_guide,
-        uninstall_guide: item.uninstall_guide,
-        caveats: item.caveats,
+          summary: item.summary,
+          features: item.features,
+          use_cases: item.use_cases,
+          quick_start_guide: item.quick_start_guide,
+          uninstall_guide: item.uninstall_guide,
+          caveats: item.caveats,
+        },
       }
     }))
 
