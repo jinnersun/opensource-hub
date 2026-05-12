@@ -1,11 +1,12 @@
 "use client"
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from '@/i18n/routing'
 import { Shield } from 'lucide-react'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
+  const pathname = usePathname()
   const [authed, setAuthed] = useState(false)
   const [checking, setChecking] = useState(true)
 
@@ -15,14 +16,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       router.replace('/admin/login')
       return
     }
-    // Verify token is still valid
     fetch('/api/proxy?path=/admin/stats', {
       headers: { 'Authorization': `Bearer ${token}` },
     }).then(r => {
       if (r.ok) { setAuthed(true) } else { sessionStorage.removeItem('admin_token'); router.replace('/admin/login') }
     }).catch(() => router.replace('/admin/login'))
     .finally(() => setChecking(false))
-  }, [router])
+  }, [router, pathname])
 
   if (checking) {
     return <div className="flex min-h-screen items-center justify-center"><Shield className="size-8 animate-pulse text-muted-foreground" /></div>
