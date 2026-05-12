@@ -5,6 +5,8 @@
 export interface Env {
   DB: D1Database
   KV: KVNamespace
+  VECTORIZE: VectorizeIndex
+  AI: Ai
   OPENAI_API_KEY: string
   GITHUB_TOKEN?: string
   ALERT_WEBHOOK_URL?: string

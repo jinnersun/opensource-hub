@@ -10,7 +10,7 @@
 
 import { runEtl } from './scheduler'
 import { fetchLatestRelease } from './release'
-import { saveVersionsOnly } from './persistence'
+import { saveVersionsOnly, upsertEmbedding } from './persistence'
 import { promoteToLibrary } from './library'
 import type { BatchStats, Env } from './types'
 
@@ -126,6 +126,63 @@ async function handleStatus(env: Env): Promise<Response> {
   })
 }
 
+/**
+ * 存量项目向量回填：对已有的 apps 生成 embedding 并写入 Vectorize
+ * 同步执行，返回详细结果。用 offset 参数分批调用，避免超时。
+ * 幂等：重复 upsert 会覆盖同 ID 的旧向量
+ */
+async function backfillEmbeddings(
+  env: Env, batchSize: number, offset: number,
+): Promise<{ done: number; failed: number; errors: string[]; hasMore: boolean; nextOffset: number }> {
+  let done = 0
+  let failed = 0
+  const errors: string[] = []
+
+  const rows = await env.DB.prepare(
+    `SELECT a.id, a.name, a.description, a.tags, a.category,
+            t_zh.summary as summaryZh, t_en.summary as summaryEn
+     FROM apps a
+     LEFT JOIN app_translations t_zh ON t_zh.app_id = a.id AND t_zh.locale = 'zh'
+     LEFT JOIN app_translations t_en ON t_en.app_id = a.id AND t_en.locale = 'en'
+     WHERE a.status = 'active'
+     ORDER BY a.id
+     LIMIT ? OFFSET ?`,
+  ).bind(batchSize, offset).all<{
+    id: string; name: string; description: string | null;
+    tags: string | null; category: string;
+    summaryZh: string | null; summaryEn: string | null;
+  }>()
+
+  if (!rows.results || rows.results.length === 0) {
+    return { done: 0, failed: 0, errors: [], hasMore: false, nextOffset: offset }
+  }
+
+  for (const r of rows.results) {
+    try {
+      let tags: string[] = []
+      if (r.tags) {
+        try { tags = JSON.parse(r.tags) } catch { tags = [r.tags] }
+      }
+      await upsertEmbedding(
+        env, r.id, r.name, r.description || '',
+        r.summaryZh || '', r.summaryEn || '',
+        tags, r.category || '',
+      )
+      done++
+    } catch (err) {
+      failed++
+      const msg = `${r.id}: ${(err as Error).message}`
+      errors.push(msg)
+      console.warn(`[backfill] ${msg}`)
+    }
+  }
+
+  const hasMore = rows.results.length === batchSize
+  const nextOffset = offset + rows.results.length
+  console.log(`[backfill] offset=${offset} done=${done} failed=${failed} hasMore=${hasMore}`)
+  return { done, failed, errors, hasMore, nextOffset }
+}
+
 export default {
   async scheduled(_controller: ScheduledController, env: Env, ctx: ExecutionContext) {
     console.log('[ETL] scheduled 触发')
@@ -156,6 +213,40 @@ export default {
       return new Response(`refresh-versions started (limit=${limit})`, { status: 202 })
     }
 
+    if (url.pathname === '/etl/backfill-embeddings' && request.method === 'POST') {
+      const batchSize = Math.max(1, Math.min(20, parseInt(url.searchParams.get('batch') || '10')))
+      const offset = Math.max(0, parseInt(url.searchParams.get('offset') || '0'))
+      try {
+        const result = await backfillEmbeddings(env, batchSize, offset)
+        return Response.json(result)
+      } catch (err) {
+        return new Response(`backfill error: ${(err as Error).message}`, { status: 500 })
+      }
+    }
+
+    // 诊断端点：测试 AI + Vectorize 绑定是否正常
+    if (url.pathname === '/etl/diag' && request.method === 'GET') {
+      const diag: Record<string, unknown> = {}
+      // Test AI binding
+      try {
+        const aiRes = await env.AI.run('@cf/baai/bge-small-en-v1.5', { text: ['hello test'] }) as { data: number[][] }
+        diag.ai = { ok: true, dimensions: aiRes.data?.[0]?.length || 0 }
+      } catch (err) {
+        diag.ai = { ok: false, error: (err as Error).message }
+      }
+      // Test Vectorize binding
+      try {
+        await env.VECTORIZE.getByIds(['nonexistent-test-id'])
+        diag.vectorize = { ok: true }
+      } catch (err) {
+        diag.vectorize = { ok: false, error: (err as Error).message }
+      }
+      // Count apps
+      const count = await env.DB.prepare(`SELECT COUNT(*) as c FROM apps WHERE status = 'active'`).first<{ c: number }>()
+      diag.appCount = count?.c || 0
+      return Response.json(diag)
+    }
+
     if (url.pathname === '/etl/status' && request.method === 'GET') {
       try {
         return await handleStatus(env)
@@ -179,6 +270,8 @@ export default {
           'POST /etl/trigger',
           'POST /etl/promote-library',
           'POST /etl/refresh-versions?limit=20',
+          'POST /etl/backfill-embeddings?batch=10&offset=0',
+          'GET /etl/diag',
           'GET /etl/status',
           'GET /etl/metrics',
         ],

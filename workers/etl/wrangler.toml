@@ -19,6 +19,15 @@ database_id = "9989fa14-ca29-46ef-8c9f-9ab55f6b47d7"
 binding = "KV"
 id = "4a1bc5fb651342528766c6f4248d4e69"
 
+# Workers AI 绑定 (用于 embedding 生成)
+[ai]
+binding = "AI"
+
+# Vectorize 向量搜索索引
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "opensource-hub-search"
+
 # 环境变量
 [vars]
 ENVIRONMENT = "production"

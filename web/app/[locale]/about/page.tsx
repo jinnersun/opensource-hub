@@ -46,10 +46,10 @@ export default function AboutPage() {
               <div className="flex size-10 items-center justify-center rounded-lg bg-blue-500/10">
                 <Shield className="size-5 text-blue-500" />
               </div>
-              <h2 className="text-xl font-bold">安全承诺</h2>
+              <h2 className="text-xl font-bold">透明可信</h2>
               <p className="text-muted-foreground leading-relaxed">
-                每一款上架的软件都经过严格的安全扫描和人工审核。我们展示透明的安全报告、SHA256 校验码和官方源码链接，
-                让你下载的每一个文件都安全可靠。我们绝不分发含有恶意代码或捆绑广告的软件。
+                每款软件的安装包都直接来自 GitHub 官方 Release 页面，我们展示项目原始的 SHA-256 校验码和源码链接，
+                供你下载后自行核对文件完整性。所有内容由 AI 辅助生成，我们绝不分发含有恶意代码或捆绑广告的软件。
               </p>
             </div>
           </div>
@@ -76,9 +76,9 @@ export default function AboutPage() {
               </div>
               <div className="rounded-xl border bg-card p-6">
                 <div className="mb-3 text-2xl font-bold text-muted-foreground">03</div>
-                <h3 className="mb-2 font-semibold">人工审核</h3>
+                <h3 className="mb-2 font-semibold">社区共建</h3>
                 <p className="text-sm text-muted-foreground">
-                  安全扫描通过后，由社区志愿者进行最终质量把关
+                  用户可提交软件推荐和纠错反馈，共同维护平台内容质量
                 </p>
               </div>
             </div>

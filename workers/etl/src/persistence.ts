@@ -260,3 +260,55 @@ function buildTranslationStmt(env: Env, appId: string, locale: 'zh' | 'en', ai: 
     ai.modelVersion, ai.qualityScore,
   )
 }
+
+/**
+ * 为 app 生成向量 embedding 并 upsert 到 Vectorize 索引
+ * 使用 bge-small-en-v1.5 (384维)，拼接英文描述+中文摘要以覆盖双语语义
+ */
+export async function upsertEmbedding(
+  env: Env,
+  appId: string,
+  name: string,
+  description: string,
+  summaryZh: string,
+  summaryEn: string,
+  tags: string[],
+  category: string,
+): Promise<void> {
+  try {
+    // 拼接搜索文本：名称 + 中英文摘要 + 标签 + 分类，覆盖多语言搜索意图
+    const searchText = [
+      name,
+      description,
+      summaryEn,
+      summaryZh,
+      ...(tags || []),
+      category,
+    ].filter(Boolean).join('. ').slice(0, 2000)
+
+    const aiResult = await env.AI.run('@cf/baai/bge-small-en-v1.5', {
+      text: [searchText],
+    }) as { data: number[][] }
+
+    const vector = aiResult.data?.[0]
+    if (!vector || vector.length === 0) {
+      console.warn(`[Embedding] empty vector for ${appId}`)
+      return
+    }
+
+    await env.VECTORIZE.upsert([{
+      id: appId,
+      values: vector,
+      metadata: {
+        name,
+        category,
+        slug: appId,
+      },
+    }])
+
+    console.log(`[Embedding] ✅ upserted ${appId} (${vector.length}d)`)
+  } catch (err) {
+    // embedding 失败不阻塞主流程
+    console.warn(`[Embedding] ${appId} failed:`, (err as Error).message)
+  }
+}

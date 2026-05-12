@@ -212,17 +212,22 @@ OpenSource-Hub/
 
 ### 6.2 进行中
 
-- 🚧 ETL 全量处理 665 种子项目（临时 MAX_BATCHES_PER_RUN=7）
-- 🚧 完成后调回正常批次
+- 🚧 语义搜索升级（Cloudflare Vectorize 向量检索）
+- 🚧 类同项目关联推荐
 
-### 6.3 待规划
+### 6.3 已完成
 
-- ⬜ VirusTotal 集成
-- ⬜ 语义搜索升级（向量检索）
-- ⬜ 管理后台面板
-- ⬜ 热门动态实时数据（activities / star_snapshots 采集）
+- ✅ ETL 全量处理种子项目（数据持续扩展中）
+
+### 6.4 待规划
+
+- ⬜ 管理后台面板（与域名一起延后处理）
 - ⬜ 更多语言支持（日语、韩语）
-- ⬜ 类同项目去重
+
+### 6.5 已放弃
+
+- ❌ VirusTotal 集成 — 改为展示 GitHub Release 官方 SHA-256 校验码
+- ❌ activities / star_snapshots 表数据采集 — 用 apps 表字段 + ETL 增量刷新替代
 
 ---
 
@@ -319,4 +324,4 @@ npm run deploy    # 部署到 CF Pages
 ---
 
 **文档维护**: 随项目进展持续更新
-**最后验证**: 2026-05-07
+**最后验证**: 2026-05-12

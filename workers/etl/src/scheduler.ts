@@ -18,6 +18,7 @@ import {
   saveFailure,
   saveSkipped,
   saveSuccess,
+  upsertEmbedding,
 } from './persistence'
 import type { BatchStats, Env, RawApp, ReleaseAssetView } from './types'
 
@@ -173,6 +174,15 @@ async function processOneInner(
     etag: fetchResult.etag, ai: aiResult, nextCheckAt: nextOk,
     releaseAssets,
   })
+  // 向量 embedding（失败不阻塞主流程）
+  try {
+    const appId = `app_${repo.id}`
+    await upsertEmbedding(
+      env, appId, aiResult.name, aiResult.description,
+      aiResult.summaryZh, aiResult.summaryEn,
+      aiResult.tags, aiResult.category,
+    )
+  } catch { /* embedding 失败静默 */ }
   stats.succeeded++
 }
 

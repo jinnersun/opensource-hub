@@ -12,6 +12,15 @@ binding = "DB"
 database_name = "opensource-hub-db"
 database_id = "9989fa14-ca29-46ef-8c9f-9ab55f6b47d7"
 
+# Workers AI 绑定 (用于搜索 query embedding)
+[ai]
+binding = "AI"
+
+# Vectorize 向量搜索索引
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "opensource-hub-search"
+
 # 环境变量
 [vars]
 API_VERSION = "1.0.0"

@@ -491,7 +491,7 @@ export function transformAppForDisplay(app: App) {
     stars: app.stars_count,
     category: app.category || 'system',
     categoryLabel: app.category_name || app.category || '系统调教',
-    verified: true,
+    verified: !!platforms.windows?.sha256 || !!platforms.mac?.sha256 || !!platforms.linux?.sha256,
     features: features.slice(0, 5),
     gettingStarted: gettingStarted.slice(0, 3),
     uninstallNote: aiContent?.uninstall_guide?.split('\n')[0] || '卸载干净，不留系统痕迹',
@@ -507,26 +507,17 @@ export function transformAppForDisplay(app: App) {
     latestReleaseNotes: (app.versions && app.versions.length > 0)
       ? (app.versions[0] as any).release_notes || ''
       : '',
-    // 安全信息
-    virustotalUrl: app.security?.virustotal_url || undefined,
-    virustotalScore: app.security?.virustotal_score ?? undefined,
     // 必填字段补全
     platforms,
-    // 校验码：优先取 windows -> mac -> linux 中第一个有值的；用作 fallback / VirusTotal 链接
+    // SHA-256 校验码：优先取版本中的 sha256 → 其次 app_security 表 → 再次版本中的 sha256
     checksum:
-      app.security?.sha256 ||
       platforms.windows?.sha256 ||
       platforms.mac?.sha256 ||
       platforms.linux?.sha256 ||
+      app.security?.sha256 ||
       '',
     sourceUrl: app.github_url || '',
     lastUpdated: app.last_updated || '',
-    // 安全扫描状态：仅当后端明确返回 passed 才算通过；缺失数据一律按 pending（等待扫描）处理，避免误导
-    securityScan: (app.security?.audit_status === 'passed'
-      ? 'passed'
-      : app.security?.audit_status === 'failed'
-        ? 'failed'
-        : 'pending') as 'passed' | 'pending' | 'failed',
     // 兼容字段
     docsUrl: (app as any).documentation_url || undefined,
     license: app.license || undefined,

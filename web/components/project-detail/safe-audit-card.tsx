@@ -17,7 +17,6 @@ export function SafeAuditCard({ project }: SafeAuditCardProps) {
   const t = useTranslations('project')
 
   const hasChecksum = !!project.checksum && project.checksum !== '—' && project.checksum !== ''
-  const isPassed = project.securityScan === 'passed'
 
   const copyChecksum = () => {
     if (!hasChecksum) return
@@ -30,21 +29,21 @@ export function SafeAuditCard({ project }: SafeAuditCardProps) {
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base">
-          <ShieldCheck className={cn("size-5", isPassed ? "text-emerald-500" : "text-muted-foreground")} />
+          <ShieldCheck className={cn("size-5", hasChecksum ? "text-emerald-500" : "text-muted-foreground")} />
           {t('securityAudit')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Security Status */}
+        {/* Checksum Status */}
         <div className={cn(
           "flex items-center gap-3 rounded-lg p-3",
-          isPassed ? "bg-emerald-500/10" : "bg-muted/50"
+          hasChecksum ? "bg-emerald-500/10" : "bg-muted/50"
         )}>
           <div className={cn(
             "flex size-8 items-center justify-center rounded-full",
-            isPassed ? "bg-emerald-500/20" : "bg-muted"
+            hasChecksum ? "bg-emerald-500/20" : "bg-muted"
           )}>
-            {isPassed ? (
+            {hasChecksum ? (
               <ShieldCheck className="size-4 text-emerald-600 dark:text-emerald-400" />
             ) : (
               <ShieldAlert className="size-4 text-muted-foreground" />
@@ -53,67 +52,21 @@ export function SafeAuditCard({ project }: SafeAuditCardProps) {
           <div>
             <p className={cn(
               "text-sm font-medium",
-              isPassed ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"
+              hasChecksum ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"
             )}>
-              {isPassed ? t('securityScanPassed') : t('securityScanPending')}
+              {hasChecksum ? t('sha256Available') : t('securityScanPending')}
             </p>
             <p className="text-xs text-muted-foreground">
-              {isPassed ? t('passedMultiCheck') : t('securityScanPendingDesc')}
+              {hasChecksum ? t('passedMultiCheck') : t('securityScanPendingDesc')}
             </p>
           </div>
         </div>
 
-        {/* VirusTotal Score */}
-        {project.virustotalScore != null && (
-          <div className="space-y-2">
-            <p className="text-xs font-medium text-muted-foreground">{t('vtScore')}</p>
-            <div className="flex items-center gap-3 rounded-lg border p-2.5">
-              <div className={cn(
-                "flex size-9 shrink-0 items-center justify-center rounded-full text-xs font-bold",
-                project.virustotalScore === 0
-                  ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
-                  : project.virustotalScore <= 5
-                    ? "bg-amber-500/15 text-amber-600 dark:text-amber-400"
-                    : "bg-red-500/15 text-red-600 dark:text-red-400"
-              )}>
-                {project.virustotalScore}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className={cn(
-                  "text-sm font-medium",
-                  project.virustotalScore === 0
-                    ? "text-emerald-600 dark:text-emerald-400"
-                    : project.virustotalScore <= 5
-                      ? "text-amber-600 dark:text-amber-400"
-                      : "text-red-600 dark:text-red-400"
-                )}>
-                  {project.virustotalScore === 0 ? t('vtSafe') : t('vtDetections', { score: project.virustotalScore })}
-                </p>
-                <p className="text-xs text-muted-foreground">0/{70 + project.virustotalScore} engines</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* VirusTotal Link：仅当真的有 sha256 或 vt 链接时才展示 */}
-        {(project.virustotalUrl || hasChecksum) && (
-          <div className="space-y-2">
-            <p className="text-xs font-medium text-muted-foreground">{t('virusScan')}</p>
-            <a
-              href={project.virustotalUrl || `https://www.virustotal.com/gui/file/${project.checksum}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-between rounded-lg border p-2.5 text-sm transition-colors hover:bg-muted"
-            >
-              <span>{t('vtReport')}</span>
-              <ExternalLink className="size-3.5 text-muted-foreground" />
-            </a>
-          </div>
-        )}
-
-        {/* SHA256 Checksum：缺失时显示 pending 提示而不是 "—" */}
+        {/* SHA256 Checksum */}
         <div className="space-y-2">
-          <p className="text-xs font-medium text-muted-foreground">{t('sha256')}</p>
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-medium text-muted-foreground">{t('sha256')}</p>
+          </div>
           {hasChecksum ? (
             <>
               <div className="flex items-center gap-2">
@@ -147,6 +100,13 @@ export function SafeAuditCard({ project }: SafeAuditCardProps) {
               </p>
             </div>
           )}
+        </div>
+
+        {/* SHA256 Source Note */}
+        <div className="rounded-lg bg-muted/30 p-3">
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            {t('sha256SourceText')}
+          </p>
         </div>
 
         {/* Source Code Link */}

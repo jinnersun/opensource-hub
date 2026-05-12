@@ -5,6 +5,8 @@
 
 export interface Env {
   DB: D1Database
+  VECTORIZE?: VectorizeIndex
+  AI?: Ai
 }
 
 // CORS 响应头
@@ -41,12 +43,23 @@ function handleOptions() {
 }
 
 // ==========================================
-// locale fallback SQL 片段（参数化，严禁拼接 lang）
-// 语义：优先命中请求语言的翻译；若该语言没有记录，COALESCE 回退到 'zh'
+// 双 LEFT JOIN 翻译回退：t_req=请求语言，t_zh=中文兜底
+// 替代旧的相关子查询写法（D1/SQLite 对 JOIN ON 中相关子查询处理不稳定，会静默 fallback 导致翻译字段全 NULL）
 // 安全要点：使用 ? 占位符，由调用方 bind(lang, ...) 传入，防 SQL 注入
 // ==========================================
-const LOCALE_FALLBACK_SQL =
-  `COALESCE((SELECT locale FROM app_translations WHERE app_id = a.id AND locale = ? LIMIT 1), 'zh')`
+const TRANSLATION_JOIN =
+  `LEFT JOIN app_translations t_req ON t_req.app_id = a.id AND t_req.locale = ?
+   LEFT JOIN app_translations t_zh ON t_zh.app_id = a.id AND t_zh.locale = 'zh'`
+
+const TRANSLATION_SELECT =
+  `COALESCE(t_req.summary, t_zh.summary) as summary,
+   COALESCE(t_req.description, t_zh.description) as trans_desc,
+   COALESCE(t_req.full_description, t_zh.full_description) as trans_full_desc,
+   COALESCE(t_req.features, t_zh.features) as features,
+   COALESCE(t_req.use_cases, t_zh.use_cases) as use_cases,
+   COALESCE(t_req.quick_start_guide, t_zh.quick_start_guide) as quick_start_guide,
+   COALESCE(t_req.uninstall_guide, t_zh.uninstall_guide) as uninstall_guide,
+   COALESCE(t_req.caveats, t_zh.caveats) as caveats`
 
 // ==========================================
 // API 路由处理
@@ -68,13 +81,13 @@ async function getApps(db: D1Database, params: URLSearchParams): Promise<Respons
         a.github_url, a.license, a.homepage_url, a.is_featured,
         a.status, a.stars_count, a.last_updated, a.created_at,
         c.name as category_name,
-        t.summary, t.description as trans_desc, t.full_description as trans_full_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats
+        ${TRANSLATION_SELECT}
       FROM apps a
       LEFT JOIN categories c ON a.category = c.slug
-      LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ${LOCALE_FALLBACK_SQL}
+      ${TRANSLATION_JOIN}
       WHERE a.status = 'active'
     `
-    // 第一个绑定参数始终是 locale fallback 子查询使用的 lang
+    // TRANSLATION_JOIN 中 t_req.locale = ? 需要绑定的 lang
     const bindings: (string | number)[] = [lang]
 
     if (category) {
@@ -271,10 +284,10 @@ async function getTrending(db: D1Database, params: URLSearchParams): Promise<Res
       a.id, a.name, a.slug, a.description, a.full_description, a.category,
       a.stars_count, a.last_updated,
       c.name as category_name,
-      t.summary, t.description as trans_desc, t.full_description as trans_full_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats`
+      ${TRANSLATION_SELECT}`
     const joinClause = `
       LEFT JOIN categories c ON a.category = c.slug
-      LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ${LOCALE_FALLBACK_SQL}`
+      ${TRANSLATION_JOIN}`
 
     let query: string
 
@@ -343,19 +356,22 @@ async function searchApps(db: D1Database, params: URLSearchParams): Promise<Resp
           a.id, a.name, a.slug, a.description, a.full_description, a.category, a.tags,
           a.github_url, a.license, a.stars_count, a.last_updated,
           c.name as category_name,
-          t.summary, t.description as trans_desc, t.full_description as trans_full_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats
+          ${TRANSLATION_SELECT}
         FROM apps a
         LEFT JOIN categories c ON a.category = c.slug
-        LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ${LOCALE_FALLBACK_SQL}
+        ${TRANSLATION_JOIN}
         WHERE a.status = 'active'
           AND (
             a.name LIKE ? COLLATE NOCASE
             OR a.description LIKE ? COLLATE NOCASE
             OR a.full_description LIKE ? COLLATE NOCASE
             OR a.tags LIKE ? COLLATE NOCASE
-            OR t.description LIKE ? COLLATE NOCASE
-            OR t.full_description LIKE ? COLLATE NOCASE
-            OR t.summary LIKE ? COLLATE NOCASE
+            OR t_req.description LIKE ? COLLATE NOCASE
+            OR t_req.full_description LIKE ? COLLATE NOCASE
+            OR t_req.summary LIKE ? COLLATE NOCASE
+            OR t_zh.description LIKE ? COLLATE NOCASE
+            OR t_zh.full_description LIKE ? COLLATE NOCASE
+            OR t_zh.summary LIKE ? COLLATE NOCASE
             OR c.name LIKE ? COLLATE NOCASE
           )
         ORDER BY
@@ -366,15 +382,49 @@ async function searchApps(db: D1Database, params: URLSearchParams): Promise<Resp
           a.stars_count DESC
         LIMIT ?
       `)
-      // 绑定顺序：locale、8个 WHERE LIKE、ORDER BY 中的 name精准/name模糊/tags模糊、limit
+      // 绑定顺序：locale、10个 WHERE LIKE、ORDER BY 中的 name精准/name模糊/tags模糊、limit
       .bind(
         lang,
         searchPattern, searchPattern, searchPattern, searchPattern,
-        searchPattern, searchPattern, searchPattern, searchPattern,
+        searchPattern, searchPattern, searchPattern,
+        searchPattern, searchPattern, searchPattern,
+        searchPattern,
         query, searchPattern, searchPattern,
         limit,
       )
       .all()
+
+    // 向量搜索（有 Vectorize + AI 绑定时自动启用，失败静默回退）
+    let vectorAppIds: string[] = []
+    if (env.VECTORIZE && env.AI) {
+      try {
+        const embResult = await env.AI.run('@cf/baai/bge-small-en-v1.5', { text: [query] }) as { data: number[][] }
+        const qv = embResult.data?.[0]
+        if (qv && qv.length > 0) {
+          const vecMatches = await env.VECTORIZE.query(qv, { topK: 10, returnMetadata: false })
+          vectorAppIds = (vecMatches.matches || []).map((m: { id: string }) => m.id).filter(Boolean)
+        }
+      } catch (err) { console.warn('[Vectorize] query failed:', (err as Error).message) }
+    }
+
+    // 向量命中但 SQL 未命中的项目，补查 D1
+    let vectorApps: any[] = []
+    const newIds = vectorAppIds.filter(id => !(results || []).some((r: any) => r.id === id))
+    if (newIds.length > 0) {
+      const vp = newIds.map(() => '?').join(',')
+      const { results: vResults } = await db.prepare(
+        `SELECT a.id, a.name, a.slug, a.description, a.full_description, a.category, a.tags,
+                a.github_url, a.license, a.stars_count, a.last_updated,
+                c.name as category_name, ${TRANSLATION_SELECT}
+         FROM apps a LEFT JOIN categories c ON a.category = c.slug
+         ${TRANSLATION_JOIN}
+         WHERE a.status = 'active' AND a.id IN (${vp})`,
+      ).bind(lang, ...newIds).all()
+      vectorApps = (vResults || [])
+    }
+
+    // 合并结果
+    const allResults = [...(results || []), ...vectorApps]
 
     // 记录搜索分析
     await db
@@ -387,10 +437,10 @@ async function searchApps(db: D1Database, params: URLSearchParams): Promise<Resp
           search_count = search_count + 1,
           last_searched = datetime('now')
       `)
-      .bind(query, results?.length || 0, results && results.length > 0 ? 1 : 0)
+      .bind(query, allResults.length, allResults.length > 0 ? 1 : 0)
       .run()
 
-    const mappedResults = (results || []).map((app: any) => ({
+    const mappedResults = allResults.map((app: any) => ({
       ...app,
       description: app.trans_desc || app.description,
       full_description: app.trans_full_desc || app.full_description,
@@ -407,7 +457,7 @@ async function searchApps(db: D1Database, params: URLSearchParams): Promise<Resp
     return jsonResponse({
       data: mappedResults,
       query,
-      count: results?.length || 0,
+      count: mappedResults.length,
     })
   } catch (error) {
     console.error('Error searching apps:', error)
@@ -513,9 +563,9 @@ async function getHomeData(db: D1Database, params: URLSearchParams): Promise<Res
   try {
     const appSelectFields = `
       a.id, a.name, a.slug, a.description, a.full_description, a.category, a.stars_count,
-      t.summary, t.description as trans_desc, t.full_description as trans_full_desc, t.features, t.use_cases, t.quick_start_guide, t.uninstall_guide, t.caveats`
+      ${TRANSLATION_SELECT}`
     const appJoinClause = `
-      LEFT JOIN app_translations t ON t.app_id = a.id AND t.locale = ${LOCALE_FALLBACK_SQL}`
+      ${TRANSLATION_JOIN}`
 
     // 并行获取各类数据（每条含 locale fallback 的 SQL 都必须 bind(lang)）
     const [

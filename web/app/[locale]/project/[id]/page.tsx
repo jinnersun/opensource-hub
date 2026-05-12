@@ -49,15 +49,22 @@ export default function ProjectPage() {
       const p = transformAppForDisplay(app)
       setProject(p)
 
-      // Get similar projects
+      // Get similar projects (category + tags overlap ranking)
       try {
-        const appsResult = await getApps({ category: p.category, limit: 4, locale })
-        setSimilarProjects(
-          (appsResult.data || [])
-            .map(transformAppForDisplay)
-            .filter((sp: Project) => sp.id !== p.id)
-            .slice(0, 3)
-        )
+        const appsResult = await getApps({ category: p.category, limit: 10, locale })
+        const currentTags = new Set(p.tags || [])
+        const scored = (appsResult.data || [])
+          .map(transformAppForDisplay)
+          .filter((sp: Project) => sp.id !== p.id)
+          .map(sp => {
+            const spTags = new Set(sp.tags || [])
+            const overlap = [...currentTags].filter(t => spTags.has(t)).length
+            return { project: sp, overlap }
+          })
+          .sort((a, b) => b.overlap - a.overlap || b.project.stars - a.project.stars)
+          .slice(0, 3)
+          .map(s => s.project)
+        setSimilarProjects(scored)
       } catch {
         // similarProjects 失败不阻断
       }
@@ -171,8 +178,8 @@ export default function ProjectPage() {
                   <h1 className="text-2xl font-bold sm:text-3xl">{project.humanTitle}</h1>
                   {project.verified && (
                     <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20">
-                      <ShieldCheck className="mr-1 size-3" />
-                      {t('verified')}
+                      <CheckCircle2 className="mr-1 size-3" />
+                      SHA-256
                     </Badge>
                   )}
                 </div>
@@ -189,7 +196,7 @@ export default function ProjectPage() {
                   <span>·</span>
                   <span className="flex items-center gap-1">
                     <CheckCircle2 className="size-3.5 text-emerald-500" />
-                    {t('securityScanPassed')}
+                    {t('sha256Available')}
                   </span>
                 </div>
 

@@ -128,7 +128,7 @@ export default function ContactPage() {
               <div className="rounded-xl border bg-card p-6">
                 <h3 className="mb-2 font-semibold">下载的软件安全吗？</h3>
                 <p className="text-sm text-muted-foreground">
-                  我们所有上架的软件都经过自动安全扫描，并展示 SHA256 校验码供您核对。
+                  所有软件安装包均来自 GitHub 官方 Release 页面，我们展示项目原始的 SHA-256 校验码供您自行核对。
                   同时提供官方 GitHub 源码链接，确保透明可信。
                 </p>
               </div>
