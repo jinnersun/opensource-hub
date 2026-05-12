@@ -34,9 +34,9 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           cd scripts
-          # --discover：除种子列表外，额外抓 GitHub Trending（今日/本周/本月）发现新仓库
-          # --submissions 暂未启用（等 user_submissions 审批流程上线后再接入）
-          npx tsx github-harvester-raw.ts --discover --output ../data/harvested-raw.json
+          # --discover：抓 GitHub Trending
+          # --search：GitHub Search API 按 topic 搜索
+          npx tsx github-harvester-raw.ts --discover --search --output ../data/harvested-raw.json
           
       - name: Upload harvest results
         if: always()

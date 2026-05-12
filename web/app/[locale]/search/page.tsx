@@ -9,7 +9,48 @@ import { SearchBox } from "@/components/search-box"
 import { ProjectCard } from "@/components/project-card"
 import { ErrorState } from "@/components/error-state"
 import { searchApps, transformAppForDisplay, type Project } from "@/lib/api"
-import { Search, Loader2, Frown } from "lucide-react"
+import { Search, Loader2, Frown, Star, ExternalLink, Library } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
+import { parseLibraryTags } from "@/lib/api"
+
+function LibrarySearchCard({ item }: { item: any }) {
+  const tags = parseLibraryTags(item.tags).slice(0, 3)
+  return (
+    <Card className="h-full hover:shadow-md transition-shadow flex flex-col border-dashed">
+      <CardContent className="p-5 flex flex-col flex-1">
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <div className="min-w-0 flex-1">
+            <h3 className="font-semibold text-base truncate">{item.name}</h3>
+            <p className="text-xs text-muted-foreground truncate">{item.full_name}</p>
+          </div>
+          <Badge variant="outline" className="shrink-0 text-[11px] gap-1">
+            <Library className="size-3" />
+            代码宝库
+          </Badge>
+        </div>
+        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+          {item.summary || item.description}
+        </p>
+        {tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-3">
+            {tags.map((tag: string) => (
+              <Badge key={tag} variant="outline" className="text-[11px] px-1.5 py-0">{tag}</Badge>
+            ))}
+          </div>
+        )}
+        <div className="mt-auto flex items-center justify-between text-xs text-muted-foreground pt-3 border-t">
+          <span className="flex items-center gap-1"><Star className="h-3.5 w-3.5" />{(item.stars_count/1000).toFixed(1)}k</span>
+          {item.language && <span>{item.language}</span>}
+          <a href={item.html_url} target="_blank" rel="noopener noreferrer"
+             className="flex items-center gap-1 hover:text-foreground">
+            查看源码<ExternalLink className="h-3 w-3" />
+          </a>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
 
 function SearchResults() {
   const t = useTranslations('searchPage')
@@ -19,6 +60,7 @@ function SearchResults() {
   const query = searchParams.get('q') || ''
 
   const [projects, setProjects] = useState<Project[]>([])
+  const [libProjects, setLibProjects] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
   const [total, setTotal] = useState(0)
@@ -33,7 +75,17 @@ function SearchResults() {
     setError(false)
     try {
       const result = await searchApps(query, 30, locale)
-      setProjects(result.data.map(transformAppForDisplay))
+      const apps: Project[] = []
+      const libs: any[] = []
+      for (const item of result.data) {
+        if ((item as any)._source === 'library') {
+          libs.push(item)
+        } else {
+          apps.push(transformAppForDisplay(item as any))
+        }
+      }
+      setProjects(apps)
+      setLibProjects(libs)
       setTotal(result.count)
     } catch (err) {
       console.error('Search failed:', err)
@@ -71,7 +123,7 @@ function SearchResults() {
             <Search className="size-12 mb-4 opacity-30" />
             <p className="text-lg">{t('enterKeyword')}</p>
           </div>
-        ) : projects.length === 0 ? (
+        ) : projects.length === 0 && libProjects.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
             <Frown className="size-12 mb-4 opacity-30" />
             <p className="text-lg">{t('noResults')}</p>
@@ -87,6 +139,9 @@ function SearchResults() {
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {projects.map((project) => (
                 <ProjectCard key={project.id} project={project} />
+              ))}
+              {libProjects.map((lib) => (
+                <LibrarySearchCard key={`lib_${lib.id}`} item={lib} />
               ))}
             </div>
           </>

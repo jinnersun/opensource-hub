@@ -349,6 +349,7 @@ export async function getLibrary(params?: {
   projectType?: string
   category?: string
   language?: string
+  q?: string
   limit?: number
   offset?: number
   sort?: 'stars' | 'updated'
@@ -358,6 +359,7 @@ export async function getLibrary(params?: {
   if (params?.projectType) sp.set('project_type', params.projectType)
   if (params?.category) sp.set('category', params.category)
   if (params?.language) sp.set('language', params.language)
+  if (params?.q) sp.set('q', params.q)
   if (params?.limit) sp.set('limit', String(params.limit))
   if (params?.offset) sp.set('offset', String(params.offset))
   if (params?.sort) sp.set('sort', params.sort)

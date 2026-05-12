@@ -479,6 +479,47 @@ async function discoverTrendingRepos(token?: string): Promise<GitHubRepo[]> {
   return list
 }
 
+async function searchGitHubRepos(token?: string): Promise<GitHubRepo[]> {
+  console.log('🔍 从 GitHub Search API 搜索项目...')
+  const discovered = new Map<string, GitHubRepo>()
+  const queries = [
+    { q: 'topic:windows+stars:>500', cat: 'system' },
+    { q: 'topic:macos+stars:>300', cat: 'system' },
+    { q: 'topic:llm+stars:>500', cat: 'ai' },
+    { q: 'topic:machine-learning+stars:>1000', cat: 'ai' },
+    { q: 'topic:video+stars:>300', cat: 'video' },
+    { q: 'topic:cli+stars:>1000', cat: 'dev-tools' },
+    { q: 'topic:developer-tools+stars:>500', cat: 'dev-tools' },
+    { q: 'topic:terminal+stars:>500', cat: 'dev-tools' },
+    { q: 'topic:privacy+stars:>300', cat: 'privacy' },
+    { q: 'topic:design+stars:>300', cat: 'design' },
+    { q: 'topic:file-manager+stars:>200', cat: 'file-management' },
+    { q: 'topic:productivity+stars:>500', cat: 'office' },
+    { q: 'topic:framework+stars:>2000', cat: 'dev-tools' },
+    { q: 'topic:library+stars:>2000', cat: 'dev-tools' },
+  ]
+  for (const { q, cat } of queries) {
+    try {
+      const url = `${GITHUB_API_BASE}/search/repositories?q=${encodeURIComponent(q)}&sort=stars&per_page=30`
+      const headers: Record<string, string> = {
+        'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'OpenSource-Hub-Harvester/2.0',
+      }
+      if (token) headers['Authorization'] = `Bearer ${token}`
+      const res = await fetch(url, { headers })
+      if (!res.ok) { await delay(2000); continue }
+      const data = await res.json() as { items?: Array<{ full_name: string }> }
+      for (const item of (data.items || [])) {
+        const [owner, repo] = item.full_name.split('/')
+        const key = `${owner}/${repo}`.toLowerCase()
+        if (!discovered.has(key)) discovered.set(key, { owner, repo, category: cat, tags: [], source: 'search' })
+      }
+      await delay(3000) // 30 req/min limit
+    } catch { await delay(2000) }
+  }
+  console.log(`✅ 搜索发现合计 ${discovered.size} 个`)
+  return Array.from(discovered.values())
+}
+
 /**
  * 从 GitHub Trending HTML 中抽取 owner/repo 列表。
  * 解析策略：宽容短语区配（避免因 GitHub 改结构一处点就翻）
@@ -564,12 +605,14 @@ async function main() {
   const tokenIndex = args.indexOf('--token')
   const discoverIndex = args.indexOf('--discover')
   const submissionsIndex = args.indexOf('--submissions')
-  
+  const searchIndex = args.indexOf('--search')
+
   const reposFile = reposIndex !== -1 ? args[reposIndex + 1] : null
   const outputFile = outputIndex !== -1 ? args[outputIndex + 1] : 'data/harvested-raw.json'
   const token = tokenIndex !== -1 ? args[tokenIndex + 1] : undefined
   const enableDiscover = discoverIndex !== -1
   const enableSubmissions = submissionsIndex !== -1
+  const enableSearch = searchIndex !== -1
 
   // 加载仓库列表（多层来源）
   const sources: GitHubRepo[][] = []
@@ -592,7 +635,14 @@ async function main() {
     sources.push(trendingRepos)
   }
   
-  // 3. 用户提交（可选）
+  // 3. 搜索发现（可选）
+  if (enableSearch) {
+    console.log('🔍 启用搜索发现...')
+    const searchRepos = await searchGitHubRepos(token)
+    sources.push(searchRepos)
+  }
+
+  // 4. 用户提交（可选）
   if (enableSubmissions) {
     console.log('📥 加载用户提交...')
     // 注意：需要 D1 连接，这里简化处理

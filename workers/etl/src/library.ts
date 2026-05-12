@@ -17,6 +17,7 @@
  */
 
 import type { Env, GitHubRepoInfo } from './types'
+import { upsertEmbedding } from './persistence'
 
 // ========== 常量 ==========
 const STAR_THRESHOLD = 2000
@@ -416,7 +417,15 @@ export async function promoteToLibrary(env: Env): Promise<LibraryBatchStats> {
         try {
           await persistLibraryEntry(env, repo, aiResult, preview)
           stats.promoted++
-          console.log(`[Library] ✅ ${c.full_name} → ${aiResult.projectType}/${aiResult.category}`)
+          // 向量 embedding（失败不阻塞）
+          try {
+            await upsertEmbedding(
+              env, `lib_${repo.id}`, repo.name, repo.description || '',
+              aiResult.summaryZh, aiResult.summary,
+              aiResult.tags, aiResult.category,
+            )
+          } catch { /* embedding 失败静默 */ }
+          console.log(`[Library] ${c.full_name} → ${aiResult.projectType}/${aiResult.category}`)
         } catch (err) {
           stats.dbFailed++
           console.warn(`[Library] ${c.full_name} DB failed:`, (err as Error).message)
