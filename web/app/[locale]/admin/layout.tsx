@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from 'react'
-import { useRouter, usePathname } from '@/i18n/routing'
+import { useRouter, usePathname, Link } from '@/i18n/routing'
 import { Shield } from 'lucide-react'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -43,9 +43,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <span className="font-semibold">OpenSource-Hub Admin</span>
         </div>
         <nav className="flex items-center gap-4 text-sm">
-          <a href="/admin" className="hover:text-foreground text-muted-foreground">总览</a>
-          <a href="/admin/etl" className="hover:text-foreground text-muted-foreground">ETL 作业</a>
-          <a href="/admin/submissions" className="hover:text-foreground text-muted-foreground">提交审核</a>
+          <Link href="/admin" className="hover:text-foreground text-muted-foreground">总览</Link>
+          <Link href="/admin/etl" className="hover:text-foreground text-muted-foreground">ETL 作业</Link>
+          <Link href="/admin/submissions" className="hover:text-foreground text-muted-foreground">提交审核</Link>
           <button onClick={() => { sessionStorage.removeItem('admin_token'); router.replace('/admin/login') }}
             className="text-muted-foreground hover:text-red-500">退出</button>
         </nav>
