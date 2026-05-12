@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Link, usePathname } from '@/i18n/routing'
 import { Package2, Flame, LayoutGrid, Compass, Library } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { LanguageToggle } from "@/components/language-toggle"
+import { LanguageSwitcher } from "@/components/language-switcher"
 import { SubmitSoftwareDialog } from "@/components/submit-software-dialog"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -72,7 +72,7 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <LanguageToggle />
+            <LanguageSwitcher />
             <ThemeToggle />
             <Button
               size="sm"
