@@ -29,6 +29,9 @@ async function forward(request: Request, method: string, body?: string) {
           headers: { 'Content-Type': 'application/json' },
         }
         if (body) init.body = body
+        // 转发 Authorization 头（admin 鉴权需要）
+        const auth = request.headers.get('Authorization')
+        if (auth) (init.headers as Record<string,string>)['Authorization'] = auth
         const apiRequest = new Request(`http://internal${apiPath}`, init)
         response = await apiBinding.fetch(apiRequest)
       } else {
@@ -37,9 +40,11 @@ async function forward(request: Request, method: string, body?: string) {
     } catch (sbErr: any) {
       console.warn('Service Binding failed:', sbErr?.message || sbErr)
       const devUrl = `http://localhost:8787${apiPath}`
-      const init: RequestInit = { method, headers: { 'Content-Type': 'application/json' } }
-      if (body) init.body = body
-      response = await fetch(devUrl, init)
+      const devInit: RequestInit = { method, headers: { 'Content-Type': 'application/json' } }
+      if (body) devInit.body = body
+      const devAuth = request.headers.get('Authorization')
+      if (devAuth) (devInit.headers as Record<string,string>)['Authorization'] = devAuth
+      response = await fetch(devUrl, devInit)
     }
 
     const data = await response.text()

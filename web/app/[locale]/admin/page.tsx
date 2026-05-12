@@ -20,12 +20,13 @@ export default function AdminDashboard() {
   useEffect(() => { api('/admin/stats').then(setStats) }, [])
 
   if (!stats) return <div className="py-20 text-center text-muted-foreground">加载中...</div>
+  if ((stats as any).error) return <div className="py-20 text-center text-red-500">加载失败: {(stats as any).error}</div>
 
   const cards = [
-    { label: '活跃应用', value: stats.apps, icon: Package, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-    { label: '库项目', value: stats.library, icon: BookOpen, color: 'text-violet-500', bg: 'bg-violet-500/10' },
-    { label: '待审核提交', value: stats.submissions.pending || 0, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-    { label: 'ETL 失败', value: stats.etl.failed || 0, icon: AlertTriangle, color: 'text-red-500', bg: 'bg-red-500/10' },
+    { label: '活跃应用', value: stats.apps || 0, icon: Package, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+    { label: '库项目', value: stats.library || 0, icon: BookOpen, color: 'text-violet-500', bg: 'bg-violet-500/10' },
+    { label: '待审核提交', value: stats.submissions?.pending || 0, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-500/10' },
+    { label: 'ETL 失败', value: stats.etl?.failed || 0, icon: AlertTriangle, color: 'text-red-500', bg: 'bg-red-500/10' },
   ]
 
   return (
@@ -54,7 +55,7 @@ export default function AdminDashboard() {
         <CardContent className="p-5">
           <h2 className="font-semibold mb-3">ETL 状态分布</h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-            {Object.entries(stats.etl).map(([k, v]) => (
+            {Object.entries(stats.etl || {}).map(([k, v]) => (
               <div key={k} className="flex justify-between rounded-lg bg-muted/50 px-3 py-2">
                 <span className="text-muted-foreground">{k}</span>
                 <span className="font-mono font-medium">{v}</span>
@@ -68,7 +69,7 @@ export default function AdminDashboard() {
         <CardContent className="p-5">
           <h2 className="font-semibold mb-3">用户提交</h2>
           <div className="grid grid-cols-3 gap-3 text-sm">
-            {Object.entries(stats.submissions).map(([k, v]) => (
+            {Object.entries(stats.submissions || {}).map(([k, v]) => (
               <div key={k} className="flex justify-between rounded-lg bg-muted/50 px-3 py-2">
                 <span className="text-muted-foreground">{k}</span>
                 <span className="font-mono font-medium">{v}</span>
