@@ -158,6 +158,19 @@ export default function ProjectPage() {
       <Header />
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* JSON-LD 结构化数据 */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'SoftwareApplication',
+          name: project.name,
+          description: project.summary || project.description,
+          applicationCategory: categoryLabel,
+          operatingSystem: Object.keys(project.platforms).map(p => p === 'mac' ? 'macOS' : p === 'windows' ? 'Windows' : 'Linux').join(', '),
+          offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+          author: { '@type': 'Organization', name: project.sourceUrl?.split('/')[3] || '' },
+          dateModified: project.lastUpdated,
+          license: project.license || '',
+        }) }} />
         {/* Breadcrumb */}
         <Breadcrumb
           items={[
@@ -225,8 +238,7 @@ export default function ProjectPage() {
                     <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-violet-500/10">
                       <Lightbulb className="size-4 text-violet-500" />
                     </div>
-                    <div>
-                      <h2 className="text-sm font-semibold text-violet-600 dark:text-violet-400 mb-1">{t('summary')}</h2>
+                    <div role="note">
                       <p className="text-sm text-foreground leading-relaxed">{project.summary}</p>
                     </div>
                   </div>
@@ -241,18 +253,20 @@ export default function ProjectPage() {
                   <Sparkles className="size-5 text-violet-500" />
                   {t('coreFeatures')}
                 </h2>
-                <div className="grid gap-3 sm:grid-cols-2">
+                <ul className="grid gap-3 sm:grid-cols-2 list-none p-0">
                   {project.features.map((feature, index) => (
-                    <Card key={index} className="border-border/50">
-                      <CardContent className="flex items-start gap-3 p-4">
-                        <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-violet-500/10">
-                          <CheckCircle2 className="size-3.5 text-violet-500" />
-                        </div>
-                        <p className="text-sm">{feature}</p>
-                      </CardContent>
-                    </Card>
+                    <li key={index}>
+                      <Card className="border-border/50 h-full">
+                        <CardContent className="flex items-start gap-3 p-4">
+                          <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-violet-500/10">
+                            <CheckCircle2 className="size-3.5 text-violet-500" />
+                          </div>
+                          <span className="text-sm">{feature}</span>
+                        </CardContent>
+                      </Card>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </section>
             )}
 
@@ -263,14 +277,14 @@ export default function ProjectPage() {
                   <AlertTriangle className="size-5 text-amber-500" />
                   {t('caveats')}
                 </h2>
-                <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 space-y-2">
+                <ul className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 space-y-2 list-none">
                   {project.caveats.map((caveat, index) => (
-                    <div key={index} className="flex items-start gap-2 text-sm">
+                    <li key={index} className="flex items-start gap-2 text-sm">
                       <span className="text-amber-500 shrink-0">•</span>
                       <span className="text-muted-foreground">{caveat}</span>
-                    </div>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </section>
             )}
 
@@ -281,13 +295,15 @@ export default function ProjectPage() {
                   <Target className="size-5 text-emerald-500" />
                   {t('useCases')}
                 </h2>
-                <div className="flex flex-wrap gap-2">
+                <ul className="flex flex-wrap gap-2 list-none p-0">
                   {project.useCases.map((useCase, index) => (
-                    <Badge key={index} variant="secondary" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20">
-                      {useCase}
-                    </Badge>
+                    <li key={index}>
+                      <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20">
+                        {useCase}
+                      </Badge>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </section>
             )}
 

@@ -997,6 +997,35 @@ export default {
       }
 
       // ---- GET 路由 ----
+      // Sitemap
+      if (path === '/api/sitemap') {
+        const [apps, libs, cats] = await Promise.all([
+          env.DB.prepare(`SELECT slug, last_updated FROM apps WHERE status='active'`).all<{slug:string;last_updated:string}>(),
+          env.DB.prepare(`SELECT slug, last_updated FROM apps_library WHERE status='active'`).all<{slug:string;last_updated:string}>(),
+          env.DB.prepare(`SELECT slug, name FROM categories WHERE is_active=1`).all<{slug:string;name:string}>(),
+        ])
+        const locs = ['zh', 'en', 'ja', 'ko']
+        const urls: string[] = []
+        // 首页
+        for (const l of locs) urls.push(`<url><loc>https://www.opensource-hub.com/${l}</loc><changefreq>daily</changefreq><priority>1.0</priority></url>`)
+        // 分类页
+        for (const c of (cats.results||[])) {
+          for (const l of locs) urls.push(`<url><loc>https://www.opensource-hub.com/${l}/category/${c.slug}</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>`)
+        }
+        // 软件详情页
+        for (const a of (apps.results||[])) {
+          const lm = a.last_updated ? a.last_updated.replace(' ', 'T')+'+00:00' : ''
+          for (const l of locs) urls.push(`<url><loc>https://www.opensource-hub.com/${l}/project/${a.slug}</loc><lastmod>${lm}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>`)
+        }
+        // 库项目
+        for (const li of (libs.results||[])) {
+          const lm = li.last_updated ? li.last_updated.replace(' ', 'T')+'+00:00' : ''
+          for (const l of locs.slice(0,2)) urls.push(`<url><loc>https://www.opensource-hub.com/${l}/library/${li.slug}</loc><lastmod>${lm}</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>`)
+        }
+        const xml = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.join('')}</urlset>`
+        return new Response(xml, { headers: { 'Content-Type': 'application/xml', 'Cache-Control': 'public, max-age=3600' } })
+      }
+
       // API 健康检查
       if (path === '/api/health') {
         return jsonResponse({
