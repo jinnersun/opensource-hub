@@ -13,10 +13,14 @@ const STATUS_LABELS: Record<string, string> = {
   skipped: '已跳过', failed: '失败', rate_limited: '限流',
 }
 
-const api = (path: string, opts?: RequestInit) => fetch(`/api/proxy?path=${encodeURIComponent(path)}`, {
-  headers: { 'Authorization': `Bearer ${sessionStorage.getItem('admin_token')}`, 'Content-Type': 'application/json', ...opts?.headers },
-  ...opts,
-}).then(r => r.ok ? r.json() : r.json().then(e => { throw new Error(e.error || String(r.status)) }))
+const api = (path: string, params?: Record<string,string|number>, opts?: RequestInit) => {
+  const sp = new URLSearchParams({ path })
+  if (params) Object.entries(params).forEach(([k,v]) => sp.set(k, String(v)))
+  return fetch(`/api/proxy?${sp.toString()}`, {
+    headers: { 'Authorization': `Bearer ${sessionStorage.getItem('admin_token')}`, 'Content-Type': 'application/json', ...opts?.headers },
+    ...opts,
+  }).then(r => r.ok ? r.json() : r.json().then(e => { throw new Error(e.error || String(r.status)) }))
+}
 
 export default function AdminEtlPage() {
   const [jobs, setJobs] = useState<any[]>([])
@@ -28,8 +32,9 @@ export default function AdminEtlPage() {
 
   const load = useCallback(async () => {
     try {
-      const q = status !== 'all' ? `&status=${encodeURIComponent(status)}` : ''
-      const data = await api(`/admin/jobs?page=${page}&limit=30${q}`)
+      const params: Record<string,string|number> = { page, limit: 30 }
+      if (status !== 'all') params.status = status
+      const data = await api('/admin/jobs', params)
       setJobs(data.data || [])
       setTotal(data.total || 0)
     } catch (e) { console.error('load jobs failed:', e) }
@@ -47,7 +52,7 @@ export default function AdminEtlPage() {
   const bulkRetry = async () => {
     setRetrying(true)
     try {
-      await api('/admin/jobs/bulk-retry', { method: 'POST', body: JSON.stringify({ ids: selected }) })
+      await api('/admin/jobs/bulk-retry', undefined, { method: 'POST', body: JSON.stringify({ ids: selected }) })
       load()
     } catch (e) { console.error(e) }
     finally { setRetrying(false) }

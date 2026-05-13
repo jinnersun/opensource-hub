@@ -12,9 +12,13 @@ interface AdminStats {
   translation: Record<string, number>
 }
 
-const api = (path: string) => fetch(`/api/proxy?path=${encodeURIComponent(path)}`, {
-  headers: { 'Authorization': `Bearer ${sessionStorage.getItem('admin_token')}` },
-}).then(r => r.json())
+const api = (path: string, params?: Record<string,string|number>) => {
+  const sp = new URLSearchParams({ path })
+  if (params) Object.entries(params).forEach(([k,v]) => sp.set(k, String(v)))
+  return fetch(`/api/proxy?${sp.toString()}`, {
+    headers: { 'Authorization': `Bearer ${sessionStorage.getItem('admin_token')}` },
+  }).then(r => r.json())
+}
 
 const ETl_STATUS_MAP: Record<string, { label: string; color: string }> = {
   pending:     { label: '待处理', color: 'text-amber-500' },
