@@ -969,6 +969,26 @@ export default {
           ).run()
           return jsonResponse({ affected: r.meta?.changes || 0 })
         }
+        if (path === '/admin/translations/bulk-retry') {
+          const auth = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '')
+          if (auth !== env.ADMIN_TOKEN || !auth) return errorResponse('Unauthorized', 401)
+          const b = await request.json().catch(() => ({})) as { ids?: number[] }
+          if (!b.ids?.length) return errorResponse('ids required', 400)
+          const ph = b.ids.map(() => '?').join(',')
+          const r = await env.DB.prepare(
+            `UPDATE translation_tasks SET status='pending', retry_count=0, last_error=NULL, updated_at=CURRENT_TIMESTAMP WHERE id IN (${ph})`
+          ).bind(...b.ids).run()
+          return jsonResponse({ affected: r.meta?.changes || 0 })
+        }
+        const transRetryMatch = path.match(/^\/admin\/translations\/(\d+)\/retry$/)
+        if (transRetryMatch) {
+          const auth = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '')
+          if (auth !== env.ADMIN_TOKEN || !auth) return errorResponse('Unauthorized', 401)
+          const r = await env.DB.prepare(
+            `UPDATE translation_tasks SET status='pending', retry_count=0, last_error=NULL, updated_at=CURRENT_TIMESTAMP WHERE id=?`
+          ).bind(parseInt(transRetryMatch[1])).run()
+          return jsonResponse({ affected: r.meta?.changes || 0 })
+        }
         return errorResponse('Not found', 404)
       }
 
