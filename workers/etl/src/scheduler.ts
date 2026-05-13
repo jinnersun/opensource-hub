@@ -125,8 +125,18 @@ async function processOneInner(
     return
   }
 
-  // 2. 准入漏斗
+  // 2. 去重检查：同一 github_repo_id 已处理过则跳过
   const repo = fetchResult.repo
+  const existingAppId = `app_${repo.id}`
+  const existing = await env.DB.prepare(`SELECT id FROM apps WHERE id=?`).bind(existingAppId).first()
+  if (existing) {
+    await saveSkipped(env, fullName, 'already_processed', computeNextCheckAt(repo.pushed_at, repo.archived),
+      repo.id, fetchResult.etag, repo.pushed_at, repo.archived)
+    stats.skipped++
+    return
+  }
+
+  // 3. 准入漏斗
   const gate = checkQualityGate(repo)
   const nextOk = computeNextCheckAt(repo.pushed_at, repo.archived)
 

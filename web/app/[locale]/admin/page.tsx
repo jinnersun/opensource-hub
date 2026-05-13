@@ -84,13 +84,13 @@ export default function AdminDashboard() {
       </div>
 
       <div className="flex gap-3 flex-wrap">
-        <Button size="sm" variant="outline" onClick={async () => {
-          const r = await api('/admin/trigger-etl')
-          alert(r.ok ? 'ETL 已触发' : '触发失败')
+        <Button size="sm" variant="outline" onClick={() => {
+          api('/admin/trigger-etl')
+          alert('ETL 任务已触发，后台处理中')
         }}><Zap className="size-4 mr-1" />触发 ETL</Button>
-        <Button size="sm" variant="outline" onClick={async () => {
-          const r = await api('/admin/trigger-translate')
-          alert(r.ok ? '翻译已触发' : '触发失败')
+        <Button size="sm" variant="outline" onClick={() => {
+          api('/admin/trigger-translate')
+          alert('翻译任务已触发，后台处理中')
         }}><Languages className="size-4 mr-1" />触发翻译</Button>
       </div>
 
