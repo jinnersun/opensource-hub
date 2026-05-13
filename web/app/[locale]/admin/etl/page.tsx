@@ -105,9 +105,9 @@ export default function AdminEtlPage() {
               </thead>
               <tbody>
                 {jobs.map(job => (
-                  <tr key={job.id} className="border-b hover:bg-muted/30">
+                  <tr key={job.github_repo_id} className="border-b hover:bg-muted/30">
                     <td className="px-4 py-3">
-                      <input type="checkbox" checked={selected.includes(job.id)} onChange={() => toggleOne(job.id)} />
+                      <input type="checkbox" checked={selected.includes(job.github_repo_id)} onChange={() => toggleOne(job.github_repo_id)} />
                     </td>
                     <td className="px-4 py-3 font-medium">{job.full_name}</td>
                     <td className="px-4 py-3">

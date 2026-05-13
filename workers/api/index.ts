@@ -939,7 +939,7 @@ export default {
           let affected = 0
           if (b.ids?.length) {
             const ph = b.ids.map(() => '?').join(',')
-            const r = await env.DB.prepare(`UPDATE raw_apps SET etl_status='pending', retry_count=0, next_check_at=NULL WHERE id IN (${ph})`).bind(...b.ids).run()
+            const r = await env.DB.prepare(`UPDATE raw_apps SET etl_status='pending', retry_count=0, next_check_at=NULL WHERE github_repo_id IN (${ph})`).bind(...b.ids).run()
             affected = r.meta?.changes || 0
           } else if (b.status) {
             const r = await env.DB.prepare(`UPDATE raw_apps SET etl_status='pending', retry_count=0, next_check_at=NULL WHERE etl_status=?`).bind(b.status).run()
