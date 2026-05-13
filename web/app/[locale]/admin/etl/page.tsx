@@ -1,16 +1,22 @@
 "use client"
 
 import { useEffect, useState, useCallback } from 'react'
-import { RefreshCw } from 'lucide-react'
+import { ArrowLeft, RefreshCw, Home } from 'lucide-react'
+import { Link } from '@/i18n/routing'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 
 const STATUSES = ['all', 'pending', 'processing', 'completed', 'skipped', 'failed', 'rate_limited']
+const STATUS_LABELS: Record<string, string> = {
+  pending: '待处理', processing: '处理中', completed: '已完成',
+  skipped: '已跳过', failed: '失败', rate_limited: '限流',
+}
+
 const api = (path: string, opts?: RequestInit) => fetch(`/api/proxy?path=${encodeURIComponent(path)}`, {
-  headers: { 'Authorization': `Bearer ${sessionStorage.getItem('admin_token')}`, ...opts?.headers },
+  headers: { 'Authorization': `Bearer ${sessionStorage.getItem('admin_token')}`, 'Content-Type': 'application/json', ...opts?.headers },
   ...opts,
-}).then(r => r.json())
+}).then(r => r.ok ? r.json() : r.json().then(e => { throw new Error(e.error || r.statusText) }))
 
 export default function AdminEtlPage() {
   const [jobs, setJobs] = useState<any[]>([])
@@ -25,24 +31,45 @@ export default function AdminEtlPage() {
     const data = await api(`/admin/jobs?page=${page}&limit=30${q}`)
     setJobs(data.data || [])
     setTotal(data.total || 0)
+    setSelected(new Set())
   }, [status, page])
 
   useEffect(() => { load() }, [load])
 
+  const allChecked = jobs.length > 0 && jobs.every(j => selected.has(j.id))
+  const toggleAll = () => {
+    if (allChecked) setSelected(new Set())
+    else setSelected(new Set(jobs.map(j => j.id)))
+  }
+  const toggleOne = (id: number) => {
+    const next = new Set(selected)
+    if (next.has(id)) next.delete(id) else next.add(id)
+    setSelected(next)
+  }
+
   const bulkRetry = async () => {
     setRetrying(true)
-    await api('/admin/jobs/bulk-retry', {
-      method: 'POST',
-      body: JSON.stringify({ ids: [...selected] }),
-      headers: { 'Content-Type': 'application/json' },
-    })
-    setSelected(new Set())
-    setRetrying(false)
-    load()
+    try {
+      await api('/admin/jobs/bulk-retry', {
+        method: 'POST',
+        body: JSON.stringify({ ids: [...selected] }),
+      })
+      setSelected(new Set())
+      load()
+    } catch (e) { console.error(e) }
+    finally { setRetrying(false) }
   }
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center gap-3 mb-2">
+        <Link href="/admin" className="text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="size-5" />
+        </Link>
+        <Link href="/" className="text-muted-foreground hover:text-foreground">
+          <Home className="size-5" />
+        </Link>
+      </div>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">ETL 作业管理</h1>
@@ -63,7 +90,7 @@ export default function AdminEtlPage() {
         {STATUSES.map(s => (
           <Badge key={s} variant={status === s ? 'default' : 'outline'}
             className="cursor-pointer" onClick={() => { setStatus(s); setPage(1) }}>
-            {s} {s === 'all' ? '' : ''}
+            {s === 'all' ? '全部' : STATUS_LABELS[s] || s}
           </Badge>
         ))}
       </div>
@@ -75,10 +102,7 @@ export default function AdminEtlPage() {
               <thead className="border-b bg-muted/50">
                 <tr>
                   <th className="px-4 py-3 text-left w-10">
-                    <input type="checkbox" onChange={e => {
-                      if (e.target.checked) setSelected(new Set(jobs.map(j => j.id)))
-                      else setSelected(new Set())
-                    }} />
+                    <input type="checkbox" checked={allChecked} onChange={toggleAll} />
                   </th>
                   <th className="px-4 py-3 text-left">仓库</th>
                   <th className="px-4 py-3 text-left">状态</th>
@@ -92,17 +116,12 @@ export default function AdminEtlPage() {
                 {jobs.map(job => (
                   <tr key={job.id} className="border-b hover:bg-muted/30">
                     <td className="px-4 py-3">
-                      <input type="checkbox" checked={selected.has(job.id)}
-                        onChange={e => {
-                          const next = new Set(selected)
-                          e.target.checked ? next.add(job.id) : next.delete(job.id)
-                          setSelected(next)
-                        }} />
+                      <input type="checkbox" checked={selected.has(job.id)} onChange={() => toggleOne(job.id)} />
                     </td>
                     <td className="px-4 py-3 font-medium">{job.full_name}</td>
                     <td className="px-4 py-3">
                       <Badge variant={job.etl_status === 'failed' ? 'destructive' : job.etl_status === 'completed' ? 'default' : 'secondary'}>
-                        {job.etl_status}
+                        {STATUS_LABELS[job.etl_status] || job.etl_status}
                       </Badge>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">{job.source || '-'}</td>

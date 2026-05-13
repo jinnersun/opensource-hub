@@ -101,6 +101,20 @@ export default function AdminDashboard() {
 
       <Card>
         <CardContent className="p-5">
+          <h2 className="font-semibold mb-3">翻译任务</h2>
+          <div className="grid grid-cols-4 gap-3 text-sm">
+            {Object.entries(stats.translation || {}).map(([k, v]) => (
+              <div key={k} className="flex justify-between rounded-lg bg-muted/50 px-3 py-2">
+                <span className="text-muted-foreground">{k === 'pending' ? '待翻译' : k === 'done' ? '已完成' : k === 'translating' ? '翻译中' : k === 'failed' ? '失败' : k}</span>
+                <span className="font-mono font-medium">{v}</span>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="p-5">
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-semibold">用户提交</h2>
             <Link href="/admin/submissions" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
