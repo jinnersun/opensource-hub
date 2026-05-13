@@ -102,7 +102,12 @@ export default function AdminDashboard() {
 
       <Card>
         <CardContent className="p-5">
-          <h2 className="font-semibold mb-3">翻译任务</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold">翻译任务</h2>
+            <Link href="/admin/translations" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
+              查看全部 <ArrowRight className="size-3" />
+            </Link>
+          </div>
           <div className="grid grid-cols-4 gap-3 text-sm">
             {Object.entries(stats.translation || {}).map(([k, v]) => (
               <div key={k} className="flex justify-between rounded-lg bg-muted/50 px-3 py-2">
