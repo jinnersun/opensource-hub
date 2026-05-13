@@ -1079,12 +1079,15 @@ export default {
         const st = url.searchParams.get('status')
         const page = parseInt(url.searchParams.get('page') || '1')
         const limit = 30; const offset = (page - 1) * limit
+        console.log('[API /admin/jobs] status:', st, 'page:', page, 'limit:', limit)
         let sql = `SELECT * FROM raw_apps`; const binds: (string|number)[] = []
         if (st) { sql += ` WHERE etl_status = ?`; binds.push(st) }
         sql += ` ORDER BY last_processed_at DESC LIMIT ? OFFSET ?`; binds.push(limit, offset)
+        console.log('[API /admin/jobs] SQL:', sql, 'binds:', binds)
         const { results } = await env.DB.prepare(sql).bind(...binds).all()
         let countSql = `SELECT COUNT(*) as c FROM raw_apps`; const countBinds: (string|number)[] = []
         if (st) { countSql += ` WHERE etl_status = ?`; countBinds.push(st) }
+        console.log('[API /admin/jobs] countSQL:', countSql, 'countBinds:', countBinds)
         const { c } = await env.DB.prepare(countSql).bind(...countBinds).first<{c:number}>() || {c:0}
         return jsonResponse({ data: results||[], total: c||0, page, limit })
       }

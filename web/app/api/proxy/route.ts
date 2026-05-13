@@ -20,6 +20,9 @@ async function forward(request: Request, method: string, body?: string) {
   try {
     let response: Response
 
+    console.log('[API Proxy] apiPath:', apiPath)
+    console.log('[API Proxy] method:', method)
+
     try {
       const cloudflareContext = (globalThis as any)[Symbol.for("__cloudflare-context__")]
       const apiBinding = cloudflareContext?.env?.API
@@ -33,13 +36,15 @@ async function forward(request: Request, method: string, body?: string) {
         const auth = request.headers.get('Authorization')
         if (auth) (init.headers as Record<string,string>)['Authorization'] = auth
         const apiRequest = new Request(`http://internal${apiPath}`, init)
+        console.log('[API Proxy] Service Binding request URL:', apiRequest.url)
         response = await apiBinding.fetch(apiRequest)
       } else {
         throw new Error(`Service binding not available`)
       }
     } catch (sbErr: any) {
-      console.warn('Service Binding failed:', sbErr?.message || sbErr)
+      console.warn('[API Proxy] Service Binding failed:', sbErr?.message || sbErr)
       const devUrl = `http://localhost:8787${apiPath}`
+      console.log('[API Proxy] Dev fallback URL:', devUrl)
       const devInit: RequestInit = { method, headers: { 'Content-Type': 'application/json' } }
       if (body) devInit.body = body
       const devAuth = request.headers.get('Authorization')
