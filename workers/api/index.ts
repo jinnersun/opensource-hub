@@ -1120,16 +1120,16 @@ export default {
 
       // ---- Admin 触发 ETL/Translator 端点 ----
       if (path === '/admin/trigger-etl' && adminAuth(request)) {
-        const r = await fetch('https://opensource-hub-etl.358042175.workers.dev/etl/trigger', {
+        ctx.waitUntil(fetch('https://opensource-hub-etl.358042175.workers.dev/etl/trigger', {
           method: 'POST', headers: { 'Authorization': `Bearer ${env.TRIGGER_TOKEN}` },
-        })
-        return jsonResponse({ status: r.status, ok: r.ok })
+        }))
+        return jsonResponse({ ok: true })
       }
       if (path === '/admin/trigger-translate' && adminAuth(request)) {
-        const r = await fetch('https://opensource-hub-translator.358042175.workers.dev/translate/trigger', {
+        ctx.waitUntil(fetch('https://opensource-hub-translator.358042175.workers.dev/translate/trigger', {
           method: 'POST', headers: { 'Authorization': `Bearer ${env.TRIGGER_TOKEN}` },
-        })
-        return jsonResponse({ status: r.status, ok: r.ok })
+        }))
+        return jsonResponse({ ok: true })
       }
 
       // 404
