@@ -609,9 +609,10 @@ async function createSubmission(db: D1Database, request: Request): Promise<Respo
   try {
     // 通过 repo_url 去重：同一 GitHub 仓库 24h 内仅接受 1 次提交
     if (source === 'software' && repoUrl) {
+      // 24h 内已提交且未审核（pending）的才去重；已拒绝的可重新提交
       const dup = await db.prepare(
         `SELECT id FROM user_submissions
-         WHERE source = 'software' AND repo_url = ?
+         WHERE source = 'software' AND repo_url = ? AND status = 'pending'
            AND created_at > datetime('now', '-1 day')
          LIMIT 1`,
       ).bind(repoUrl).first()
@@ -960,6 +961,14 @@ export default {
           await env.DB.prepare(`UPDATE user_submissions SET status='rejected', reviewed_at=CURRENT_TIMESTAMP WHERE id=?`).bind(id).run()
           return jsonResponse({ ok: true })
         }
+        if (path === '/admin/translations/retry-failed') {
+          const auth = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '')
+          if (auth !== env.ADMIN_TOKEN || !auth) return errorResponse('Unauthorized', 401)
+          const r = await env.DB.prepare(
+            `UPDATE translation_tasks SET status='pending', retry_count=0, last_error=NULL, updated_at=CURRENT_TIMESTAMP WHERE status='failed'`
+          ).run()
+          return jsonResponse({ affected: r.meta?.changes || 0 })
+        }
         return errorResponse('Not found', 404)
       }
 
@@ -1055,6 +1064,18 @@ export default {
         sql += ` ORDER BY last_processed_at DESC LIMIT ? OFFSET ?`; binds.push(limit, offset)
         const { results } = await env.DB.prepare(sql).bind(...binds).all()
         const { c } = await env.DB.prepare(`SELECT COUNT(*) as c FROM raw_apps`).first<{c:number}>() || {c:0}
+        return jsonResponse({ data: results||[], total: c||0, page, limit })
+      }
+
+      if (path === '/admin/translations' && adminAuth(request)) {
+        const st = url.searchParams.get('status')
+        const page = parseInt(url.searchParams.get('page') || '1')
+        const limit = 30; const offset = (page - 1) * limit
+        let sql = `SELECT * FROM translation_tasks`; const binds: (string|number)[] = []
+        if (st) { sql += ` WHERE status = ?`; binds.push(st) }
+        sql += ` ORDER BY created_at DESC LIMIT ? OFFSET ?`; binds.push(limit, offset)
+        const { results } = await env.DB.prepare(sql).bind(...binds).all()
+        const { c } = await env.DB.prepare(`SELECT COUNT(*) as c FROM translation_tasks`).first<{c:number}>() || {c:0}
         return jsonResponse({ data: results||[], total: c||0, page, limit })
       }
 
