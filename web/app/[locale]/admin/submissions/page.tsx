@@ -10,10 +10,14 @@ import { Card, CardContent } from '@/components/ui/card'
 const STATUS_TABS = ['pending', 'approved', 'rejected']
 const STATUS_LABELS: Record<string, string> = { pending: '待审核', approved: '已通过', rejected: '已拒绝' }
 
-const api = (path: string, opts?: RequestInit) => fetch(`/api/proxy?path=${encodeURIComponent(path)}`, {
-  headers: { 'Authorization': `Bearer ${sessionStorage.getItem('admin_token')}`, 'Content-Type': 'application/json', ...opts?.headers },
-  ...opts,
-}).then(r => r.ok ? r.json() : r.json().then(e => { throw new Error(e.error || String(r.status)) }))
+const api = (path: string, params?: Record<string,string|number>, opts?: RequestInit) => {
+  const sp = new URLSearchParams({ path })
+  if (params) Object.entries(params).forEach(([k,v]) => sp.set(k, String(v)))
+  return fetch(`/api/proxy?${sp.toString()}`, {
+    headers: { 'Authorization': `Bearer ${sessionStorage.getItem('admin_token')}`, 'Content-Type': 'application/json', ...opts?.headers },
+    ...opts,
+  }).then(r => r.ok ? r.json() : r.json().then(e => { throw new Error(e.error || String(r.status)) }))
+}
 
 export default function AdminSubmissionsPage() {
   const [items, setItems] = useState<any[]>([])
@@ -23,7 +27,7 @@ export default function AdminSubmissionsPage() {
   const [acting, setActing] = useState<string | null>(null) // id currently being processed
 
   const load = useCallback(async () => {
-    const data = await api(`/admin/submissions?status=${status}&page=${page}`)
+    const data = await api('/admin/submissions', { status, page })
     setItems(data.data || [])
     setTotal(data.total || 0)
   }, [status, page])
@@ -32,13 +36,13 @@ export default function AdminSubmissionsPage() {
 
   const approve = async (id: string) => {
     setActing(id)
-    try { await api(`/admin/submissions/${id}/approve`, { method: 'POST' }); load() }
+    try { await api(`/admin/submissions/${id}/approve`, undefined, { method: 'POST' }); load() }
     catch (e) { console.error('approve failed:', e) }
     finally { setActing(null) }
   }
   const reject = async (id: string) => {
     setActing(id)
-    try { await api(`/admin/submissions/${id}/reject`, { method: 'POST' }); load() }
+    try { await api(`/admin/submissions/${id}/reject`, undefined, { method: 'POST' }); load() }
     catch (e) { console.error('reject failed:', e) }
     finally { setActing(null) }
   }

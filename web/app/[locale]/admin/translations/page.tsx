@@ -12,10 +12,14 @@ const STATUS_LABELS: Record<string, string> = {
   pending: '待翻译', translating: '翻译中', done: '已完成', failed: '失败',
 }
 
-const api = (path: string, opts?: RequestInit) => fetch(`/api/proxy?path=${encodeURIComponent(path)}`, {
-  headers: { 'Authorization': `Bearer ${sessionStorage.getItem('admin_token')}`, 'Content-Type': 'application/json', ...opts?.headers },
-  ...opts,
-}).then(r => r.ok ? r.json() : r.json().then(e => { throw new Error(e.error || String(r.status)) }))
+const api = (path: string, params?: Record<string,string|number>, opts?: RequestInit) => {
+  const sp = new URLSearchParams({ path })
+  if (params) Object.entries(params).forEach(([k,v]) => sp.set(k, String(v)))
+  return fetch(`/api/proxy?${sp.toString()}`, {
+    headers: { 'Authorization': `Bearer ${sessionStorage.getItem('admin_token')}`, 'Content-Type': 'application/json', ...opts?.headers },
+    ...opts,
+  }).then(r => r.ok ? r.json() : r.json().then(e => { throw new Error(e.error || String(r.status)) }))
+}
 
 export default function AdminTranslationsPage() {
   const [tasks, setTasks] = useState<any[]>([])
@@ -27,8 +31,9 @@ export default function AdminTranslationsPage() {
 
   const load = useCallback(async () => {
     try {
-      const q = filter !== 'all' ? `&status=${encodeURIComponent(filter)}` : ''
-      const data = await api(`/admin/translations?page=${page}&limit=30${q}`)
+      const params: Record<string,string|number> = { page, limit: 30 }
+      if (filter !== 'all') params.status = filter
+      const data = await api('/admin/translations', params)
       setTasks(data.data || [])
       setTotal(data.total || 0)
     } catch (e) { console.error(e) }
@@ -45,21 +50,21 @@ export default function AdminTranslationsPage() {
 
   const retryOne = async (taskId: number) => {
     setActing(taskId)
-    try { await api(`/admin/translations/${taskId}/retry`, { method: 'POST' }); load() }
+    try { await api(`/admin/translations/${taskId}/retry`, undefined, { method: 'POST' }); load() }
     catch (e) { console.error(e) }
     finally { setActing(null) }
   }
 
   const retrySelected = async () => {
     setActing(-1)
-    try { await api('/admin/translations/bulk-retry', { method: 'POST', body: JSON.stringify({ ids: selected }) }); load() }
+    try { await api('/admin/translations/bulk-retry', undefined, { method: 'POST', body: JSON.stringify({ ids: selected }) }); load() }
     catch (e) { console.error(e) }
     finally { setActing(null) }
   }
 
   const retryAllFailed = async () => {
     setActing(-1)
-    try { await api('/admin/translations/retry-failed', { method: 'POST' }); load() }
+    try { await api('/admin/translations/retry-failed', undefined, { method: 'POST' }); load() }
     catch (e) { console.error(e) }
     finally { setActing(null) }
   }
