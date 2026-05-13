@@ -91,15 +91,56 @@ async function markFailed(db: D1Database, id: number, error: string): Promise<vo
   ).bind(error.slice(0, 500), id).run()
 }
 
-async function getSourceTranslation(db: D1Database, appId: string, sourceLocale: string): Promise<Translation | null> {
-  return db.prepare(
+function isLibrary(appId: string) { return appId.startsWith('lib_') }
+
+async function getSourceTranslation(db: D1Database, appId: string, sourceLocale: string): Promise<{ data: Translation | null; usedLocale: string }> {
+  const fallbackLocale = sourceLocale === 'zh' ? 'en' : 'zh'
+  if (isLibrary(appId)) {
+    const repoId = parseInt(appId.replace('lib_', ''))
+    // 先试请求语言，再试回退语言
+    let row = await db.prepare(
+      `SELECT ? as app_id, locale, summary, full_description,
+              NULL as description, NULL as features, NULL as use_cases,
+              NULL as quick_start_guide, NULL as uninstall_guide, NULL as caveats
+       FROM apps_library_translations WHERE library_id = (SELECT id FROM apps_library WHERE github_repo_id = ?) AND locale = ?`,
+    ).bind(appId, repoId, sourceLocale).first<Translation>()
+    if (!row?.summary && !row?.full_description) {
+      row = await db.prepare(
+        `SELECT ? as app_id, locale, summary, full_description,
+                NULL as description, NULL as features, NULL as use_cases,
+                NULL as quick_start_guide, NULL as uninstall_guide, NULL as caveats
+         FROM apps_library_translations WHERE library_id = (SELECT id FROM apps_library WHERE github_repo_id = ?) AND locale = ?`,
+      ).bind(appId, repoId, fallbackLocale).first<Translation>()
+    }
+    if (!row?.summary && !row?.full_description) return { data: null, usedLocale: sourceLocale }
+    return { data: row, usedLocale: row?.locale || sourceLocale }
+  }
+  // apps 表
+  let row = await db.prepare(
     `SELECT app_id, locale, summary, description, full_description,
             features, use_cases, quick_start_guide, uninstall_guide, caveats
      FROM app_translations WHERE app_id = ? AND locale = ?`,
   ).bind(appId, sourceLocale).first<Translation>()
+  if (!row?.summary && !row?.full_description) {
+    row = await db.prepare(
+      `SELECT app_id, locale, summary, description, full_description,
+              features, use_cases, quick_start_guide, uninstall_guide, caveats
+       FROM app_translations WHERE app_id = ? AND locale = ?`,
+    ).bind(appId, fallbackLocale).first<Translation>()
+  }
+  return { data: row, usedLocale: row?.locale || sourceLocale }
 }
 
 async function upsertTranslation(db: D1Database, t: Translation): Promise<void> {
+  if (isLibrary(t.app_id)) {
+    const repoId = parseInt(t.app_id.replace('lib_', ''))
+    await db.prepare(
+      `INSERT OR REPLACE INTO apps_library_translations
+         (library_id, locale, summary, full_description)
+       VALUES ((SELECT id FROM apps_library WHERE github_repo_id = ?), ?, ?, ?)`,
+    ).bind(repoId, t.locale, t.summary, t.full_description).run()
+    return
+  }
   await db.prepare(
     `INSERT OR REPLACE INTO app_translations
        (id, app_id, locale, summary, description, full_description,
@@ -115,14 +156,16 @@ async function upsertTranslation(db: D1Database, t: Translation): Promise<void> 
 }
 
 async function processTask(env: Env, task: Task): Promise<void> {
-  // 获取源语言翻译
-  const source = await getSourceTranslation(env.DB, task.app_id, task.source_locale)
+  // 获取源语言翻译（zh 无内容则 fallback en）
+  const src = await getSourceTranslation(env.DB, task.app_id, task.source_locale)
+  const source = src.data
   if (!source) {
     await markFailed(env.DB, task.id, 'source translation not found')
     return
   }
 
-  // 逐字段翻译
+  // 逐字段翻译（用实际源语言）
+  const actualSrc = src.usedLocale
   const t: Translation = {
     app_id: task.app_id,
     locale: task.target_locale,
@@ -137,14 +180,14 @@ async function processTask(env: Env, task: Task): Promise<void> {
   }
 
   try {
-    if (source.summary) t.summary = await translateText(env, source.summary, task.source_locale, task.target_locale)
-    if (source.description) t.description = await translateText(env, source.description, task.source_locale, task.target_locale)
-    if (source.full_description) t.full_description = await translateText(env, source.full_description, task.source_locale, task.target_locale)
-    if (source.features) t.features = await translateText(env, source.features, task.source_locale, task.target_locale)
-    if (source.use_cases) t.use_cases = await translateText(env, source.use_cases, task.source_locale, task.target_locale)
-    if (source.quick_start_guide) t.quick_start_guide = await translateText(env, source.quick_start_guide, task.source_locale, task.target_locale)
-    if (source.uninstall_guide) t.uninstall_guide = await translateText(env, source.uninstall_guide, task.source_locale, task.target_locale)
-    if (source.caveats) t.caveats = await translateText(env, source.caveats, task.source_locale, task.target_locale)
+    if (source.summary) t.summary = await translateText(env, source.summary, actualSrc, task.target_locale)
+    if (source.description) t.description = await translateText(env, source.description, actualSrc, task.target_locale)
+    if (source.full_description) t.full_description = await translateText(env, source.full_description, actualSrc, task.target_locale)
+    if (source.features) t.features = await translateText(env, source.features, actualSrc, task.target_locale)
+    if (source.use_cases) t.use_cases = await translateText(env, source.use_cases, actualSrc, task.target_locale)
+    if (source.quick_start_guide) t.quick_start_guide = await translateText(env, source.quick_start_guide, actualSrc, task.target_locale)
+    if (source.uninstall_guide) t.uninstall_guide = await translateText(env, source.uninstall_guide, actualSrc, task.target_locale)
+    if (source.caveats) t.caveats = await translateText(env, source.caveats, actualSrc, task.target_locale)
 
     await upsertTranslation(env.DB, t)
     await markDone(env.DB, task.id)
