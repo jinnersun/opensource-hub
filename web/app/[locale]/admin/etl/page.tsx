@@ -43,7 +43,7 @@ export default function AdminEtlPage() {
   }
   const toggleOne = (id: number) => {
     const next = new Set(selected)
-    if (next.has(id)) next.delete(id) else next.add(id)
+    next.has(id) ? next.delete(id) : next.add(id)
     setSelected(next)
   }
 
