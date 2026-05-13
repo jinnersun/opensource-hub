@@ -9,6 +9,7 @@ export interface Env {
   AI: Ai
   BATCH_SIZE: string
   TARGET_LOCALES: string
+  TRIGGER_TOKEN?: string
 }
 
 const TARGET_LOCALES = ['ja', 'ko', 'es', 'pt-BR']
@@ -175,9 +176,11 @@ export default {
 
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url)
+    const auth = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '')
+    const ok = auth && env.TRIGGER_TOKEN && auth === env.TRIGGER_TOKEN
 
-    // 手动触发翻译（调试用）
     if (url.pathname === '/translate/trigger' && request.method === 'POST') {
+      if (!ok) return new Response('Unauthorized', { status: 401 })
       const tasks = await fetchPendingTasks(env.DB)
       if (tasks.length === 0) {
         return new Response('no pending tasks', { status: 200 })
@@ -191,6 +194,7 @@ export default {
 
     // 批量为指定 app 创建翻译任务
     if (url.pathname === '/translate/create-tasks' && request.method === 'POST') {
+      if (!ok) return new Response('Unauthorized', { status: 401 })
       const appId = url.searchParams.get('app_id')
       let count = 0
       for (const tl of TARGET_LOCALES) {
@@ -206,6 +210,7 @@ export default {
 
     // 为所有存量 app 创建翻译任务
     if (url.pathname === '/translate/create-all-tasks' && request.method === 'POST') {
+      if (!ok) return new Response('Unauthorized', { status: 401 })
       const batchSize = Math.max(1, Math.min(100, parseInt(url.searchParams.get('batch') || '50')))
       let created = 0; let offset = 0
       while (true) {

@@ -235,13 +235,18 @@ export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url)
 
+    // POST 操作鉴权
+    const auth = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '')
+    const ok = auth && auth === env.TRIGGER_TOKEN
+
     if (url.pathname === '/etl/trigger' && request.method === 'POST') {
+      if (!ok) return new Response('Unauthorized', { status: 401 })
       ctx.waitUntil(executeAndRecord(env))
       return new Response('ETL job started in background', { status: 202 })
     }
 
     if (url.pathname === '/etl/promote-library' && request.method === 'POST') {
-      // 手动触发 Library 分支，不跑主 ETL
+      if (!ok) return new Response('Unauthorized', { status: 401 })
       ctx.waitUntil(
         promoteToLibrary(env)
           .then(s => console.log('[promote-library] done:', s))
@@ -251,12 +256,14 @@ export default {
     }
 
     if (url.pathname === '/etl/refresh-versions' && request.method === 'POST') {
+      if (!ok) return new Response('Unauthorized', { status: 401 })
       const limit = Math.max(1, Math.min(50, parseInt(url.searchParams.get('limit') || '20')))
       ctx.waitUntil(refreshVersions(env, limit))
       return new Response(`refresh-versions started (limit=${limit})`, { status: 202 })
     }
 
     if (url.pathname === '/etl/backfill-embeddings' && request.method === 'POST') {
+      if (!ok) return new Response('Unauthorized', { status: 401 })
       const batchSize = Math.max(1, Math.min(20, parseInt(url.searchParams.get('batch') || '10')))
       const offset = Math.max(0, parseInt(url.searchParams.get('offset') || '0'))
       try {
@@ -269,6 +276,7 @@ export default {
 
     // 诊断端点：测试 AI + Vectorize 绑定是否正常
     if (url.pathname === '/etl/backfill-library-embeddings' && request.method === 'POST') {
+      if (!ok) return new Response('Unauthorized', { status: 401 })
       const batchSize = Math.max(1, Math.min(20, parseInt(url.searchParams.get('batch') || '10')))
       const offset = Math.max(0, parseInt(url.searchParams.get('offset') || '0'))
       try {
