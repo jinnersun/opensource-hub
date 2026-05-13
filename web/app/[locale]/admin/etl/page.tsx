@@ -16,45 +16,38 @@ const STATUS_LABELS: Record<string, string> = {
 const api = (path: string, opts?: RequestInit) => fetch(`/api/proxy?path=${encodeURIComponent(path)}`, {
   headers: { 'Authorization': `Bearer ${sessionStorage.getItem('admin_token')}`, 'Content-Type': 'application/json', ...opts?.headers },
   ...opts,
-}).then(r => r.ok ? r.json() : r.json().then(e => { throw new Error(e.error || r.statusText) }))
+}).then(r => r.ok ? r.json() : r.json().then(e => { throw new Error(e.error || String(r.status)) }))
 
 export default function AdminEtlPage() {
   const [jobs, setJobs] = useState<any[]>([])
   const [status, setStatus] = useState('all')
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
-  const [selected, setSelected] = useState<Set<number>>(new Set())
+  const [selected, setSelected] = useState<number[]>([])
   const [retrying, setRetrying] = useState(false)
 
   const load = useCallback(async () => {
-    const q = status !== 'all' ? `&status=${status}` : ''
-    const data = await api(`/admin/jobs?page=${page}&limit=30${q}`)
-    setJobs(data.data || [])
-    setTotal(data.total || 0)
-    setSelected(new Set())
+    try {
+      const q = status !== 'all' ? `&status=${encodeURIComponent(status)}` : ''
+      const data = await api(`/admin/jobs?page=${page}&limit=30${q}`)
+      setJobs(data.data || [])
+      setTotal(data.total || 0)
+    } catch (e) { console.error('load jobs failed:', e) }
+    setSelected([])
   }, [status, page])
 
   useEffect(() => { load() }, [load])
 
-  const allChecked = jobs.length > 0 && jobs.every(j => selected.has(j.id))
-  const toggleAll = () => {
-    if (allChecked) setSelected(new Set())
-    else setSelected(new Set(jobs.map(j => j.id)))
-  }
-  const toggleOne = (id: number) => {
-    const next = new Set(selected)
-    next.has(id) ? next.delete(id) : next.add(id)
-    setSelected(next)
-  }
+  const allChecked = jobs.length > 0 && jobs.every(j => selected.includes(j.id))
+  const toggleAll = () => setSelected(allChecked ? [] : jobs.map(j => j.id))
+  const toggleOne = (id: number) => setSelected(prev =>
+    prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+  )
 
   const bulkRetry = async () => {
     setRetrying(true)
     try {
-      await api('/admin/jobs/bulk-retry', {
-        method: 'POST',
-        body: JSON.stringify({ ids: [...selected] }),
-      })
-      setSelected(new Set())
+      await api('/admin/jobs/bulk-retry', { method: 'POST', body: JSON.stringify({ ids: selected }) })
       load()
     } catch (e) { console.error(e) }
     finally { setRetrying(false) }
@@ -76,10 +69,9 @@ export default function AdminEtlPage() {
           <p className="text-muted-foreground text-sm mt-1">共 {total} 条记录</p>
         </div>
         <div className="flex items-center gap-2">
-          {selected.size > 0 && (
+          {selected.length > 0 && (
             <Button size="sm" onClick={bulkRetry} disabled={retrying}>
-              <RefreshCw className="size-4 mr-1" />
-              重试选中 ({selected.size})
+              <RefreshCw className="size-4 mr-1" />重试选中 ({selected.length})
             </Button>
           )}
           <Button size="sm" variant="outline" onClick={load}>刷新</Button>
@@ -106,7 +98,6 @@ export default function AdminEtlPage() {
                   </th>
                   <th className="px-4 py-3 text-left">仓库</th>
                   <th className="px-4 py-3 text-left">状态</th>
-                  <th className="px-4 py-3 text-left">来源</th>
                   <th className="px-4 py-3 text-left">重试</th>
                   <th className="px-4 py-3 text-left">错误信息</th>
                   <th className="px-4 py-3 text-left">上次处理</th>
@@ -116,7 +107,7 @@ export default function AdminEtlPage() {
                 {jobs.map(job => (
                   <tr key={job.id} className="border-b hover:bg-muted/30">
                     <td className="px-4 py-3">
-                      <input type="checkbox" checked={selected.has(job.id)} onChange={() => toggleOne(job.id)} />
+                      <input type="checkbox" checked={selected.includes(job.id)} onChange={() => toggleOne(job.id)} />
                     </td>
                     <td className="px-4 py-3 font-medium">{job.full_name}</td>
                     <td className="px-4 py-3">
@@ -124,7 +115,6 @@ export default function AdminEtlPage() {
                         {STATUS_LABELS[job.etl_status] || job.etl_status}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground">{job.source || '-'}</td>
                     <td className="px-4 py-3">{job.retry_count}/{job.max_retries}</td>
                     <td className="px-4 py-3 text-muted-foreground max-w-[200px] truncate">{job.error_log || '-'}</td>
                     <td className="px-4 py-3 text-muted-foreground text-xs">{job.last_processed_at || '-'}</td>
