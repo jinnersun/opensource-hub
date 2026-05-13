@@ -46,6 +46,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link href="/admin" className="hover:text-foreground text-muted-foreground">总览</Link>
           <Link href="/admin/etl" className="hover:text-foreground text-muted-foreground">ETL 作业</Link>
           <Link href="/admin/submissions" className="hover:text-foreground text-muted-foreground">提交审核</Link>
+          <Link href="/admin/daily" className="hover:text-foreground text-muted-foreground">今日统计</Link>
           <Link href="/admin/translations" className="hover:text-foreground text-muted-foreground">翻译任务</Link>
           <button onClick={() => { sessionStorage.removeItem('admin_token'); router.replace('/admin/login') }}
             className="text-muted-foreground hover:text-red-500">退出</button>
