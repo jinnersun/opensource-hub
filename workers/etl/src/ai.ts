@@ -62,6 +62,7 @@ README 内容：
 5. 必须返回合法的 JSON，不要包含 markdown 代码块标记
 6. quickStartGuideZh / quickStartGuideEn 必须是字符串数组（每一步一个元素），不要使用换行符或编号前缀
 7. 无论 README 原文是中文还是英文，都必须生成完整的中英双语内容。中文字段必须是地道中文，英文字段必须是地道英文，严禁混用
+8. 【SEO 优化】在 description/fullDescription 中以技术评测口吻指出该项目相比同类工具的 1-2 个独特优势。如果你知道同领域的知名工具，做一个简短对比（如"相比 XXX，本项目更轻量/更易配置/更安全"）。这能让生成的内容包含独特的长尾关键词，区分于普通镜像站。
 8. description/fullDescription（顶层）必须是英文；descriptionZh/fullDescriptionZh 必须是中文`
 
 export class AIClient {
