@@ -1083,7 +1083,9 @@ export default {
         if (st) { sql += ` WHERE etl_status = ?`; binds.push(st) }
         sql += ` ORDER BY last_processed_at DESC LIMIT ? OFFSET ?`; binds.push(limit, offset)
         const { results } = await env.DB.prepare(sql).bind(...binds).all()
-        const { c } = await env.DB.prepare(`SELECT COUNT(*) as c FROM raw_apps`).first<{c:number}>() || {c:0}
+        let countSql = `SELECT COUNT(*) as c FROM raw_apps`; const countBinds: (string|number)[] = []
+        if (st) { countSql += ` WHERE etl_status = ?`; countBinds.push(st) }
+        const { c } = await env.DB.prepare(countSql).bind(...countBinds).first<{c:number}>() || {c:0}
         return jsonResponse({ data: results||[], total: c||0, page, limit })
       }
 
@@ -1095,7 +1097,9 @@ export default {
         if (st) { sql += ` WHERE status = ?`; binds.push(st) }
         sql += ` ORDER BY created_at DESC LIMIT ? OFFSET ?`; binds.push(limit, offset)
         const { results } = await env.DB.prepare(sql).bind(...binds).all()
-        const { c } = await env.DB.prepare(`SELECT COUNT(*) as c FROM translation_tasks`).first<{c:number}>() || {c:0}
+        let countSql = `SELECT COUNT(*) as c FROM translation_tasks`; const countBinds: (string|number)[] = []
+        if (st) { countSql += ` WHERE status = ?`; countBinds.push(st) }
+        const { c } = await env.DB.prepare(countSql).bind(...countBinds).first<{c:number}>() || {c:0}
         return jsonResponse({ data: results||[], total: c||0, page, limit })
       }
 
