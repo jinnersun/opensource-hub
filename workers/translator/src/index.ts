@@ -1,7 +1,7 @@
 /**
  * OpenSource-Hub Translator Worker
  * 定时扫描 translation_tasks，用 CF AI m2m100 翻译软件内容
- * 触发: cron */5 * * * * (每 5 分钟)
+ * 触发: cron 每 5 分钟 (见 wrangler.toml)
  */
 
 export interface Env {
@@ -192,18 +192,41 @@ export default {
     // 批量为指定 app 创建翻译任务
     if (url.pathname === '/translate/create-tasks' && request.method === 'POST') {
       const appId = url.searchParams.get('app_id')
-      const targetLocales = TARGET_LOCALES
       let count = 0
-      for (const tl of targetLocales) {
+      for (const tl of TARGET_LOCALES) {
         try {
           await env.DB.prepare(
-            `INSERT OR IGNORE INTO translation_tasks (app_id, source_locale, target_locale)
-             VALUES (?, 'zh', ?)`,
+            `INSERT OR IGNORE INTO translation_tasks (app_id, source_locale, target_locale) VALUES (?, 'zh', ?)`,
           ).bind(appId, tl).run()
           count++
-        } catch { /* UNIQUE constraint — already exists */ }
+        } catch { /* UNIQUE constraint */ }
       }
       return Response.json({ app_id: appId, created: count })
+    }
+
+    // 为所有存量 app 创建翻译任务
+    if (url.pathname === '/translate/create-all-tasks' && request.method === 'POST') {
+      const batchSize = Math.max(1, Math.min(100, parseInt(url.searchParams.get('batch') || '50')))
+      let created = 0; let offset = 0
+      while (true) {
+        const rows = await env.DB.prepare(
+          `SELECT id FROM apps WHERE status = 'active' ORDER BY id LIMIT ? OFFSET ?`,
+        ).bind(batchSize, offset).all<{id:string}>()
+        if (!rows.results?.length) break
+        for (const r of rows.results) {
+          for (const tl of TARGET_LOCALES) {
+            try {
+              await env.DB.prepare(
+                `INSERT OR IGNORE INTO translation_tasks (app_id, source_locale, target_locale) VALUES (?, 'zh', ?)`,
+              ).bind(r.id, tl).run()
+              created++
+            } catch { /* UNIQUE constraint */ }
+          }
+        }
+        offset += batchSize
+        if (rows.results.length < batchSize) break
+      }
+      return Response.json({ created })
     }
 
     return Response.json({
