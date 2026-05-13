@@ -52,7 +52,7 @@ async function forward(request: Request, method: string, body?: string) {
       status: response.status,
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'no-store',
+        'Cache-Control': apiPath.startsWith('/admin/') ? 'no-store' : 'public, max-age=60',
       },
     })
   } catch (error: any) {
