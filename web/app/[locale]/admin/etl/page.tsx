@@ -80,10 +80,10 @@ export default function AdminEtlPage() {
 
       <div className="flex gap-2 flex-wrap">
         {STATUSES.map(s => (
-          <Badge key={s} variant={status === s ? 'default' : 'outline'}
-            className="cursor-pointer" onClick={() => { setStatus(s); setPage(1) }}>
+          <Button key={s} size="sm" variant={status === s ? 'default' : 'outline'}
+            onClick={() => { setStatus(s); setPage(1) }}>
             {s === 'all' ? '全部' : STATUS_LABELS[s] || s}
-          </Badge>
+          </Button>
         ))}
       </div>
 
