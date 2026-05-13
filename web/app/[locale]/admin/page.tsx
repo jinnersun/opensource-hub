@@ -9,6 +9,7 @@ interface AdminStats {
   apps: number; library: number
   etl: Record<string, number>
   submissions: Record<string, number>
+  translation: Record<string, number>
 }
 
 const api = (path: string) => fetch(`/api/proxy?path=${encodeURIComponent(path)}`, {
