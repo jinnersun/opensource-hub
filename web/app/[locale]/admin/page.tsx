@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { Link } from '@/i18n/routing'
-import { Package, BookOpen, Clock, AlertTriangle, ArrowRight } from 'lucide-react'
+import { Package, BookOpen, Clock, AlertTriangle, ArrowRight, Zap, Languages } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 
 interface AdminStats {
@@ -80,6 +81,17 @@ export default function AdminDashboard() {
             )}
           </Card>
         ))}
+      </div>
+
+      <div className="flex gap-3 flex-wrap">
+        <Button size="sm" variant="outline" onClick={async () => {
+          const r = await api('/admin/trigger-etl')
+          alert(r.ok ? 'ETL 已触发' : '触发失败')
+        }}><Zap className="size-4 mr-1" />触发 ETL</Button>
+        <Button size="sm" variant="outline" onClick={async () => {
+          const r = await api('/admin/trigger-translate')
+          alert(r.ok ? '翻译已触发' : '触发失败')
+        }}><Languages className="size-4 mr-1" />触发翻译</Button>
       </div>
 
       <Card>
