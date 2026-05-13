@@ -10,6 +10,7 @@ export interface Env {
   OPENAI_API_KEY: string
   GITHUB_TOKEN?: string
   ALERT_WEBHOOK_URL?: string
+  TRIGGER_TOKEN?: string
 }
 
 export interface RawApp {
