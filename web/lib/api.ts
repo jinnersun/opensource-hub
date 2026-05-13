@@ -10,24 +10,18 @@
 // 生产环境客户端：走代理路由 /api/proxy?path=，由 Edge Runtime 通过 Service Binding 内网转发
 // 生产环境 SSR：优先用 NEXT_PUBLIC_API_URL 直连（如有），否则也走代理
 // 开发环境：直接请求本地 Workers API
-function buildApiUrl(endpoint: string): string {
+function buildApiUrl(path: string, params?: Record<string,string>): string {
   const isServer = typeof window === 'undefined'
-
-  // 生产环境：客户端永远走代理，SSR 可以走直连
   if (process.env.NODE_ENV === 'production') {
-    if (!isServer) {
-      // 浏览器端：走 /api/proxy 避免 localhost 暴露
-      return `/api/proxy?path=${encodeURIComponent(endpoint)}`
-    }
-    // SSR 端：如果配置了 API URL 则直连，否则也走代理
-    if (!process.env.NEXT_PUBLIC_API_URL) {
-      return `/api/proxy?path=${encodeURIComponent(endpoint)}`
+    if (!isServer || !process.env.NEXT_PUBLIC_API_URL) {
+      const sp = new URLSearchParams({ path })
+      if (params) Object.entries(params).forEach(([k,v]) => sp.set(k, String(v)))
+      return `/api/proxy?${sp.toString()}`
     }
   }
-
-  // 开发环境：NEXT_PUBLIC_API_URL 或 localhost fallback
   const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787'
-  return `${base}${endpoint}`
+  const qs = params ? '?' + new URLSearchParams(params).toString() : ''
+  return `${base}${path}${qs}`
 }
 
 // 请求超时时间
@@ -210,8 +204,8 @@ async function fetchWithTimeout(url: string, options: RequestInit = {}, timeout 
   }
 }
 
-async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const url = buildApiUrl(endpoint)
+async function apiRequest<T>(path: string, params?: Record<string,string>, options: RequestInit = {}): Promise<T> {
+  const url = buildApiUrl(path, params)
   
   try {
     const response = await fetchWithTimeout(url, {
@@ -242,40 +236,30 @@ async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promi
  * 获取首页数据
  */
 export async function getHomeData(locale?: string): Promise<HomeData> {
-  const q = locale ? `?lang=${encodeURIComponent(locale)}` : ''
-  return apiRequest<HomeData>(`/api/home${q}`)
+  return apiRequest<HomeData>('/api/home', locale ? { lang: locale } : undefined)
 }
 
 /**
  * 获取应用列表
  */
 export async function getApps(params?: {
-  category?: string
-  limit?: number
-  offset?: number
-  featured?: boolean
-  q?: string
-  locale?: string
+  category?: string; limit?: number; offset?: number; featured?: boolean; q?: string; locale?: string
 }): Promise<PaginatedResponse<App[]>> {
-  const searchParams = new URLSearchParams()
-
-  if (params?.category) searchParams.set('category', params.category)
-  if (params?.limit) searchParams.set('limit', params.limit.toString())
-  if (params?.offset) searchParams.set('offset', params.offset.toString())
-  if (params?.featured) searchParams.set('featured', 'true')
-  if (params?.q) searchParams.set('q', params.q)
-  if (params?.locale) searchParams.set('lang', params.locale)
-
-  const query = searchParams.toString()
-  return apiRequest<PaginatedResponse<App[]>>(`/api/apps${query ? `?${query}` : ''}`)
+  const sp: Record<string,string> = {}
+  if (params?.category) sp.category = params.category
+  if (params?.limit) sp.limit = String(params.limit)
+  if (params?.offset) sp.offset = String(params.offset)
+  if (params?.featured) sp.featured = 'true'
+  if (params?.q) sp.q = params.q
+  if (params?.locale) sp.lang = params.locale
+  return apiRequest<PaginatedResponse<App[]>>('/api/apps', Object.keys(sp).length > 0 ? sp : undefined)
 }
 
 /**
  * 获取应用详情
  */
 export async function getApp(id: string, locale?: string): Promise<App> {
-  const q = locale ? `?lang=${encodeURIComponent(locale)}` : ''
-  return apiRequest<App>(`/api/apps/${id}${q}`)
+  return apiRequest<App>(`/api/apps/${id}`, locale ? { lang: locale } : undefined)
 }
 
 /**
@@ -290,8 +274,9 @@ export async function getCategories(): Promise<ApiCategory[]> {
  * 获取热门应用
  */
 export async function getTrending(period: 'day' | 'week' | 'alltime' = 'week', limit = 10, locale?: string): Promise<App[]> {
-  const langQ = locale ? `&lang=${encodeURIComponent(locale)}` : ''
-  const response = await apiRequest<{ data: App[] }>(`/api/trending?period=${period}&limit=${limit}${langQ}`)
+  const p: Record<string,string> = { period, limit: String(limit) }
+  if (locale) p.lang = locale
+  const response = await apiRequest<{ data: App[] }>('/api/trending', p)
   return response.data
 }
 
@@ -299,8 +284,9 @@ export async function getTrending(period: 'day' | 'week' | 'alltime' = 'week', l
  * 搜索应用
  */
 export async function searchApps(query: string, limit = 20, locale?: string): Promise<{ data: App[]; count: number }> {
-  const langQ = locale ? `&lang=${encodeURIComponent(locale)}` : ''
-  return apiRequest<{ data: App[]; count: number }>(`/api/search?q=${encodeURIComponent(query)}&limit=${limit}${langQ}`)
+  const p: Record<string,string> = { q: query, limit: String(limit) }
+  if (locale) p.lang = locale
+  return apiRequest<{ data: App[]; count: number }>('/api/search', p)
 }
 
 /**
@@ -364,16 +350,12 @@ export async function getLibrary(params?: {
   if (params?.offset) sp.set('offset', String(params.offset))
   if (params?.sort) sp.set('sort', params.sort)
   if (params?.locale) sp.set('lang', params.locale)
-  const qs = sp.toString()
-  return apiRequest<PaginatedResponse<LibraryItem[]>>(`/api/library${qs ? `?${qs}` : ''}`)
+  const entries = Object.fromEntries(sp.entries())
+  return apiRequest<PaginatedResponse<LibraryItem[]>>('/api/library', Object.keys(entries).length > 0 ? entries : undefined)
 }
 
-/**
- * 获取代码宝库项目详情
- */
 export async function getLibraryItem(idOrSlug: string, locale?: string): Promise<LibraryItem> {
-  const q = locale ? `?lang=${encodeURIComponent(locale)}` : ''
-  return apiRequest<LibraryItem>(`/api/library/${idOrSlug}${q}`)
+  return apiRequest<LibraryItem>(`/api/library/${idOrSlug}`, locale ? { lang: locale } : undefined)
 }
 
 /**
