@@ -36,6 +36,15 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     title: t('title'),
     description: t('description'),
+    openGraph: {
+      title: t('title'),
+      description: t('description'),
+      siteName: 'OpenSource-Hub',
+      type: 'website',
+      locale: locale === 'zh' ? 'zh_CN' : locale === 'ja' ? 'ja_JP' : locale === 'ko' ? 'ko_KR' : 'en_US',
+      images: [{ url: 'https://www.opensource-hub.com/icon.svg', width: 512, height: 512 }],
+    },
+    twitter: { card: 'summary_large_image', title: t('title'), description: t('description') },
   }
 }
 
