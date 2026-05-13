@@ -15,14 +15,14 @@ export interface Env {
 const TARGET_LOCALES = ['ja', 'ko', 'es', 'pt-BR']
 const BATCH_SIZE = 5
 
-// m2m100 语言代码映射 (ISO 639-3)
+// m2m100 语言代码 (Cloudflare Workers AI 使用 ISO 639-1)
 const LANG_MAP: Record<string, string> = {
-  zh: 'zho_Hans',
-  en: 'eng_Latn',
-  ja: 'jpn_Jpan',
-  ko: 'kor_Hang',
-  es: 'spa_Latn',
-  'pt-BR': 'por_Latn',
+  zh: 'zh',
+  en: 'en',
+  ja: 'ja',
+  ko: 'ko',
+  es: 'es',
+  'pt-BR': 'pt',
 }
 
 interface Task {

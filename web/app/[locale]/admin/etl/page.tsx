@@ -29,6 +29,7 @@ export default function AdminEtlPage() {
   const [total, setTotal] = useState(0)
   const [selected, setSelected] = useState<number[]>([])
   const [retrying, setRetrying] = useState(false)
+  const [logModal, setLogModal] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     try {
@@ -121,7 +122,13 @@ export default function AdminEtlPage() {
                       </Badge>
                     </td>
                     <td className="px-4 py-3">{job.retry_count}/{job.max_retries}</td>
-                    <td className="px-4 py-3 text-muted-foreground max-w-[200px] truncate">{job.error_log || '-'}</td>
+                    <td className="px-4 py-3 text-muted-foreground max-w-[200px] truncate">
+                      {job.error_log ? (
+                        <button className="text-left hover:text-foreground cursor-pointer underline underline-offset-2" onClick={() => setLogModal(job.error_log)}>
+                          {job.error_log.slice(0, 60)}{job.error_log.length > 60 ? '...' : ''}
+                        </button>
+                      ) : '-'}
+                    </td>
                     <td className="px-4 py-3 text-muted-foreground text-xs">{job.last_processed_at || '-'}</td>
                   </tr>
                 ))}
@@ -138,6 +145,18 @@ export default function AdminEtlPage() {
           <Button size="sm" variant="outline" disabled={jobs.length < 30} onClick={() => setPage(p => p + 1)}>下一页</Button>
         </div>
       </div>
+
+      {logModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setLogModal(null)}>
+          <div className="bg-background rounded-xl border shadow-lg max-w-2xl w-full mx-4 max-h-[80vh] overflow-auto" onClick={e => e.stopPropagation()}>
+            <div className="p-5 border-b flex items-center justify-between">
+              <h3 className="font-semibold">错误详情</h3>
+              <Button size="sm" variant="ghost" onClick={() => setLogModal(null)}>关闭</Button>
+            </div>
+            <pre className="p-5 text-sm whitespace-pre-wrap break-words">{logModal}</pre>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

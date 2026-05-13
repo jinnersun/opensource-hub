@@ -8,6 +8,7 @@ export interface Env {
   VECTORIZE?: VectorizeIndex
   AI?: Ai
   ADMIN_TOKEN?: string
+  TRIGGER_TOKEN?: string
 }
 
 // CORS 响应头
@@ -1108,6 +1109,20 @@ export default {
         ).bind(st, limit, offset).all()
         const { c } = await env.DB.prepare(`SELECT COUNT(*) as c FROM user_submissions WHERE status = ?`).bind(st).first<{c:number}>() || {c:0}
         return jsonResponse({ data: results||[], total: c||0, page, limit })
+      }
+
+      // ---- Admin 触发 ETL/Translator 端点 ----
+      if (path === '/admin/trigger-etl' && adminAuth(request)) {
+        const r = await fetch('https://opensource-hub-etl.358042175.workers.dev/etl/trigger', {
+          method: 'POST', headers: { 'Authorization': `Bearer ${env.TRIGGER_TOKEN}` },
+        })
+        return jsonResponse({ status: r.status, ok: r.ok })
+      }
+      if (path === '/admin/trigger-translate' && adminAuth(request)) {
+        const r = await fetch('https://opensource-hub-translator.358042175.workers.dev/translate/trigger', {
+          method: 'POST', headers: { 'Authorization': `Bearer ${env.TRIGGER_TOKEN}` },
+        })
+        return jsonResponse({ status: r.status, ok: r.ok })
       }
 
       // 404
