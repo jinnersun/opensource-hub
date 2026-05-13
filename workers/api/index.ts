@@ -293,15 +293,13 @@ async function getTrending(db: D1Database, params: URLSearchParams): Promise<Res
 
     let query: string
 
-    // 时间窗口过滤：day=最近1天更新过的，week=最近7天更新过的，alltime=不限
-    // 兼容安全：若时间窗口内数据不足，涉及测试期数据稀疏的场景，可以回退为无窗口排序
     if (period === 'day') {
       query = `SELECT ${selectFields} FROM apps a ${joinClause}
-               WHERE a.status = 'active' AND a.last_updated >= datetime('now', '-1 day')
-               ORDER BY a.last_updated DESC LIMIT ?`
+               WHERE a.status = 'active' AND a.etl_processed_at >= datetime('now', 'start of day')
+               ORDER BY a.stars_count DESC LIMIT ?`
     } else if (period === 'week') {
       query = `SELECT ${selectFields} FROM apps a ${joinClause}
-               WHERE a.status = 'active' AND a.last_updated >= datetime('now', '-7 days')
+               WHERE a.status = 'active' AND a.etl_processed_at >= datetime('now', '-7 days')
                ORDER BY a.stars_count DESC LIMIT ?`
     } else {
       query = `SELECT ${selectFields} FROM apps a ${joinClause} WHERE a.status = 'active' ORDER BY a.stars_count DESC LIMIT ?`
@@ -1098,6 +1096,21 @@ export default {
         const { results } = await env.DB.prepare(sql).bind(...binds).all()
         const { c } = await env.DB.prepare(`SELECT COUNT(*) as c FROM translation_tasks`).first<{c:number}>() || {c:0}
         return jsonResponse({ data: results||[], total: c||0, page, limit })
+      }
+
+      if (path === '/admin/daily-stats' && adminAuth(request)) {
+        const today = `datetime('now', 'start of day')`
+        const [newApps, etlDone, etlFailed, transDone, transFailed] = await Promise.all([
+          env.DB.prepare(`SELECT COUNT(*) as c FROM apps WHERE etl_processed_at >= ${today} AND status='active'`).first<{c:number}>(),
+          env.DB.prepare(`SELECT COUNT(*) as c FROM raw_apps WHERE last_processed_at >= ${today} AND etl_status='completed'`).first<{c:number}>(),
+          env.DB.prepare(`SELECT COUNT(*) as c FROM raw_apps WHERE last_processed_at >= ${today} AND etl_status='failed'`).first<{c:number}>(),
+          env.DB.prepare(`SELECT COUNT(*) as c FROM translation_tasks WHERE updated_at >= ${today} AND status='done'`).first<{c:number}>(),
+          env.DB.prepare(`SELECT COUNT(*) as c FROM translation_tasks WHERE updated_at >= ${today} AND status='failed'`).first<{c:number}>(),
+        ])
+        return jsonResponse({
+          newApps: newApps?.c||0, etlDone: etlDone?.c||0, etlFailed: etlFailed?.c||0,
+          transDone: transDone?.c||0, transFailed: transFailed?.c||0,
+        })
       }
 
       if (path === '/admin/submissions' && adminAuth(request)) {

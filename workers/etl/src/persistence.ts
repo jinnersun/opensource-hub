@@ -126,8 +126,8 @@ export async function saveSuccess(params: {
       `INSERT OR REPLACE INTO apps (
          id, name, slug, description, full_description, category, tags,
          github_url, github_owner, github_repo, license, homepage_url,
-         stars_count, last_updated, status, is_featured
-       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', 0)`,
+         stars_count, last_updated, etl_processed_at, status, is_featured
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, 'active', 0)`,
     ).bind(
       appId, ai.name, ai.slug, ai.description, ai.fullDescription,
       ai.category, JSON.stringify(ai.tags),
