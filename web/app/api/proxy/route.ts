@@ -52,7 +52,7 @@ async function forward(request: Request, method: string, body?: string) {
       status: response.status,
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': method === 'GET' ? 'public, max-age=60' : 'no-store',
+        'Cache-Control': 'no-store',
       },
     })
   } catch (error: any) {
