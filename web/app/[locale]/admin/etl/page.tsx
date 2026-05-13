@@ -38,8 +38,8 @@ export default function AdminEtlPage() {
 
   useEffect(() => { load() }, [load])
 
-  const allChecked = jobs.length > 0 && jobs.every(j => selected.includes(j.id))
-  const toggleAll = () => setSelected(allChecked ? [] : jobs.map(j => j.id))
+  const allChecked = jobs.length > 0 && jobs.every(j => selected.includes(j.github_repo_id))
+  const toggleAll = () => setSelected(allChecked ? [] : jobs.map(j => j.github_repo_id))
   const toggleOne = (id: number) => setSelected(prev =>
     prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
   )
