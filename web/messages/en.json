@@ -381,7 +381,16 @@
       "p2": "If you are a project author and believe our display infringes your rights, contact us and we will address it within 7 business days."
     },
     "retention": { "title": "Data Retention & Deletion", "text": "We retain personal information only as long as necessary. You may request deletion at any time, and we will respond within a reasonable timeframe." },
-    "contact": { "title": "Contact Us", "text": "For questions about this policy or to exercise your data rights, reach us through our contact page." },
+    "contact": { "title": "Contact Us", "text": "For questions about this policy or to exercise your data rights, reach us through our ", "linkText": "contact page", "textAfter": "." },
     "update": "Last updated: May 14, 2026."
+  },
+  "about": {
+    "title": "About OpenSource-Hub",
+    "subtitle": "Making quality open source software accessible to everyone",
+    "mission": { "title": "Our Mission", "desc": "Removing barriers to open source software. Great tools shouldn't be hidden behind technical docs and complex installation. Through AI-powered automation, we transform top GitHub projects into consumer-ready applications anyone can understand and use." },
+    "trust": { "title": "Transparent & Trustworthy", "desc": "Every installer comes directly from GitHub's official Release pages. We display original SHA-256 checksums and source code links for you to verify. All content is AI-assisted. We never distribute malware or bundled adware." },
+    "dataSource": { "title": "Data Sources", "s1": { "title": "GitHub Harvesting", "desc": "Daily automated collection from GitHub Trending and Awesome lists" }, "s2": { "title": "AI Refinement", "desc": "Large language models transform technical docs into clear multilingual guides" }, "s3": { "title": "Community Driven", "desc": "Users submit recommendations and corrections to maintain quality together" } },
+    "disclaimer": { "title": "Disclaimer", "p1": "OpenSource-Hub is an open source software aggregation and distribution platform. We do not own copyright to any software; all software belongs to their respective authors or organizations.", "p2": "We only distribute projects under open licenses (MIT, Apache 2.0, GPL, etc.) and comply with attribution requirements. If you are a copyright holder and believe our display infringes your rights, please contact us.", "p3": "We are not responsible for data loss, system damage, or other losses from software use. Please review the software's open source license and documentation before downloading." },
+    "community": { "title": "Join the Community", "desc": "OpenSource-Hub is a community-driven project. Submit software recommendations, correct AI translations, or contribute code.", "github": "GitHub Repo", "contact": "Contact Us" }
   }
 }

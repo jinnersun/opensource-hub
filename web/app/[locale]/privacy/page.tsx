@@ -93,9 +93,9 @@ export default function PrivacyPage() {
             <div>
               <div className="mb-4 flex items-center gap-2"><Mail className="size-5 text-emerald-500" /><h2 className="text-xl font-bold">{t('contact.title')}</h2></div>
               <p className="text-muted-foreground leading-relaxed">
-                {t('contact.text').split('联系我们页面')[0]}
-                <Link href="/contact" className="mx-1 text-foreground underline">联系我们页面</Link>
-                {t('contact.text').split('联系我们页面')[1] || ''}
+                {t('contact.text')}
+                <Link href="/contact" className="mx-1 text-foreground underline">{t('contact.linkText')}</Link>
+                {t('contact.textAfter')}
               </p>
             </div>
 
