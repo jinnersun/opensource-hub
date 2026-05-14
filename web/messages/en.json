@@ -334,5 +334,54 @@
       ]
     },
     "copyright": "© 2026 OpenSource-Hub"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Questions, suggestions or collaboration? We'd love to hear from you.",
+    "feedback": { "title": "Feedback", "desc": "Found incorrect info, broken links or security issues? Let us know and we'll fix it promptly." },
+    "submit": { "title": "Submit Software", "desc": "Want to recommend a great open source tool? Send us the project link and description." },
+    "cooperation": { "title": "Business", "desc": "Advertising, brand partnerships, open source project promotion, and other business inquiries." },
+    "community": { "title": "Open Source Community", "desc": "Our code is fully open source. Issues, PRs and discussions are welcome.", "label": "GitHub Repository" },
+    "faq": {
+      "title": "FAQ",
+      "q1": { "q": "How to submit software?", "a": "Send your recommendation via the \"Submit Software\" email above, or open an Issue on our GitHub repo. Please include the software name, GitHub link, and a brief description." },
+      "q2": { "q": "What if I find incorrect info?", "a": "Every software detail page has a feedback link at the bottom. You can also email us at the feedback address." },
+      "q3": { "q": "Is the software safe to download?", "a": "All installers come from official GitHub Release pages. We display the original SHA-256 checksums for you to verify. Source code links are provided for full transparency." }
+    }
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "subtitle": "We respect and protect every user's privacy",
+    "overview": { "title": "Overview", "text": "OpenSource-Hub (\"the Site\") takes user privacy seriously. This policy explains how we collect, use, store and protect your personal information. Using the Site means you agree to these terms." },
+    "infrastructure": {
+      "title": "Data Storage & Global Transmission",
+      "p1": "The Site runs on Cloudflare's global edge network, with core data stored in Cloudflare D1 (globally distributed SQLite) and Cloudflare KV (key-value storage).",
+      "p2": "When you visit, your request is processed by the nearest Cloudflare edge node, which may be outside your country. Cloudflare holds ISO 27001, SOC 2 and other international security certifications.",
+      "p3": "We only store personal information when you voluntarily submit an email address with a software recommendation or feature request. This data is stored in D1 and transmitted over HTTPS."
+    },
+    "ai": {
+      "title": "AI & Automated Processing",
+      "p1": "The Site uses AI technologies (including DeepSeek LLM and Cloudflare Workers AI translation) to automate:",
+      "li1": "Open source metadata: automated summarization, classification and translation of GitHub public README files and documentation into user-friendly guides.",
+      "li2": "Search intent: vector embeddings (Cloudflare Vectorize) convert your search terms into semantic vectors for better matching.",
+      "p2": "All AI processing targets only public open source metadata (project names, READMEs, star counts). It does NOT involve your personal identity. Your search terms are used only for the current session and are never used for AI model training."
+    },
+    "collection": { "title": "Information We Collect", "li1": "Browsing data: anonymized access logs for security and traffic analysis.", "li2": "Search records: stored in anonymous aggregate form to optimize search.", "li3": "Download behavior: anonymized click data to understand software trends.", "li4": "User submissions: email and description you provide when recommending software." },
+    "cookies": {
+      "title": "Cookies & Tracking",
+      "p1": "The Site uses cookies and LocalStorage for basic functionality:",
+      "necessary": { "title": "Essential Cookies", "li1": "Dark/light theme preference", "li2": "Language preference", "li3": "Required for the site to function — cannot be disabled" },
+      "analytics": { "title": "Analytics Cookies", "li1": "Cloudflare Web Analytics (privacy-first) measures page views", "li2": "No personal identifiers, no tracking cookies, no fingerprinting", "li3": "Google Search Console may be connected in the future for indexing monitoring" },
+      "p2": "You can reject non-essential cookies via browser settings without affecting core functionality."
+    },
+    "usage": { "title": "Usage & Sharing", "p1": "We use collected information to: provide and improve services, analyze anonymous trends, respond to feedback, and maintain security.", "p2": "We do NOT sell, trade or transfer your personal information to third parties. Sharing only occurs when legally required or to protect legitimate interests." },
+    "opensource": {
+      "title": "Open Source Metadata Sourcing",
+      "p1": "All open source software information displayed (name, description, stars, license, author) comes from the GitHub public API. We respect all original authors' intellectual property and open source licenses.",
+      "p2": "If you are a project author and believe our display infringes your rights, contact us and we will address it within 7 business days."
+    },
+    "retention": { "title": "Data Retention & Deletion", "text": "We retain personal information only as long as necessary. You may request deletion at any time, and we will respond within a reasonable timeframe." },
+    "contact": { "title": "Contact Us", "text": "For questions about this policy or to exercise your data rights, reach us through our contact page." },
+    "update": "Last updated: May 14, 2026."
   }
 }
