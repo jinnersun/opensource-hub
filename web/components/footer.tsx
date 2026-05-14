@@ -38,6 +38,15 @@ export function Footer() {
         </a>
       )
     }
+    // 根路径不走 i18n 路由 (如 /sitemap.xml)
+    if (link.href.startsWith('/') && !link.href.startsWith('/category') && !link.href.startsWith('/privacy') && !link.href.startsWith('/about')) {
+      return (
+        <a key={link.label} href={link.href}
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          {link.label}
+        </a>
+      )
+    }
     return (
       <Link key={link.label} href={link.href}
         className="text-sm text-muted-foreground hover:text-foreground transition-colors">
