@@ -56,7 +56,6 @@
     "ctaButton": "요청 제출",
     "newArrivals": "신규",
     "newArrivalsSubtitle": "최근 추가된 도구 — 먼저 사용해 보세요",
-    "footer": "© 2026 OpenSource-Hub. 우수한 오픈소스 소프트웨어의 발견과 배포에 전념합니다.",
     "aboutUs": "소개",
     "privacy": "개인정보처리방침",
     "contact": "문의하기"
@@ -302,5 +301,38 @@
       "stars": "스타 순",
       "updated": "업데이트 순"
     }
+  },
+  "footer": {
+    "brand": {
+      "slogan": "우수한 오픈소스를 손쉽게",
+      "techSignal": "Cloudflare D1 & DeepSeek 기반"
+    },
+    "discover": {
+      "title": "발견",
+      "links": [
+        { "label": "AI 생산성", "href": "/category/ai" },
+        { "label": "개발 도구", "href": "/category/dev-tools" },
+        { "label": "시스템 최적화", "href": "/category/system" },
+        { "label": "개인정보 보호", "href": "/category/privacy" },
+        { "label": "동영상·오디오", "href": "/category/video" },
+        { "label": "오피스", "href": "/category/office" }
+      ]
+    },
+    "resources": {
+      "title": "리소스",
+      "links": [
+        { "label": "프로젝트 제안", "href": "#submit" },
+        { "label": "사이트맵", "href": "/sitemap.xml" },
+        { "label": "GitHub 저장소", "href": "https://github.com/jinnersun/opensource-hub" }
+      ]
+    },
+    "legal": {
+      "title": "법적 고지",
+      "links": [
+        { "label": "개인정보처리방침", "href": "/privacy" },
+        { "label": "소개", "href": "/about" }
+      ]
+    },
+    "copyright": "© 2026 OpenSource-Hub"
   }
 }

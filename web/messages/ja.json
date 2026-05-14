@@ -56,7 +56,6 @@
     "ctaButton": "リクエストを送信",
     "newArrivals": "新着",
     "newArrivalsSubtitle": "最近追加されたツール — いち早くお試しください",
-    "footer": "© 2026 OpenSource-Hub. 優れたオープンソースソフトウェアの発見と配布に専念しています。",
     "aboutUs": "私たちについて",
     "privacy": "プライバシーポリシー",
     "contact": "お問い合わせ"
@@ -302,5 +301,38 @@
       "stars": "スター順",
       "updated": "更新順"
     }
+  },
+  "footer": {
+    "brand": {
+      "slogan": "優れたオープンソースを手の届くところに",
+      "techSignal": "Cloudflare D1 & DeepSeek 搭載"
+    },
+    "discover": {
+      "title": "発見",
+      "links": [
+        { "label": "AI 生産性", "href": "/category/ai" },
+        { "label": "開発ツール", "href": "/category/dev-tools" },
+        { "label": "システム最適化", "href": "/category/system" },
+        { "label": "プライバシー", "href": "/category/privacy" },
+        { "label": "動画・音声", "href": "/category/video" },
+        { "label": "オフィス", "href": "/category/office" }
+      ]
+    },
+    "resources": {
+      "title": "リソース",
+      "links": [
+        { "label": "プロジェクトを提案", "href": "#submit" },
+        { "label": "サイトマップ", "href": "/sitemap.xml" },
+        { "label": "GitHub リポジトリ", "href": "https://github.com/jinnersun/opensource-hub" }
+      ]
+    },
+    "legal": {
+      "title": "法的情報",
+      "links": [
+        { "label": "プライバシーポリシー", "href": "/privacy" },
+        { "label": "私たちについて", "href": "/about" }
+      ]
+    },
+    "copyright": "© 2026 OpenSource-Hub"
   }
 }

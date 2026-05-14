@@ -56,7 +56,6 @@
     "ctaButton": "Submit Request",
     "newArrivals": "New Arrivals",
     "newArrivalsSubtitle": "Recently added tools — try them first",
-    "footer": "© 2026 OpenSource-Hub. Dedicated to discovering and distributing quality open source software.",
     "aboutUs": "About Us",
     "privacy": "Privacy Policy",
     "contact": "Contact Us"
@@ -302,5 +301,38 @@
       "stars": "Sort by stars",
       "updated": "Sort by updated"
     }
+  },
+  "footer": {
+    "brand": {
+      "slogan": "Quality Open Source Within Reach",
+      "techSignal": "Powered by Cloudflare D1 & DeepSeek"
+    },
+    "discover": {
+      "title": "Discover",
+      "links": [
+        { "label": "AI Productivity", "href": "/category/ai" },
+        { "label": "Dev Tools", "href": "/category/dev-tools" },
+        { "label": "System Tuning", "href": "/category/system" },
+        { "label": "Privacy", "href": "/category/privacy" },
+        { "label": "Video & Audio", "href": "/category/video" },
+        { "label": "Office", "href": "/category/office" }
+      ]
+    },
+    "resources": {
+      "title": "Resources",
+      "links": [
+        { "label": "Submit Project", "href": "#submit" },
+        { "label": "Sitemap", "href": "/sitemap.xml" },
+        { "label": "GitHub Repo", "href": "https://github.com/jinnersun/opensource-hub" }
+      ]
+    },
+    "legal": {
+      "title": "Legal",
+      "links": [
+        { "label": "Privacy Policy", "href": "/privacy" },
+        { "label": "About Us", "href": "/about" }
+      ]
+    },
+    "copyright": "© 2026 OpenSource-Hub"
   }
 }

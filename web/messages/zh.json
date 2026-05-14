@@ -56,7 +56,6 @@
     "ctaButton": "提交需求",
     "newArrivals": "最新到达",
     "newArrivalsSubtitle": "最近收录的新工具，抢先体验",
-    "footer": "© 2026 OpenSource-Hub. 专注于发现与分发优质开源软件。",
     "aboutUs": "关于我们",
     "privacy": "隐私政策",
     "contact": "联系我们"
@@ -302,5 +301,38 @@
       "stars": "按星标排序",
       "updated": "按更新排序"
     }
+  },
+  "footer": {
+    "brand": {
+      "slogan": "让优质开源项目触手可及",
+      "techSignal": "基于 Cloudflare D1 & DeepSeek 驱动"
+    },
+    "discover": {
+      "title": "发现",
+      "links": [
+        { "label": "AI 生产力", "href": "/category/ai" },
+        { "label": "开发工具", "href": "/category/dev-tools" },
+        { "label": "系统调优", "href": "/category/system" },
+        { "label": "隐私保护", "href": "/category/privacy" },
+        { "label": "影音处理", "href": "/category/video" },
+        { "label": "办公提效", "href": "/category/office" }
+      ]
+    },
+    "resources": {
+      "title": "资源",
+      "links": [
+        { "label": "提交项目", "href": "#submit" },
+        { "label": "站点地图", "href": "/sitemap.xml" },
+        { "label": "GitHub 仓库", "href": "https://github.com/jinnersun/opensource-hub" }
+      ]
+    },
+    "legal": {
+      "title": "法律",
+      "links": [
+        { "label": "隐私政策", "href": "/privacy" },
+        { "label": "关于我们", "href": "/about" }
+      ]
+    },
+    "copyright": "© 2026 OpenSource-Hub"
   }
 }
