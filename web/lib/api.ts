@@ -469,7 +469,7 @@ export function transformAppForDisplay(app: App) {
   return {
     id: app.slug || app.id,
     name: app.name,
-    humanTitle: `${app.name} — ${app.description?.slice(0, 30) || '开源工具'}`,
+    humanTitle: app.name,
     description: app.description,
     longDescription: (app as any).full_description || app.description,
     stars: app.stars_count,
