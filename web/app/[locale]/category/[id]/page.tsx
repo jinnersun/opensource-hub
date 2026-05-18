@@ -81,7 +81,10 @@ export default async function CategoryDetailPage({ params }: Props) {
           <span>/</span><span className="text-foreground font-medium">{label}</span>
         </div>
         <div className="flex flex-col lg:flex-row gap-8">
-          <CategorySidebar currentCat={currentCat as any} categories={categories as any} categoryId={categoryId} label={label} description={description} projectCount={projects.length} currentIcon={null} td={td} t={t} />
+          <CategorySidebar currentCat={currentCat as any} categories={categories as any} categoryId={categoryId} label={label} description={description} projectCount={projects.length}
+            allLabel={t('all', { label, count: projects.length })} otherLabel={t('otherCategories')}
+            catLabels={categories.map(c => td(`categories.${c.id}.label`))} />
+
           <div className="flex-1 min-w-0">
             {projects.length > 0 ? (
               <>
