@@ -71,8 +71,8 @@ export default function CategoryDetailPage() {
     loadData()
   }, [loadData])
 
-  const label = currentCategory?.label || td(`categories.${categoryId}.label`)
-  const description = currentCategory?.description || td(`categories.${categoryId}.description`)
+  const label = td(`categories.${categoryId}.label`) || currentCategory?.label || categoryId
+  const description = td(`categories.${categoryId}.description`) || currentCategory?.description || ''
   const currentIcon = currentCategory ? getCategoryIcon(currentCategory.emoji) : null
   const otherCategories = allCategories.filter(c => c.id !== categoryId).slice(0, 3)
 
