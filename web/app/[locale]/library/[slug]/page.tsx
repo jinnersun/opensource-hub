@@ -1,16 +1,12 @@
-'use client'
-
-import { useEffect, useState, useCallback } from 'react'
-import { useTranslations, useLocale } from 'next-intl'
-import { useParams } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { Link } from '@/i18n/routing'
+import type { Metadata } from 'next'
 import {
   ArrowLeft,
   Star,
   ExternalLink,
   Github,
   Globe,
-  Loader2,
 } from 'lucide-react'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
@@ -19,11 +15,40 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { ErrorState } from '@/components/error-state'
 import {
-  getLibraryItem,
-  getLibrary,
   parseLibraryTags,
   type LibraryItem,
 } from '@/lib/api'
+
+type LibraryProps = { params: Promise<{ locale: string; slug: string }> }
+
+export async function generateMetadata({ params }: LibraryProps): Promise<Metadata> {
+  const { locale, slug } = await params
+  try {
+    const ctx = (globalThis as any)[Symbol.for('__cloudflare-context__')]
+    const api = ctx?.env?.API
+    if (api) {
+      const res = await api.fetch(new Request(`http://internal/api/library/${slug}?lang=${locale}`))
+      const item = await res.json() as LibraryItem
+      if (item?.name) {
+        return {
+          title: `${item.name} - OpenSource-Hub`,
+          description: (item.summary || item.description || '').slice(0, 160),
+          alternates: {
+            canonical: `https://www.opensource-hub.com/${locale}/library/${slug}`,
+            languages: {
+              zh: `https://www.opensource-hub.com/zh/library/${slug}`,
+              en: `https://www.opensource-hub.com/en/library/${slug}`,
+              ja: `https://www.opensource-hub.com/ja/library/${slug}`,
+              ko: `https://www.opensource-hub.com/ko/library/${slug}`,
+              'x-default': `https://www.opensource-hub.com/en/library/${slug}`,
+            },
+          },
+        }
+      }
+    }
+  } catch { /* fallback */ }
+  return { title: 'OpenSource-Hub' }
+}
 
 function formatStars(n: number): string {
   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`
@@ -35,89 +60,104 @@ function formatDate(iso: string | null, locale: string): string {
   try {
     const d = new Date(iso)
     return d.toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
+      year: 'numeric', month: 'short', day: 'numeric',
     })
   } catch {
     return iso
   }
 }
 
-export default function LibraryDetailPage() {
-  const t = useTranslations('library')
-  const te = useTranslations('errors')
-  const intlLocale = useLocale()
-  const params = useParams<{ slug: string; locale?: string }>()
-  const slug = params?.slug
-  // 和列表页保持一致：优先用 URL 段 locale，回back provider locale
-  const locale = (params?.locale as string) || intlLocale
+function MetaRow({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-medium text-right">{value}</span>
+    </div>
+  )
+}
 
-  const [item, setItem] = useState<LibraryItem | null>(null)
-  const [related, setRelated] = useState<LibraryItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
+async function getServerData(locale: string, slug: string) {
+  try {
+    const ctx = (globalThis as any)[Symbol.for('__cloudflare-context__')]
+    const api = ctx?.env?.API
+    if (!api) return null
 
-  const load = useCallback(async () => {
-    if (!slug) return
-    setLoading(true)
-    setError(false)
-    try {
-      const data = await getLibraryItem(slug, locale)
-      setItem(data)
-      // fetch related items by same project_type
-      if (data?.project_type) {
-        const rel = await getLibrary({
-          projectType: data.project_type,
-          limit: 6,
-          sort: 'stars',
-          locale,
-        })
-        setRelated((rel.data || []).filter((r: LibraryItem) => r.slug !== data.slug).slice(0, 4))
-      }
-    } catch (e) {
-      console.error('getLibraryItem failed:', e)
-      setError(true)
-    } finally {
-      setLoading(false)
+    const itemRes = await api.fetch(new Request(`http://internal/api/library/${encodeURIComponent(slug)}?lang=${locale}`))
+    const item = await itemRes.json() as LibraryItem
+    if (!item?.name) return null
+
+    // Fetch related items by project_type
+    let related: LibraryItem[] = []
+    if (item.project_type) {
+      try {
+        const relRes = await api.fetch(new Request(`http://internal/api/library?project_type=${encodeURIComponent(item.project_type)}&limit=6&sort=stars&lang=${locale}`))
+        const relData = await relRes.json() as any
+        related = (relData.data || []).filter((r: LibraryItem) => r.slug !== item.slug).slice(0, 4)
+      } catch { /* related non-critical */ }
     }
-  }, [slug, locale])
 
-  useEffect(() => {
-    load()
-  }, [load])
-
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
-      </div>
-    )
+    return { item, related }
+  } catch (e) {
+    console.error('[SSR library]', e)
+    return null
   }
+}
 
-  if (error || !item) {
+export default async function LibraryDetailPage({ params }: LibraryProps) {
+  const { locale, slug } = await params
+  const t = await getTranslations({ locale, namespace: 'library' })
+  const te = await getTranslations({ locale, namespace: 'errors' })
+
+  const data = await getServerData(locale, slug)
+
+  if (!data) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
         <main className="max-w-5xl mx-auto px-4 py-12">
-          <ErrorState
-            title={te('title')}
-            description={te('description')}
-            onRetry={load}
-          />
+          <ErrorState title={te('title')} description={te('description')} />
         </main>
         <Footer />
       </div>
     )
   }
 
+  const { item, related } = data
   const tags = parseLibraryTags(item.tags)
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'SoftwareApplication',
+        name: item.name,
+        description: (item.summary || item.description || '').slice(0, 300),
+        applicationCategory: item.category_name || item.category || '',
+        operatingSystem: 'Any',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+        author: { '@type': 'Organization', name: item.full_name?.split('/')[0] || '' },
+        dateModified: item.last_updated,
+        license: item.license || '',
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: `https://www.opensource-hub.com/${locale}` },
+          { '@type': 'ListItem', position: 2, name: t('backToList'), item: `https://www.opensource-hub.com/${locale}/library` },
+          { '@type': 'ListItem', position: 3, name: item.name },
+        ],
+      },
+    ],
+  }
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
       <main className="max-w-5xl mx-auto px-4 py-8">
+        {/* JSON-LD */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
         <div className="mb-6">
           <Link
             href="/library"
@@ -136,9 +176,7 @@ export default function LibraryDetailPage() {
               {t(`type.${item.project_type}`)}
             </Badge>
           </div>
-          <p className="text-sm text-muted-foreground mb-4 break-all">
-            {item.full_name}
-          </p>
+          <p className="text-sm text-muted-foreground mb-4 break-all">{item.full_name}</p>
 
           {item.summary && (
             <p className="text-lg text-foreground/90 mb-4">{item.summary}</p>
@@ -146,12 +184,7 @@ export default function LibraryDetailPage() {
 
           <div className="flex flex-wrap items-center gap-3">
             <Button asChild>
-              <a
-                href={item.html_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5"
-              >
+              <a href={item.html_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5">
                 <Github className="h-4 w-4" />
                 {t('visitRepo')}
                 <ExternalLink className="h-3.5 w-3.5" />
@@ -159,12 +192,7 @@ export default function LibraryDetailPage() {
             </Button>
             {item.homepage && (
               <Button variant="outline" asChild>
-                <a
-                  href={item.homepage}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5"
-                >
+                <a href={item.homepage} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5">
                   <Globe className="h-4 w-4" />
                   {t('visitHomepage')}
                   <ExternalLink className="h-3.5 w-3.5" />
@@ -180,9 +208,7 @@ export default function LibraryDetailPage() {
             {item.full_description && (
               <Card>
                 <CardContent className="p-6">
-                  <h2 className="text-lg font-semibold mb-3">
-                    {t('overview')}
-                  </h2>
+                  <h2 className="text-lg font-semibold mb-3">{t('overview')}</h2>
                   <p className="text-sm leading-relaxed whitespace-pre-wrap text-foreground/90">
                     {item.full_description}
                   </p>
@@ -193,9 +219,7 @@ export default function LibraryDetailPage() {
             {item.readme_preview && (
               <Card>
                 <CardContent className="p-6">
-                  <h2 className="text-lg font-semibold mb-3">
-                    {t('readmePreview')}
-                  </h2>
+                  <h2 className="text-lg font-semibold mb-3">{t('readmePreview')}</h2>
                   <pre className="text-xs leading-relaxed whitespace-pre-wrap break-words font-mono text-muted-foreground max-h-[600px] overflow-auto">
                     {item.readme_preview}
                   </pre>
@@ -236,13 +260,7 @@ export default function LibraryDetailPage() {
                   <h3 className="text-sm font-semibold mb-3">{t('tags')}</h3>
                   <div className="flex flex-wrap gap-1.5">
                     {tags.map(tag => (
-                      <Badge
-                        key={tag}
-                        variant="outline"
-                        className="text-[11px]"
-                      >
-                        {tag}
-                      </Badge>
+                      <Badge key={tag} variant="outline" className="text-[11px]">{tag}</Badge>
                     ))}
                   </div>
                 </CardContent>
@@ -281,21 +299,6 @@ export default function LibraryDetailPage() {
       )}
 
       <Footer />
-    </div>
-  )
-}
-
-function MetaRow({
-  label,
-  value,
-}: {
-  label: string
-  value: React.ReactNode
-}) {
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium text-right">{value}</span>
     </div>
   )
 }

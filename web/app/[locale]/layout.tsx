@@ -32,19 +32,36 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params
   const { getTranslations } = await import('next-intl/server')
   const t = await getTranslations({ locale, namespace: 'metadata' })
-  
+
+  const ogImage = {
+    url: 'https://www.opensource-hub.com/images/og-image.png',
+    width: 1200,
+    height: 630,
+    alt: 'OpenSource-Hub',
+  }
+
   return {
     title: t('title'),
     description: t('description'),
+    alternates: {
+      canonical: `https://www.opensource-hub.com/${locale}`,
+      languages: {
+        zh: 'https://www.opensource-hub.com/zh',
+        en: 'https://www.opensource-hub.com/en',
+        ja: 'https://www.opensource-hub.com/ja',
+        ko: 'https://www.opensource-hub.com/ko',
+        'x-default': 'https://www.opensource-hub.com/en',
+      },
+    },
     openGraph: {
       title: t('title'),
       description: t('description'),
       siteName: 'OpenSource-Hub',
       type: 'website',
       locale: locale === 'zh' ? 'zh_CN' : locale === 'ja' ? 'ja_JP' : locale === 'ko' ? 'ko_KR' : 'en_US',
-      images: [{ url: 'https://www.opensource-hub.com/icon.svg', width: 512, height: 512 }],
+      images: [ogImage],
     },
-    twitter: { card: 'summary_large_image', title: t('title'), description: t('description') },
+    twitter: { card: 'summary_large_image', title: t('title'), description: t('description'), images: [ogImage] },
   }
 }
 
@@ -69,9 +86,40 @@ export default async function LocaleLayout({
     ? `${geist.variable} ${geistMono.variable} ${notoSansSC.variable} font-sans antialiased bg-background`
     : `${geist.variable} ${geistMono.variable} font-sans antialiased bg-background`
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        name: 'OpenSource-Hub',
+        url: 'https://www.opensource-hub.com',
+        logo: 'https://www.opensource-hub.com/icon.svg',
+        description: 'Discover quality open source software — human-curated, GitHub-checksum-verified, AI-assisted reviews',
+        sameAs: ['https://github.com/jinnersun/opensource-hub'],
+      },
+      {
+        '@type': 'WebSite',
+        name: 'OpenSource-Hub',
+        url: 'https://www.opensource-hub.com',
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: 'https://www.opensource-hub.com/{locale}/search?q={search_term_string}',
+          },
+          'query-input': 'required name=search_term_string',
+        },
+      },
+    ],
+  }
+
   return (
     <html lang={locale} suppressHydrationWarning className={isCJK ? 'font-noto-sans-sc' : ''}>
       <body className={fontClass}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider
             attribute="class"

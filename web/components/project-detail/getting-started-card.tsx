@@ -50,7 +50,7 @@ export function GettingStartedCard({ project }: GettingStartedCardProps) {
   }
 
   // 获取当前检测到的 OS 对应步骤
-  const activeOS = availablePlatforms.includes(detectedOS) ? detectedOS : availablePlatforms[0] || 'windows'
+  const activeOS = availablePlatforms.includes(detectedOS as 'windows' | 'mac' | 'linux') ? (detectedOS as 'windows' | 'mac' | 'linux') : availablePlatforms[0] || 'windows'
 
   return (
     <section>

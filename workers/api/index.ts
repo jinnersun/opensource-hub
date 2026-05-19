@@ -1007,15 +1007,16 @@ export default {
         const locs = ['zh', 'en', 'ja', 'ko']
         const fmt = (d: string | null) => { if (!d) return ''; const m = d.match(/^(\d{4}-\d{2}-\d{2})/); return m ? `<lastmod>${m[1]}</lastmod>` : '' }
         const urls: string[] = []
-        for (const l of locs) urls.push(`<url><loc>https://www.opensource-hub.com/${l}</loc><changefreq>daily</changefreq><priority>1.0</priority></url>`)
+        const today = new Date().toISOString().match(/^\d{4}-\d{2}-\d{2}/)?.[0] || ''
+        for (const l of locs) urls.push(`<url><loc>https://www.opensource-hub.com/${l}</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>`)
         for (const c of (cats.results||[])) {
-          for (const l of locs) urls.push(`<url><loc>https://www.opensource-hub.com/${l}/category/${c.slug}</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>`)
+          for (const l of locs) urls.push(`<url><loc>https://www.opensource-hub.com/${l}/category/${c.slug}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>`)
         }
         for (const a of (apps.results||[])) {
           for (const l of locs) urls.push(`<url><loc>https://www.opensource-hub.com/${l}/project/${a.slug}</loc>${fmt(a.last_updated)}<changefreq>weekly</changefreq><priority>0.8</priority></url>`)
         }
         for (const li of (libs.results||[])) {
-          for (const l of locs.slice(0,2)) urls.push(`<url><loc>https://www.opensource-hub.com/${l}/library/${li.slug}</loc>${fmt(li.last_updated)}<changefreq>weekly</changefreq><priority>0.6</priority></url>`)
+          for (const l of locs) urls.push(`<url><loc>https://www.opensource-hub.com/${l}/library/${li.slug}</loc>${fmt(li.last_updated)}<changefreq>weekly</changefreq><priority>0.7</priority></url>`)
         }
         const xml = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.join('')}</urlset>`
         return new Response(xml, { headers: { 'Content-Type': 'application/xml', 'Cache-Control': 'public, max-age=3600' } })

@@ -4,6 +4,30 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { useParams } from 'next/navigation'
 import { Link } from '@/i18n/routing'
+import type { Metadata } from 'next'
+
+type Props = { params: Promise<{ locale: string }> }
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  const { getTranslations } = await import('next-intl/server')
+  const t = await getTranslations({ locale, namespace: 'library' })
+  const tn = await getTranslations({ locale, namespace: 'nav' })
+  return {
+    title: `${tn('library')} - OpenSource-Hub`,
+    description: t('subtitle') || 'Explore open source libraries, frameworks, and developer tools',
+    alternates: {
+      canonical: `https://www.opensource-hub.com/${locale}/library`,
+      languages: {
+        zh: 'https://www.opensource-hub.com/zh/library',
+        en: 'https://www.opensource-hub.com/en/library',
+        ja: 'https://www.opensource-hub.com/ja/library',
+        ko: 'https://www.opensource-hub.com/ko/library',
+        'x-default': 'https://www.opensource-hub.com/en/library',
+      },
+    },
+  }
+}
 import {
   Library as LibraryIcon,
   Loader2,
@@ -67,7 +91,7 @@ export default function LibraryPage() {
   const [sort, setSort] = useState<'stars' | 'updated'>('stars')
   const [keyword, setKeyword] = useState('')
   const [searchQuery, setSearchQuery] = useState('')  // debounced, sent to API
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>()
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [items, setItems] = useState<LibraryItem[]>([])
   const [facets, setFacets] = useState<LibraryFacets | null>(null)
   const [loading, setLoading] = useState(true)
@@ -77,9 +101,9 @@ export default function LibraryPage() {
 
   // debounce keyword → searchQuery
   useEffect(() => {
-    clearTimeout(debounceRef.current)
+    if (debounceRef.current !== null) clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(() => setSearchQuery(keyword.trim()), 300)
-    return () => clearTimeout(debounceRef.current)
+    return () => { if (debounceRef.current !== null) clearTimeout(debounceRef.current) }
   }, [keyword])
 
   const loadList = useCallback(

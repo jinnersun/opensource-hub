@@ -13,6 +13,21 @@ import { Search, Loader2, Frown, Star, ExternalLink, Library } from "lucide-reac
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { parseLibraryTags } from "@/lib/api"
+import type { Metadata } from 'next'
+
+type Props = { params: Promise<{ locale: string }> }
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  const { getTranslations } = await import('next-intl/server')
+  const t = await getTranslations({ locale, namespace: 'searchPage' })
+  const tn = await getTranslations({ locale, namespace: 'nav' })
+  return {
+    title: `${t('title')} - OpenSource-Hub`,
+    description: t('enterKeyword'),
+    robots: { index: false, follow: true },
+  }
+}
 
 function LibrarySearchCard({ item }: { item: any }) {
   const tags = parseLibraryTags(item.tags).slice(0, 3)
@@ -106,6 +121,7 @@ function SearchResults() {
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Search box */}
         <div className="mx-auto max-w-2xl mb-8">
+          <h1 className="text-2xl font-bold mb-4 text-center">{t('title')}</h1>
           <SearchBox />
         </div>
 
