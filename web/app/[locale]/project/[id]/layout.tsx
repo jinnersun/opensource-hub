@@ -32,7 +32,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             description: desc.slice(0, 160),
             type: 'article',
             locale: locale === 'zh' ? 'zh_CN' : locale === 'ja' ? 'ja_JP' : locale === 'ko' ? 'ko_KR' : 'en_US',
+            images: [{ url: 'https://www.opensource-hub.com/images/og-image.png', width: 1200, height: 630, alt: 'OpenSource-Hub' }],
           },
+          twitter: { card: 'summary_large_image', title, description: desc.slice(0, 160) },
         }
       }
     }

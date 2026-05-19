@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: t(`categories.${id}.description`),
     alternates: {
       canonical: `https://www.opensource-hub.com/${locale}/category/${id}`,
-      languages: { zh: `/zh/category/${id}`, en: `/en/category/${id}`, ja: `/ja/category/${id}`, ko: `/ko/category/${id}`, 'x-default': `/en/category/${id}` },
+      languages: { zh: `https://www.opensource-hub.com/zh/category/${id}`, en: `https://www.opensource-hub.com/en/category/${id}`, ja: `https://www.opensource-hub.com/ja/category/${id}`, ko: `https://www.opensource-hub.com/ko/category/${id}`, 'x-default': `https://www.opensource-hub.com/en/category/${id}` },
     },
   }
 }
@@ -76,14 +76,23 @@ export default async function CategoryDetailPage({ params }: Props) {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        {/* JSON-LD BreadcrumbList */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: t('browseAll'), item: `https://www.opensource-hub.com/${locale}/category` },
+            { '@type': 'ListItem', position: 2, name: label, item: `https://www.opensource-hub.com/${locale}/category/${categoryId}` },
+          ],
+        }) }} />
         <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
           <Link href="/category" className="flex items-center gap-1 hover:text-foreground transition-colors"><ArrowLeft className="size-4" />{t('browseAll')}</Link>
-          <span>/</span><span className="text-foreground font-medium">{label}</span>
+          <span>/</span><h1 className="text-foreground font-medium text-sm">{label}</h1>
         </div>
         <div className="flex flex-col lg:flex-row gap-8">
           <CategorySidebar currentCat={currentCat as any} categories={categories as any} categoryId={categoryId} label={label} description={description} projectCount={projects.length}
             allLabel={t('all', { label, count: projects.length })} otherLabel={t('otherCategories')}
-            catLabels={categories.map(c => td(`categories.${c.id}.label`))} />
+            catLabels={categories.map((c: { id: string; label: string }) => td(`categories.${c.id}.label`))} />
 
           <div className="flex-1 min-w-0">
             {projects.length > 0 ? (

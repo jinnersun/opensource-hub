@@ -45,7 +45,7 @@ export function OSDownload({ project, variant = "default" }: OSDownloadProps) {
     const os = detectOS()
     setDetectedOS(os)
     // 如果检测到的系统有对应安装包则选中，否则回退到第一个可用平台
-    const hasDetected = project.platforms[os]
+    const hasDetected = os !== 'unknown' ? project.platforms[os] : undefined
     if (hasDetected) {
       setSelectedOS(os)
     } else {

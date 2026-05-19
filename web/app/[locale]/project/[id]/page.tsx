@@ -1,8 +1,6 @@
-"use client"
-
-import { useState, useEffect, useCallback } from 'react'
-import { useTranslations, useLocale } from 'next-intl'
-import { useParams } from 'next/navigation'
+import { Suspense } from 'react'
+import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Breadcrumb } from "@/components/breadcrumb"
@@ -13,145 +11,106 @@ import { EnvironmentGuide } from "@/components/project-detail/environment-guide"
 import { MetaInfoCard } from "@/components/project-detail/meta-info-card"
 import { GettingStartedCard } from "@/components/project-detail/getting-started-card"
 import { ErrorState } from "@/components/error-state"
-import { getApp, getApps, transformAppForDisplay } from "@/lib/api"
+import { transformAppForDisplay } from "@/lib/api"
 import type { Project } from "@/lib/api"
-import { Star, ShieldCheck, CheckCircle2, Sparkles, Lightbulb, AlertTriangle, Target, Tag, FileEdit, Loader2 } from "lucide-react"
+import { Star, ShieldCheck, CheckCircle2, Sparkles, Lightbulb, AlertTriangle, Target, Tag, FileEdit } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Link } from '@/i18n/routing'
 
+type Props = { params: Promise<{ locale: string; id: string }> }
+
 function formatStars(stars: number): string {
-  if (stars >= 1000) {
-    return `${(stars / 1000).toFixed(1)}k`
-  }
+  if (stars >= 1000) return `${(stars / 1000).toFixed(1)}k`
   return stars.toString()
 }
 
-export default function ProjectPage() {
-  const t = useTranslations('project')
-  const td = useTranslations('data')
-  const te = useTranslations('errors')
-  const params = useParams()
-  const id = params.id as string
-  const locale = useLocale()
+async function getServerData(locale: string, projectId: string) {
+  try {
+    const ctx = (globalThis as any)[Symbol.for('__cloudflare-context__')]
+    const api = ctx?.env?.API
+    if (!api) return null
 
-  const [project, setProject] = useState<Project | null>(null)
-  const [similarProjects, setSimilarProjects] = useState<Project[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
+    // 1. Get the main project
+    const appRes = await api.fetch(new Request(`http://internal/api/apps/${encodeURIComponent(projectId)}?lang=${locale}`))
+    const appData = await appRes.json() as any
+    if (!appData?.name) return null
 
-  const loadData = useCallback(async () => {
-    setLoading(true)
-    setError(false)
+    const project = transformAppForDisplay(appData)
+
+    // 2. Get similar projects by category (non-blocking)
+    let similarProjects: Project[] = []
     try {
-      const app = await getApp(id, locale)
-      const p = transformAppForDisplay(app)
-      setProject(p)
+      const similarRes = await api.fetch(new Request(`http://internal/api/apps?category=${encodeURIComponent(project.category)}&limit=10&lang=${locale}`))
+      const similarData = await similarRes.json() as any
+      const currentTags = new Set(project.tags || [])
+      similarProjects = (similarData.data || [])
+        .map(transformAppForDisplay)
+        .filter((sp: Project) => sp.id !== project.id)
+        .map((sp: Project) => {
+          const spTags = new Set(sp.tags || [])
+          const overlap = [...currentTags].filter(t => spTags.has(t)).length
+          return { project: sp, overlap }
+        })
+        .sort((a: { project: Project; overlap: number }, b: { project: Project; overlap: number }) => b.overlap - a.overlap || b.project.stars - a.project.stars)
+        .slice(0, 3)
+        .map((s: { project: Project; overlap: number }) => s.project)
+    } catch { /* similar projects failure is non-critical */ }
 
-      // Get similar projects (category + tags overlap ranking)
-      try {
-        const appsResult = await getApps({ category: p.category, limit: 10, locale })
-        const currentTags = new Set(p.tags || [])
-        const scored = (appsResult.data || [])
-          .map(transformAppForDisplay)
-          .filter((sp: Project) => sp.id !== p.id)
-          .map(sp => {
-            const spTags = new Set(sp.tags || [])
-            const overlap = [...currentTags].filter(t => spTags.has(t)).length
-            return { project: sp, overlap }
-          })
-          .sort((a, b) => b.overlap - a.overlap || b.project.stars - a.project.stars)
-          .slice(0, 3)
-          .map(s => s.project)
-        setSimilarProjects(scored)
-      } catch {
-        // similarProjects 失败不阻断
-      }
-    } catch (err) {
-      console.error('API request failed:', err)
-      setError(true)
-    } finally {
-      setLoading(false)
-    }
-  }, [id, locale])
-
-  useEffect(() => {
-    loadData()
-  }, [loadData])
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          {/* Breadcrumb skeleton */}
-          <div className="mb-6 flex items-center gap-2">
-            <Skeleton className="h-4 w-24" />
-            <span className="text-muted-foreground">/</span>
-            <Skeleton className="h-4 w-32" />
-          </div>
-          {/* Hero skeleton */}
-          <section className="mb-10">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-              <div className="flex gap-4">
-                <Skeleton className="size-16 rounded-xl" />
-                <div className="space-y-3">
-                  <Skeleton className="h-8 w-64" />
-                  <Skeleton className="h-4 w-48" />
-                  <Skeleton className="h-4 w-96" />
-                </div>
-              </div>
-              <div className="lg:w-80 space-y-3">
-                <Skeleton className="h-4 w-32" />
-                <Skeleton className="h-14 w-full rounded-xl" />
-                <div className="flex gap-2">
-                  <Skeleton className="h-8 w-24 rounded-lg" />
-                  <Skeleton className="h-8 w-24 rounded-lg" />
-                </div>
-              </div>
-            </div>
-          </section>
-          {/* Content skeleton */}
-          <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
-            <div className="space-y-8">
-              <Skeleton className="h-20 w-full rounded-xl" />
-              <div className="space-y-3">
-                <Skeleton className="h-6 w-32" />
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <Skeleton className="h-14 rounded-lg" />
-                  <Skeleton className="h-14 rounded-lg" />
-                  <Skeleton className="h-14 rounded-lg" />
-                  <Skeleton className="h-14 rounded-lg" />
-                </div>
-              </div>
-              <Skeleton className="h-24 w-full rounded-xl" />
-            </div>
-            <div className="space-y-6">
-              <Skeleton className="h-48 w-full rounded-lg" />
-              <Skeleton className="h-36 w-full rounded-lg" />
-              <Skeleton className="h-48 w-full rounded-lg" />
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    )
+    return { project, similarProjects }
+  } catch (e) {
+    console.error('[SSR project]', e)
+    return null
   }
+}
 
-  if (error || !project) {
+export default async function ProjectPage({ params }: Props) {
+  const { locale, id } = await params
+  const t = await getTranslations({ locale, namespace: 'project' })
+  const td = await getTranslations({ locale, namespace: 'data' })
+  const te = await getTranslations({ locale, namespace: 'errors' })
+
+  const data = await getServerData(locale, id)
+
+  if (!data) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
         <main className="mx-auto max-w-7xl px-4 py-12">
-          <ErrorState title={te('title')} description={te('description')} onRetry={loadData} />
+          <ErrorState title={te('title')} description={te('description')} />
         </main>
         <Footer />
       </div>
     )
   }
 
+  const { project, similarProjects } = data
   const categoryLabel = td(`categories.${project.category}.label`)
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'SoftwareApplication',
+        name: project.name,
+        description: project.summary || project.description,
+        applicationCategory: categoryLabel,
+        operatingSystem: Object.keys(project.platforms).map(p => p === 'mac' ? 'macOS' : p === 'windows' ? 'Windows' : 'Linux').join(', '),
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+        author: { '@type': 'Organization', name: project.sourceUrl?.split('/')[3] || '' },
+        dateModified: project.lastUpdated,
+        license: project.license || '',
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: `https://www.opensource-hub.com/${locale}` },
+          { '@type': 'ListItem', position: 2, name: categoryLabel, item: `https://www.opensource-hub.com/${locale}/category/${project.category}` },
+          { '@type': 'ListItem', position: 3, name: project.name },
+        ],
+      },
+    ],
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -159,18 +118,8 @@ export default function ProjectPage() {
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* JSON-LD 结构化数据 */}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
-          '@context': 'https://schema.org',
-          '@type': 'SoftwareApplication',
-          name: project.name,
-          description: project.summary || project.description,
-          applicationCategory: categoryLabel,
-          operatingSystem: Object.keys(project.platforms).map(p => p === 'mac' ? 'macOS' : p === 'windows' ? 'Windows' : 'Linux').join(', '),
-          offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-          author: { '@type': 'Organization', name: project.sourceUrl?.split('/')[3] || '' },
-          dateModified: project.lastUpdated,
-          license: project.license || '',
-        }) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
         {/* Breadcrumb */}
         <Breadcrumb
           items={[
@@ -183,7 +132,6 @@ export default function ProjectPage() {
         {/* Hero Section */}
         <section className="mb-10">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-            {/* Left: Project Info */}
             <div className="flex gap-4">
               <ProjectIcon name={project.name} size="lg" />
               <div className="min-w-0 flex-1">
@@ -196,30 +144,24 @@ export default function ProjectPage() {
                     </Badge>
                   )}
                 </div>
-                
                 <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground mb-3">
                   <span className="flex items-center gap-1">
                     <Star className="size-4 fill-amber-400 text-amber-400" />
                     {formatStars(project.stars)} stars
                   </span>
                   <span>·</span>
-                  <Badge variant="outline" className="text-xs">
-                    {categoryLabel}
-                  </Badge>
+                  <Badge variant="outline" className="text-xs">{categoryLabel}</Badge>
                   <span>·</span>
                   <span className="flex items-center gap-1">
                     <CheckCircle2 className="size-3.5 text-emerald-500" />
                     {t('sha256Available')}
                   </span>
                 </div>
-
-                <p className="text-muted-foreground max-w-2xl">
-                  {project.description}
-                </p>
+                <p className="text-muted-foreground max-w-2xl">{project.description}</p>
               </div>
             </div>
 
-            {/* Right: Quick Download */}
+            {/* Quick Download */}
             <div className="lg:w-80">
               <OSDownload project={project} />
             </div>
@@ -228,7 +170,6 @@ export default function ProjectPage() {
 
         {/* Main Content */}
         <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
-          {/* Left Column */}
           <div className="space-y-8">
             {/* AI Summary */}
             {project.summary && (
@@ -246,7 +187,7 @@ export default function ProjectPage() {
               </section>
             )}
 
-            {/* AI Summary / Features */}
+            {/* Features */}
             {project.features.length > 0 && (
               <section>
                 <h2 className="flex items-center gap-2 text-xl font-bold mb-4">
@@ -270,7 +211,7 @@ export default function ProjectPage() {
               </section>
             )}
 
-            {/* Caveats / What it can't do */}
+            {/* Caveats */}
             {project.caveats.length > 0 && (
               <section>
                 <h2 className="flex items-center gap-2 text-xl font-bold mb-4">
@@ -324,15 +265,13 @@ export default function ProjectPage() {
                 </h2>
                 <div className="flex flex-wrap gap-2">
                   {project.tags.map((tag, index) => (
-                    <Badge key={index} variant="outline" className="text-xs">
-                      {tag}
-                    </Badge>
+                    <Badge key={index} variant="outline" className="text-xs">{tag}</Badge>
                   ))}
                 </div>
               </section>
             )}
 
-            {/* Getting Started - 分系统展示 + OSDownload 联动 */}
+            {/* Getting Started */}
             <GettingStartedCard project={project} />
 
             {/* Release Notes */}
@@ -349,7 +288,6 @@ export default function ProjectPage() {
                 </div>
               </section>
             )}
-
           </div>
 
           {/* Right Sidebar */}
@@ -372,9 +310,7 @@ export default function ProjectPage() {
                       <ProjectIcon name={p.name} size="sm" />
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium truncate">{p.name}</p>
-                        <p className="text-xs text-muted-foreground line-clamp-1">
-                          {p.description}
-                        </p>
+                        <p className="text-xs text-muted-foreground line-clamp-1">{p.description}</p>
                       </div>
                     </Link>
                   ))}

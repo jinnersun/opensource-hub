@@ -67,6 +67,7 @@
     "suggestions": ["How to record screen", "Free video editing", "Protect my privacy", "PDF to Word"]
   },
   "searchPage": {
+    "title": "Search Open Source Software",
     "enterKeyword": "Enter a keyword to search open source software",
     "noResults": "No software found",
     "noResultsHint": "Try different keywords or describe what you need",

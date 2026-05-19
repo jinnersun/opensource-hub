@@ -10,8 +10,10 @@ const lucideIconMap: Record<string, LucideIcon> = {
 }
 
 function getCategoryIcon(emojiKey: string): { Icon: LucideIcon; fallback: string } {
-  const Icon = lucideIconMap[emojiKey]
-  return Icon ? { Icon, fallback: '' } : { Icon: Sparkles, fallback: '📦' }
+  if (emojiKey in lucideIconMap) {
+    return { Icon: lucideIconMap[emojiKey], fallback: '' }
+  }
+  return { Icon: Sparkles, fallback: '📦' }
 }
 
 interface CatInfo {

@@ -67,6 +67,7 @@
     "suggestions": ["如何录制屏幕", "免费剪辑视频", "保护我的隐私", "PDF 转 Word"]
   },
   "searchPage": {
+    "title": "搜索开源软件",
     "enterKeyword": "输入关键词搜索开源软件",
     "noResults": "未找到相关软件",
     "noResultsHint": "试试换个关键词，或用场景描述你的需求",

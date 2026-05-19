@@ -502,6 +502,8 @@ export function transformAppForDisplay(app: App) {
       '',
     sourceUrl: app.github_url || '',
     lastUpdated: app.last_updated || '',
+    securityScan: app.security?.audit_status as Project['securityScan'] || 'pending',
+    tags: tags.length > 0 ? tags : undefined,
     // 兼容字段
     docsUrl: (app as any).documentation_url || undefined,
     license: app.license || undefined,
@@ -566,7 +568,7 @@ function parseDependencyLinks(requirementLinks?: string): { name: string; url?: 
 export function transformCategoryForDisplay(category: ApiCategory) {
   return {
     id: category.slug,
-    label: category.name,
+    label: category.name,  // 数据库原始名称，i18n fallback
     description: category.description,
     emoji: category.lucide_icon || category.icon || 'star',
     keywords: [category.name, category.description],
