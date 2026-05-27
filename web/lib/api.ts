@@ -243,7 +243,7 @@ export async function getHomeData(locale?: string): Promise<HomeData> {
  * 获取应用列表
  */
 export async function getApps(params?: {
-  category?: string; limit?: number; offset?: number; featured?: boolean; q?: string; locale?: string
+  category?: string; limit?: number; offset?: number; featured?: boolean; q?: string; tag?: string; locale?: string
 }): Promise<PaginatedResponse<App[]>> {
   const sp: Record<string,string> = {}
   if (params?.category) sp.category = params.category
@@ -251,6 +251,7 @@ export async function getApps(params?: {
   if (params?.offset) sp.offset = String(params.offset)
   if (params?.featured) sp.featured = 'true'
   if (params?.q) sp.q = params.q
+  if (params?.tag) sp.tag = params.tag
   if (params?.locale) sp.lang = params.locale
   return apiRequest<PaginatedResponse<App[]>>('/api/apps', Object.keys(sp).length > 0 ? sp : undefined)
 }

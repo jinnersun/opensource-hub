@@ -1,0 +1,184 @@
+import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
+import { Header } from '@/components/header'
+import { Footer } from '@/components/footer'
+import { ProjectCard } from '@/components/project-card'
+import { ErrorState } from '@/components/error-state'
+import { transformAppForDisplay, type Project } from '@/lib/api'
+import { Link } from '@/i18n/routing'
+import { ArrowLeft, Tag, Loader2 } from 'lucide-react'
+
+type Props = { params: Promise<{ locale: string; slug: string }> }
+
+export const dynamicParams = false
+
+// 标签翻译映射表（热门标签，未覆盖的 fallback 到 formatTagName）
+const TAG_TRANSLATIONS: Record<string, Record<string, string>> = {
+  'screen-recording': { zh: '屏幕录制', en: 'Screen Recording', ja: 'スクリーン録画', ko: '화면 녹화' },
+  'video-editing':   { zh: '视频编辑',   en: 'Video Editing',    ja: '動画編集',       ko: '동영상 편집' },
+  'video-download':  { zh: '视频下载',   en: 'Video Download',   ja: '動画ダウンロード', ko: '동영상 다운로드' },
+  'pdf-editor':      { zh: 'PDF 编辑',   en: 'PDF Editor',       ja: 'PDF エディター',  ko: 'PDF 편집' },
+  'privacy':         { zh: '隐私保护',   en: 'Privacy',          ja: 'プライバシー',     ko: '개인정보 보호' },
+  'design':          { zh: '设计工具',   en: 'Design',           ja: 'デザイン',         ko: '디자인' },
+  'photo-editing':   { zh: '图片编辑',   en: 'Photo Editing',    ja: '写真編集',         ko: '사진 편집' },
+  'note-taking':     { zh: '笔记',       en: 'Note Taking',      ja: 'ノート',           ko: '노트' },
+  'system-cleaner':  { zh: '系统清理',   en: 'System Cleaner',   ja: 'システムクリーン', ko: '시스템 정리' },
+  'music-download':  { zh: '音乐下载',   en: 'Music Download',   ja: '音楽ダウンロード', ko: '음악 다운로드' },
+}
+
+function formatTagName(slug: string): string {
+  return slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+}
+
+function getTagDisplayName(slug: string, locale: string): string {
+  return TAG_TRANSLATIONS[slug]?.[locale] || formatTagName(slug)
+}
+
+export async function generateStaticParams() {
+  const locales = ['zh', 'en', 'ja', 'ko']
+  try {
+    const ctx = (globalThis as any)[Symbol.for('__cloudflare-context__')]
+    const api = ctx?.env?.API
+    if (!api) return []
+    const res = await api.fetch(new Request('http://internal/api/tags?minApps=3'))
+    const { tags } = await res.json() as { tags: string[] }
+    return locales.flatMap(locale => tags.map(tag => ({ locale, slug: tag })))
+  } catch { return [] }
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale, slug } = await params
+  const tagDisplay = getTagDisplayName(slug, locale)
+  return {
+    title: `${tagDisplay} - OpenSource-Hub`,
+    description: `Discover the best open source ${formatTagName(slug).toLowerCase()} tools. Free, secure, and community-trusted.`,
+    alternates: {
+      canonical: `https://www.opensource-hub.com/${locale}/tag/${slug}`,
+      languages: {
+        zh: `https://www.opensource-hub.com/zh/tag/${slug}`,
+        en: `https://www.opensource-hub.com/en/tag/${slug}`,
+        ja: `https://www.opensource-hub.com/ja/tag/${slug}`,
+        ko: `https://www.opensource-hub.com/ko/tag/${slug}`,
+        'x-default': `https://www.opensource-hub.com/en/tag/${slug}`,
+      },
+    },
+  }
+}
+
+async function getTagData(locale: string, slug: string) {
+  try {
+    const ctx = (globalThis as any)[Symbol.for('__cloudflare-context__')]
+    const api = ctx?.env?.API
+    if (!api) return null
+
+    const res = await api.fetch(
+      new Request(`http://internal/api/apps?tag=${encodeURIComponent(slug)}&limit=50&lang=${locale}`)
+    )
+    const data = await res.json() as any
+    const apps = (data.data || [])
+      .map(transformAppForDisplay)
+      .sort((a: Project, b: Project) => b.stars - a.stars)
+
+    return { tag: slug, appCount: apps.length, apps, isEmpty: apps.length === 0 }
+  } catch (e) {
+    console.error('[SSR tag]', e)
+    return null
+  }
+}
+
+export default async function TagPage({ params }: Props) {
+  const { locale, slug } = await params
+  const t = await getTranslations({ locale, namespace: 'category' })
+  const te = await getTranslations({ locale, namespace: 'errors' })
+
+  const data = await getTagData(locale, slug)
+
+  if (!data) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="mx-auto max-w-7xl px-4 py-12">
+          <ErrorState title={te('title')} description={te('description')} />
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  const { apps, appCount, isEmpty } = data
+  const tagDisplay = getTagDisplayName(slug, locale)
+
+  // JSON-LD ItemList
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `Best ${formatTagName(slug)} Tools`,
+    description: `Curated list of open source ${formatTagName(slug).toLowerCase()} tools`,
+    numberOfItems: appCount,
+    itemListElement: apps.map((app: Project, i: number) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: {
+        '@type': 'SoftwareApplication',
+        name: app.name,
+        description: app.description,
+        applicationCategory: app.categoryLabel || 'Software',
+        operatingSystem: Object.keys(app.platforms || {}).join(', ') || 'Cross-platform',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      },
+    })),
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
+        {/* Breadcrumb */}
+        <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
+          <Link href="/" className="hover:text-foreground transition-colors">
+            {t('browseAll')}
+          </Link>
+          <span>/</span>
+          <span className="text-foreground font-medium">{tagDisplay}</span>
+        </div>
+
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold flex items-center gap-3">
+            <Tag className="size-7 text-muted-foreground" />
+            {tagDisplay}
+          </h1>
+          {isEmpty ? (
+            <p className="mt-3 text-muted-foreground">
+              {t('noAppsForTag') || `No applications found for "${tagDisplay}" yet.`}
+            </p>
+          ) : (
+            <p className="mt-3 text-muted-foreground">{appCount} open source tools found</p>
+          )}
+        </div>
+
+        {/* Empty state */}
+        {isEmpty ? (
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed py-20">
+            <span className="text-5xl mb-4">🏷️</span>
+            <p className="text-lg text-muted-foreground">
+              {t('empty', { label: tagDisplay })}
+            </p>
+            <Link href="/search" className="mt-4 text-sm text-foreground underline underline-offset-4">
+              {t('browseAll')}
+            </Link>
+          </div>
+        ) : (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {apps.map((project: Project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))}
+          </div>
+        )}
+      </main>
+      <Footer />
+    </div>
+  )
+}
