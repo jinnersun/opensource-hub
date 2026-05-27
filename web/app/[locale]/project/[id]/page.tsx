@@ -11,6 +11,7 @@ import { EnvironmentGuide } from "@/components/project-detail/environment-guide"
 import { MetaInfoCard } from "@/components/project-detail/meta-info-card"
 import { GettingStartedCard } from "@/components/project-detail/getting-started-card"
 import { ErrorState } from "@/components/error-state"
+import { FavoriteButton } from "@/components/favorite-button"
 import { transformAppForDisplay } from "@/lib/api"
 import type { Project } from "@/lib/api"
 import { Star, ShieldCheck, CheckCircle2, Sparkles, Lightbulb, AlertTriangle, Target, Tag, FileEdit } from "lucide-react"
@@ -137,6 +138,7 @@ export default async function ProjectPage({ params }: Props) {
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2 mb-2">
                   <h1 className="text-2xl font-bold sm:text-3xl">{project.humanTitle}</h1>
+                  <FavoriteButton projectId={project.id} />
                   {project.verified && (
                     <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20">
                       <CheckCircle2 className="mr-1 size-3" />

@@ -36,6 +36,26 @@ function errorResponse(message: string, status = 400) {
   return jsonResponse({ error: message }, status)
 }
 
+// 共享函数：从 apps + apps_library 提取并去重所有 tags
+async function extractTags(db: D1Database): Promise<Set<string>> {
+  const [appsRes, libsRes] = await Promise.all([
+    db.prepare(`SELECT DISTINCT tags FROM apps WHERE status = 'active' AND tags IS NOT NULL`).all<{ tags: string }>(),
+    db.prepare(`SELECT DISTINCT tags FROM apps_library WHERE status = 'active' AND tags IS NOT NULL`).all<{ tags: string }>(),
+  ])
+  const tagSet = new Set<string>()
+  for (const res of [appsRes, libsRes]) {
+    for (const row of res.results || []) {
+      try {
+        const parsed = JSON.parse(row.tags)
+        if (Array.isArray(parsed)) {
+          parsed.forEach((t: unknown) => { const tag = String(t).trim(); if (tag) tagSet.add(tag) })
+        }
+      } catch { /* skip malformed JSON */ }
+    }
+  }
+  return tagSet
+}
+
 // 处理 OPTIONS 请求（CORS 预检）
 function handleOptions() {
   return new Response(null, {
@@ -105,6 +125,20 @@ async function getApps(db: D1Database, params: URLSearchParams): Promise<Respons
       query += ` AND (a.name LIKE ? OR a.description LIKE ? OR a.tags LIKE ?)`
       const searchPattern = `%${search}%`
       bindings.push(searchPattern, searchPattern, searchPattern)
+    }
+
+    // 标签过滤（支持单标签和多标签逗号分隔 OR 查询）
+    const tag = params.get('tag')
+    if (tag) {
+      const tags = tag.split(',').map(t => t.trim()).filter(Boolean)
+      if (tags.length === 1) {
+        query += ` AND a.tags LIKE ?`
+        bindings.push(`%"${tags[0]}"%`)
+      } else if (tags.length > 1) {
+        const orClauses = tags.map(() => `a.tags LIKE ?`).join(' OR ')
+        query += ` AND (${orClauses})`
+        for (const t of tags) bindings.push(`%"${t}"%`)
+      }
     }
 
     query += ` ORDER BY a.stars_count DESC LIMIT ? OFFSET ?`
@@ -997,6 +1031,27 @@ export default {
       }
 
       // ---- GET 路由 ----
+      // 标签列表
+      if (path === '/api/tags') {
+        const minApps = parseInt(url.searchParams.get('minApps') || '0')
+        const tagSet = await extractTags(env.DB)
+        let tags = [...tagSet].sort()
+        if (minApps > 0) {
+          const filtered: string[] = []
+          for (const tag of tags) {
+            const count = await env.DB.prepare(
+              `SELECT COUNT(*) as cnt FROM (
+                SELECT id FROM apps WHERE status='active' AND tags LIKE ?
+                UNION SELECT id FROM apps_library WHERE status='active' AND tags LIKE ?
+              )`
+            ).bind(`%"${tag}"%`, `%"${tag}"%`).first<{ cnt: number }>()
+            if ((count?.cnt || 0) >= minApps) filtered.push(tag)
+          }
+          tags = filtered
+        }
+        return jsonResponse({ tags }, { headers: { ...corsHeaders, 'Cache-Control': 'public, max-age=3600' } })
+      }
+
       // Sitemap
       if (path === '/api/sitemap') {
         const [apps, libs, cats] = await Promise.all([
@@ -1018,6 +1073,21 @@ export default {
         for (const li of (libs.results||[])) {
           for (const l of locs) urls.push(`<url><loc>https://www.opensource-hub.com/${l}/library/${li.slug}</loc>${fmt(li.last_updated)}<changefreq>weekly</changefreq><priority>0.7</priority></url>`)
         }
+
+        // 标签页
+        const tagSet = await extractTags(env.DB)
+        for (const tag of tagSet) {
+          for (const l of locs) urls.push(`<url><loc>https://www.opensource-hub.com/${l}/tag/${tag}</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>`)
+        }
+
+        // 推荐页（Worker 内联 slug 列表，与 web/config/guides.ts 同步）
+        const GUIDE_SLUGS = [
+          'best-free-screen-recorder', 'free-video-downloader', 'adobe-alternatives',
+        ]
+        for (const slug of GUIDE_SLUGS) {
+          for (const l of locs) urls.push(`<url><loc>https://www.opensource-hub.com/${l}/guide/${slug}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>`)
+        }
+
         const xml = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.join('')}</urlset>`
         return new Response(xml, { headers: { 'Content-Type': 'application/xml', 'Cache-Control': 'public, max-age=3600' } })
       }
