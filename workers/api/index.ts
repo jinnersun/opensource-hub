@@ -1033,22 +1033,49 @@ export default {
       // ---- GET 路由 ----
       // 标签列表
       if (path === '/api/tags') {
-        const minApps = parseInt(url.searchParams.get('minApps') || '0')
         const tagSet = await extractTags(env.DB)
+        const minApps = parseInt(url.searchParams.get('minApps') || '0')
         let tags = [...tagSet].sort()
+
+        // minApps 过滤：一次性查询标签到应用数的映射，避免 N 次循环
         if (minApps > 0) {
-          const filtered: string[] = []
+          const tagCounts = new Map<string, number>()
           for (const tag of tags) {
-            const count = await env.DB.prepare(
-              `SELECT COUNT(*) as cnt FROM (
-                SELECT id FROM apps WHERE status='active' AND tags LIKE ?
-                UNION SELECT id FROM apps_library WHERE status='active' AND tags LIKE ?
-              )`
-            ).bind(`%"${tag}"%`, `%"${tag}"%`).first<{ cnt: number }>()
-            if ((count?.cnt || 0) >= minApps) filtered.push(tag)
+            tagCounts.set(tag, 0)
           }
-          tags = filtered
+          // 批量查询：一次 SQL 获取所有标签的应用数
+          const pattern = `%"%` // 匹配任意非空 tag
+          const { results: appCounts } = await env.DB.prepare(`
+            SELECT tags FROM apps WHERE status='active' AND tags IS NOT NULL
+          `).all<{ tags: string }>()
+          for (const row of appCounts) {
+            try {
+              const parsed = JSON.parse(row.tags)
+              if (Array.isArray(parsed)) {
+                for (const t of parsed.map(String)) {
+                  const count = tagCounts.get(t)
+                  if (count !== undefined) tagCounts.set(t, count + 1)
+                }
+              }
+            } catch {}
+          }
+          const { results: libCounts } = await env.DB.prepare(`
+            SELECT tags FROM apps_library WHERE status='active' AND tags IS NOT NULL
+          `).all<{ tags: string }>()
+          for (const row of libCounts) {
+            try {
+              const parsed = JSON.parse(row.tags)
+              if (Array.isArray(parsed)) {
+                for (const t of parsed.map(String)) {
+                  const count = tagCounts.get(t)
+                  if (count !== undefined) tagCounts.set(t, count + 1)
+                }
+              }
+            } catch {}
+          }
+          tags = tags.filter(t => (tagCounts.get(t) || 0) >= minApps)
         }
+
         return jsonResponse({ tags }, 200, { 'Cache-Control': 'public, max-age=3600' })
       }
 
