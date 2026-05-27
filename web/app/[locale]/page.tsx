@@ -38,16 +38,10 @@ async function getServerData(locale: string) {
 
     if (!data) return null
 
-    // 获取热门标签用于"普通人入口"
-    let quickActions: { tag: string; emoji: string; zh: string; en: string }[] = []
-    try {
-      const tagsRes = await api.fetch(new Request('http://internal/api/tags?minApps=3'))
-      const { tags } = await tagsRes.json() as { tags: string[] }
-      quickActions = tags
-        .filter(t => COMMON_TAG_EMOJIS[t])
-        .slice(0, 8)
-        .map(tag => ({ tag, ...COMMON_TAG_EMOJIS[tag] }))
-    } catch { /* quickActions failure is non-critical */ }
+    // 热门标签卡片：使用预定义的 emoji 映射表，不调用 /api/tags（避免 minApps 大量 COUNT 查询）
+    const quickActions = Object.entries(COMMON_TAG_EMOJIS)
+      .slice(0, 8)
+      .map(([tag, info]) => ({ tag, ...info }))
 
     return {
       categories: (data.categories || []).map(transformCategoryForDisplay),
