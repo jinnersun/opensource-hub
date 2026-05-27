@@ -1049,7 +1049,7 @@ export default {
           }
           tags = filtered
         }
-        return jsonResponse({ tags }, { headers: { ...corsHeaders, 'Cache-Control': 'public, max-age=3600' } })
+        return jsonResponse({ tags }, 200, { 'Cache-Control': 'public, max-age=3600' })
       }
 
       // Sitemap
