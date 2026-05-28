@@ -12,8 +12,6 @@ import { guides } from '@/config/guides'
 
 type Props = { params: Promise<{ locale: string; slug: string }> }
 
-export const dynamicParams = false
-
 export function generateStaticParams() {
   const locales = ['zh', 'en', 'ja', 'ko']
   return locales.flatMap(locale =>

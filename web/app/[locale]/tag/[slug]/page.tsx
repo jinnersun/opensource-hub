@@ -10,7 +10,8 @@ import { ArrowLeft, Tag, Loader2 } from 'lucide-react'
 
 type Props = { params: Promise<{ locale: string; slug: string }> }
 
-export const dynamicParams = false
+// 不设 dynamicParams = false：build 时 Worker 不可用导致 generateStaticParams 返回空
+// 改为运行时 SSR on-demand，此时 Service Binding 可用
 
 // 标签翻译映射表（热门标签，未覆盖的 fallback 到 formatTagName）
 const TAG_TRANSLATIONS: Record<string, Record<string, string>> = {
