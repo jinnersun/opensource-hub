@@ -14,19 +14,6 @@ import { HomeCTA } from "./_components/home-cta"
 
 type Props = { params: Promise<{ locale: string }> }
 
-const COMMON_TAG_EMOJIS: Record<string, { emoji: string; zh: string; en: string }> = {
-  'screen-recording': { emoji: '🎬', zh: '我想录屏', en: 'Screen Recorder' },
-  'video-editing':   { emoji: '✂️', zh: '我想剪辑视频', en: 'Video Editor' },
-  'pdf-editor':      { emoji: '📄', zh: '我想编辑PDF', en: 'PDF Editor' },
-  'music-download':  { emoji: '🎵', zh: '我想下载音乐', en: 'Music Downloader' },
-  'privacy':         { emoji: '🔒', zh: '我想保护隐私', en: 'Privacy Tools' },
-  'system-cleaner':  { emoji: '💻', zh: '我想清理系统', en: 'System Cleaner' },
-  'video-download':  { emoji: '🌐', zh: '我想下载视频', en: 'Video Downloader' },
-  'design':          { emoji: '🎨', zh: '我想做设计', en: 'Design Tools' },
-  'photo-editing':   { emoji: '🖼️', zh: '我想编辑照片', en: 'Photo Editor' },
-  'note-taking':     { emoji: '📝', zh: '我想记笔记', en: 'Note Taking' },
-}
-
 async function getServerData(locale: string) {
   try {
     const ctx = (globalThis as any)[Symbol.for('__cloudflare-context__')]
@@ -38,17 +25,11 @@ async function getServerData(locale: string) {
 
     if (!data) return null
 
-    // 热门标签卡片：使用预定义的 emoji 映射表，不调用 /api/tags（避免 minApps 大量 COUNT 查询）
-    const quickActions = Object.entries(COMMON_TAG_EMOJIS)
-      .slice(0, 8)
-      .map(([tag, info]) => ({ tag, ...info }))
-
     return {
       categories: (data.categories || []).map(transformCategoryForDisplay),
       trending: (data.trending || []).map(transformAppForDisplay),
       newArrivals: (data.newArrivals || []).map(transformAppForDisplay),
       featured: (data.featured || []).map(transformAppForDisplay),
-      quickActions,
     }
   } catch (e) {
     console.error('[SSR homepage]', e)
@@ -75,7 +56,7 @@ export default async function HomePage({ params }: Props) {
     )
   }
 
-  const { categories, trending, newArrivals, featured, quickActions } = data
+  const { categories, trending, newArrivals, featured } = data
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -106,26 +87,6 @@ export default async function HomePage({ params }: Props) {
           <div className="pointer-events-none absolute -left-40 -top-40 size-80 rounded-full bg-gradient-to-br from-blue-500/15 to-cyan-500/15 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-40 -right-40 size-80 rounded-full bg-gradient-to-br from-emerald-500/15 to-teal-500/15 blur-3xl" />
         </section>
-
-        {/* Quick Actions — 普通人入口 */}
-        {quickActions.length > 0 && (
-          <section className="mx-auto max-w-5xl px-4 py-10">
-            <h2 className="mb-6 text-center text-2xl font-bold">
-              {locale === 'zh' ? '不知道需要什么软件？' : "Don't know what you need?"}
-            </h2>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-              {quickActions.map(item => (
-                <Link key={item.tag} href={`/tag/${item.tag}`}
-                  className="flex items-center gap-3 rounded-xl border bg-card p-4 transition-all hover:border-foreground/30 hover:shadow-md">
-                  <span className="text-2xl">{item.emoji}</span>
-                  <span className="text-sm font-medium">
-                    {locale === 'zh' ? item.zh : item.en}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
 
         {/* Categories Section */}
         <section className="border-b bg-secondary/10 px-4 py-12 sm:py-16">
