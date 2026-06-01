@@ -41,7 +41,7 @@ export async function generateStaticParams() {
     const ctx = (globalThis as any)[Symbol.for('__cloudflare-context__')]
     const api = ctx?.env?.API
     if (!api) return []
-    const res = await api.fetch(new Request('http://internal/api/tags?minApps=3'))
+    const res = await api.fetch(new Request('http://internal/api/tags'))
     const { tags } = await res.json() as { tags: string[] }
     return locales.flatMap(locale => tags.map(tag => ({ locale, slug: tag })))
   } catch { return [] }
@@ -72,15 +72,20 @@ async function getTagData(locale: string, slug: string) {
     const api = ctx?.env?.API
     if (!api) return null
 
+    // 通过 slug 反查原始标签名
+    const mapRes = await api.fetch(new Request('http://internal/api/tags'))
+    const { map } = await mapRes.json() as { map: Record<string, string> }
+    const originalTag = map[slug] || slug
+
     const res = await api.fetch(
-      new Request(`http://internal/api/apps?tag=${encodeURIComponent(slug)}&limit=50&lang=${locale}`)
+      new Request(`http://internal/api/apps?tag=${encodeURIComponent(originalTag)}&limit=50&lang=${locale}`)
     )
     const data = await res.json() as any
     const apps = (data.data || [])
       .map(transformAppForDisplay)
       .sort((a: Project, b: Project) => b.stars - a.stars)
 
-    return { tag: slug, appCount: apps.length, apps, isEmpty: apps.length === 0 }
+    return { tag: originalTag, appCount: apps.length, apps, isEmpty: apps.length === 0 }
   } catch (e) {
     console.error('[SSR tag]', e)
     return null

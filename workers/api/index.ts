@@ -36,24 +36,38 @@ function errorResponse(message: string, status = 400) {
   return jsonResponse({ error: message }, status)
 }
 
-// 共享函数：从 apps + apps_library 提取并去重所有 tags
-async function extractTags(db: D1Database): Promise<Set<string>> {
+// 标签 slug 化：处理 URL 非法字符（空格、斜杠、加号等）
+function slugifyTag(tag: string): string {
+  return tag
+    .toLowerCase()
+    .replace(/[^a-z0-9一-鿿぀-ゟ゠-ヿ가-힯]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .replace(/-+/g, '-')
+}
+
+// 共享函数：从 apps + apps_library 提取并去重所有 tags，返回 slug → original 映射
+async function extractTags(db: D1Database): Promise<Map<string, string>> {
   const [appsRes, libsRes] = await Promise.all([
     db.prepare(`SELECT DISTINCT tags FROM apps WHERE status = 'active' AND tags IS NOT NULL`).all<{ tags: string }>(),
     db.prepare(`SELECT DISTINCT tags FROM apps_library WHERE status = 'active' AND tags IS NOT NULL`).all<{ tags: string }>(),
   ])
-  const tagSet = new Set<string>()
+  const tagMap = new Map<string, string>() // slug → original
   for (const res of [appsRes, libsRes]) {
     for (const row of res.results || []) {
       try {
         const parsed = JSON.parse(row.tags)
         if (Array.isArray(parsed)) {
-          parsed.forEach((t: unknown) => { const tag = String(t).trim(); if (tag) tagSet.add(tag) })
+          for (const t of parsed) {
+            const tag = String(t).trim()
+            if (!tag) continue
+            const slug = slugifyTag(tag)
+            if (slug && !tagMap.has(slug)) tagMap.set(slug, tag)
+          }
         }
       } catch { /* skip malformed JSON */ }
     }
   }
-  return tagSet
+  return tagMap
 }
 
 // 处理 OPTIONS 请求（CORS 预检）
@@ -1031,52 +1045,13 @@ export default {
       }
 
       // ---- GET 路由 ----
-      // 标签列表
+      // 标签列表（返回 slugs + slug→original 映射，供前端 tag 页和 sitemap）
       if (path === '/api/tags') {
-        const tagSet = await extractTags(env.DB)
-        const minApps = parseInt(url.searchParams.get('minApps') || '0')
-        let tags = [...tagSet].sort()
-
-        // minApps 过滤：一次性查询标签到应用数的映射，避免 N 次循环
-        if (minApps > 0) {
-          const tagCounts = new Map<string, number>()
-          for (const tag of tags) {
-            tagCounts.set(tag, 0)
-          }
-          // 批量查询：一次 SQL 获取所有标签的应用数
-          const pattern = `%"%` // 匹配任意非空 tag
-          const { results: appCounts } = await env.DB.prepare(`
-            SELECT tags FROM apps WHERE status='active' AND tags IS NOT NULL
-          `).all<{ tags: string }>()
-          for (const row of appCounts) {
-            try {
-              const parsed = JSON.parse(row.tags)
-              if (Array.isArray(parsed)) {
-                for (const t of parsed.map(String)) {
-                  const count = tagCounts.get(t)
-                  if (count !== undefined) tagCounts.set(t, count + 1)
-                }
-              }
-            } catch {}
-          }
-          const { results: libCounts } = await env.DB.prepare(`
-            SELECT tags FROM apps_library WHERE status='active' AND tags IS NOT NULL
-          `).all<{ tags: string }>()
-          for (const row of libCounts) {
-            try {
-              const parsed = JSON.parse(row.tags)
-              if (Array.isArray(parsed)) {
-                for (const t of parsed.map(String)) {
-                  const count = tagCounts.get(t)
-                  if (count !== undefined) tagCounts.set(t, count + 1)
-                }
-              }
-            } catch {}
-          }
-          tags = tags.filter(t => (tagCounts.get(t) || 0) >= minApps)
-        }
-
-        return jsonResponse({ tags }, 200, { 'Cache-Control': 'public, max-age=3600' })
+        const tagMap = await extractTags(env.DB)
+        const slugs = [...tagMap.keys()].sort()
+        const map: Record<string, string> = {}
+        for (const [slug, original] of tagMap) map[slug] = original
+        return jsonResponse({ tags: slugs, map }, 200, { 'Cache-Control': 'public, max-age=3600' })
       }
 
       // Sitemap
@@ -1101,10 +1076,11 @@ export default {
           for (const l of locs) urls.push(`<url><loc>https://www.opensource-hub.com/${l}/library/${li.slug}</loc>${fmt(li.last_updated)}<changefreq>weekly</changefreq><priority>0.7</priority></url>`)
         }
 
-        // 标签页
-        const tagSet = await extractTags(env.DB)
-        for (const tag of tagSet) {
-          for (const l of locs) urls.push(`<url><loc>https://www.opensource-hub.com/${l}/tag/${tag}</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>`)
+        // 标签页（使用 slug，URL-encode 处理特殊字符）
+        const tagMap = await extractTags(env.DB)
+        for (const slug of tagMap.keys()) {
+          const encoded = encodeURIComponent(slug)
+          for (const l of locs) urls.push(`<url><loc>https://www.opensource-hub.com/${l}/tag/${encoded}</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>`)
         }
 
         // 推荐页（Worker 内联 slug 列表，与 web/config/guides.ts 同步）
