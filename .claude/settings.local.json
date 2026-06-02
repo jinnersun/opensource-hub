@@ -58,7 +58,8 @@
       "Bash(curl -s \"https://www.opensource-hub.com/en/tag/screen-recording\" --connect-timeout 10)",
       "Bash(curl -s \"https://www.opensource-hub.com/sitemap.xml\" --connect-timeout 10)",
       "Bash(node -e ' *)",
-      "Bash(curl -s -w \"\\\\nHTTP %{http_code}\" \"https://www.opensource-hub.com/sitemap.xml\" --connect-timeout 10)"
+      "Bash(curl -s -w \"\\\\nHTTP %{http_code}\" \"https://www.opensource-hub.com/sitemap.xml\" --connect-timeout 10)",
+      "Bash(git rm *)"
     ]
   }
 }
