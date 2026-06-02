@@ -3,80 +3,11 @@
  * Cloudflare Workers 后端 API 服务
  */
 
-export interface Env {
-  DB: D1Database
-  VECTORIZE?: VectorizeIndex
-  AI?: Ai
-  ADMIN_TOKEN?: string
-  TRIGGER_TOKEN?: string
-}
+import { jsonResponse, errorResponse, extractTags, handleOptions } from './src/utils'
+import { handleAdminRoute } from './src/admin'
+import type { Env } from './src/utils'
 
-// CORS 响应头
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  'Access-Control-Max-Age': '86400',
-}
-
-// 创建 JSON 响应
-function jsonResponse(data: unknown, status = 200, extraHeaders: Record<string, string> = {}) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      'Content-Type': 'application/json',
-      ...corsHeaders,
-      ...extraHeaders,
-    },
-  })
-}
-
-// 创建错误响应
-function errorResponse(message: string, status = 400) {
-  return jsonResponse({ error: message }, status)
-}
-
-// 标签 slug 化：处理 URL 非法字符（空格、斜杠、加号等）
-function slugifyTag(tag: string): string {
-  return tag
-    .toLowerCase()
-    .replace(/[^a-z0-9一-鿿぀-ゟ゠-ヿ가-힯]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .replace(/-+/g, '-')
-}
-
-// 共享函数：从 apps + apps_library 提取并去重所有 tags，返回 slug → original 映射
-async function extractTags(db: D1Database): Promise<Map<string, string>> {
-  const [appsRes, libsRes] = await Promise.all([
-    db.prepare(`SELECT DISTINCT tags FROM apps WHERE status = 'active' AND tags IS NOT NULL`).all<{ tags: string }>(),
-    db.prepare(`SELECT DISTINCT tags FROM apps_library WHERE status = 'active' AND tags IS NOT NULL`).all<{ tags: string }>(),
-  ])
-  const tagMap = new Map<string, string>() // slug → original
-  for (const res of [appsRes, libsRes]) {
-    for (const row of res.results || []) {
-      try {
-        const parsed = JSON.parse(row.tags)
-        if (Array.isArray(parsed)) {
-          for (const t of parsed) {
-            const tag = String(t).trim()
-            if (!tag) continue
-            const slug = slugifyTag(tag)
-            if (slug && !tagMap.has(slug)) tagMap.set(slug, tag)
-          }
-        }
-      } catch { /* skip malformed JSON */ }
-    }
-  }
-  return tagMap
-}
-
-// 处理 OPTIONS 请求（CORS 预检）
-function handleOptions() {
-  return new Response(null, {
-    status: 204,
-    headers: corsHeaders,
-  })
-}
+export type { Env }
 
 // ==========================================
 // 双 LEFT JOIN 翻译回退：t_req=请求语言，t_zh=中文兜底
@@ -971,71 +902,9 @@ export default {
         if (path === '/api/submissions') {
           return await createSubmission(env.DB, request)
         }
-        if (path === '/admin/login') {
-          const body = await request.json().catch(() => ({})) as { token?: string }
-          if (body.token && body.token === env.ADMIN_TOKEN && body.token.length > 0) {
-            return jsonResponse({ ok: true })
-          }
-          return errorResponse('Invalid token', 401)
-        }
-        // Admin POST routes
-        if (path === '/admin/jobs/bulk-retry') {
-          const auth = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '')
-          if (auth !== env.ADMIN_TOKEN || !auth) return errorResponse('Unauthorized', 401)
-          const b = await request.json().catch(() => ({})) as { ids?: number[]; status?: string }
-          let affected = 0
-          if (b.ids?.length) {
-            const ph = b.ids.map(() => '?').join(',')
-            const r = await env.DB.prepare(`UPDATE raw_apps SET etl_status='pending', retry_count=0, next_check_at=NULL WHERE github_repo_id IN (${ph})`).bind(...b.ids).run()
-            affected = r.meta?.changes || 0
-          } else if (b.status) {
-            const r = await env.DB.prepare(`UPDATE raw_apps SET etl_status='pending', retry_count=0, next_check_at=NULL WHERE etl_status=?`).bind(b.status).run()
-            affected = r.meta?.changes || 0
-          }
-          return jsonResponse({ affected })
-        }
-        if (path.match(/^\/admin\/submissions\/([^/]+)\/approve$/)) {
-          const auth = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '')
-          if (auth !== env.ADMIN_TOKEN || !auth) return errorResponse('Unauthorized', 401)
-          const id = path.split('/')[3]
-          await env.DB.prepare(`UPDATE user_submissions SET status='approved', reviewed_at=CURRENT_TIMESTAMP WHERE id=?`).bind(id).run()
-          return jsonResponse({ ok: true })
-        }
-        if (path.match(/^\/admin\/submissions\/([^/]+)\/reject$/)) {
-          const auth = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '')
-          if (auth !== env.ADMIN_TOKEN || !auth) return errorResponse('Unauthorized', 401)
-          const id = path.split('/')[3]
-          await env.DB.prepare(`UPDATE user_submissions SET status='rejected', reviewed_at=CURRENT_TIMESTAMP WHERE id=?`).bind(id).run()
-          return jsonResponse({ ok: true })
-        }
-        if (path === '/admin/translations/retry-failed') {
-          const auth = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '')
-          if (auth !== env.ADMIN_TOKEN || !auth) return errorResponse('Unauthorized', 401)
-          const r = await env.DB.prepare(
-            `UPDATE translation_tasks SET status='pending', retry_count=0, last_error=NULL, updated_at=CURRENT_TIMESTAMP WHERE status='failed'`
-          ).run()
-          return jsonResponse({ affected: r.meta?.changes || 0 })
-        }
-        if (path === '/admin/translations/bulk-retry') {
-          const auth = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '')
-          if (auth !== env.ADMIN_TOKEN || !auth) return errorResponse('Unauthorized', 401)
-          const b = await request.json().catch(() => ({})) as { ids?: number[] }
-          if (!b.ids?.length) return errorResponse('ids required', 400)
-          const ph = b.ids.map(() => '?').join(',')
-          const r = await env.DB.prepare(
-            `UPDATE translation_tasks SET status='pending', retry_count=0, last_error=NULL, updated_at=CURRENT_TIMESTAMP WHERE id IN (${ph})`
-          ).bind(...b.ids).run()
-          return jsonResponse({ affected: r.meta?.changes || 0 })
-        }
-        const transRetryMatch = path.match(/^\/admin\/translations\/(\d+)\/retry$/)
-        if (transRetryMatch) {
-          const auth = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '')
-          if (auth !== env.ADMIN_TOKEN || !auth) return errorResponse('Unauthorized', 401)
-          const r = await env.DB.prepare(
-            `UPDATE translation_tasks SET status='pending', retry_count=0, last_error=NULL, updated_at=CURRENT_TIMESTAMP WHERE id=?`
-          ).bind(parseInt(transRetryMatch[1])).run()
-          return jsonResponse({ affected: r.meta?.changes || 0 })
-        }
+        // Admin POST 路由委托
+        const adminResult = await handleAdminRoute(path, method, request, env, ctx)
+        if (adminResult) return adminResult
         return errorResponse('Not found', 404)
       }
 
@@ -1151,90 +1020,9 @@ export default {
         return await getLibraryItem(env.DB, libraryDetailMatch[1], url.searchParams.get('lang') || 'zh')
       }
 
-      // ---- Admin 路由（仅 GET） ----
-      const adminAuth = (r: Request) => {
-        const auth = r.headers.get('Authorization') || ''
-        const token = auth.replace(/^Bearer\s+/i, '')
-        return token === env.ADMIN_TOKEN && token.length > 0
-      }
-
-      if (path === '/admin/stats' && adminAuth(request)) {
-        const [appCount, libCount, etlStats, submissions, translationStats] = await Promise.all([
-          env.DB.prepare(`SELECT COUNT(*) as c FROM apps WHERE status = 'active'`).first<{c:number}>(),
-          env.DB.prepare(`SELECT COUNT(*) as c FROM apps_library WHERE status = 'active'`).first<{c:number}>(),
-          env.DB.prepare(`SELECT etl_status, COUNT(*) as c FROM raw_apps GROUP BY etl_status`).all<{etl_status:string;c:number}>(),
-          env.DB.prepare(`SELECT status, COUNT(*) as c FROM user_submissions GROUP BY status`).all<{status:string;c:number}>(),
-          env.DB.prepare(`SELECT status, COUNT(*) as c FROM translation_tasks GROUP BY status`).all<{status:string;c:number}>(),
-        ])
-        const etl: Record<string,number> = {}; (etlStats.results||[]).forEach(r => etl[r.etl_status]=r.c)
-        const sub: Record<string,number> = {}; (submissions.results||[]).forEach(r => sub[r.status]=r.c)
-        const tr: Record<string,number> = {}; (translationStats.results||[]).forEach(r => tr[r.status]=r.c)
-        return jsonResponse({ apps: appCount?.c||0, library: libCount?.c||0, etl, submissions: sub, translation: tr })
-      }
-
-      if (path === '/admin/jobs' && adminAuth(request)) {
-        const st = url.searchParams.get('status')
-        const page = parseInt(url.searchParams.get('page') || '1')
-        const limit = 30; const offset = (page - 1) * limit
-        let sql = `SELECT * FROM raw_apps`; const binds: (string|number)[] = []
-        if (st) { sql += ` WHERE etl_status = ?`; binds.push(st) }
-        sql += ` ORDER BY last_processed_at DESC LIMIT ? OFFSET ?`; binds.push(limit, offset)
-        const { results } = await env.DB.prepare(sql).bind(...binds).all()
-        const { c } = await env.DB.prepare(`SELECT COUNT(*) as c FROM raw_apps`).first<{c:number}>() || {c:0}
-        return jsonResponse({ data: results||[], total: c||0, page, limit })
-      }
-
-      if (path === '/admin/translations' && adminAuth(request)) {
-        const st = url.searchParams.get('status')
-        const page = parseInt(url.searchParams.get('page') || '1')
-        const limit = 30; const offset = (page - 1) * limit
-        let sql = `SELECT * FROM translation_tasks`; const binds: (string|number)[] = []
-        if (st) { sql += ` WHERE status = ?`; binds.push(st) }
-        sql += ` ORDER BY created_at DESC LIMIT ? OFFSET ?`; binds.push(limit, offset)
-        const { results } = await env.DB.prepare(sql).bind(...binds).all()
-        const { c } = await env.DB.prepare(`SELECT COUNT(*) as c FROM translation_tasks`).first<{c:number}>() || {c:0}
-        return jsonResponse({ data: results||[], total: c||0, page, limit })
-      }
-
-      if (path === '/admin/daily-stats' && adminAuth(request)) {
-        const today = `datetime('now', 'start of day')`
-        const [newApps, etlDone, etlFailed, transDone, transFailed] = await Promise.all([
-          env.DB.prepare(`SELECT COUNT(*) as c FROM apps WHERE etl_processed_at >= ${today} AND status='active'`).first<{c:number}>(),
-          env.DB.prepare(`SELECT COUNT(*) as c FROM raw_apps WHERE last_processed_at >= ${today} AND etl_status='completed'`).first<{c:number}>(),
-          env.DB.prepare(`SELECT COUNT(*) as c FROM raw_apps WHERE last_processed_at >= ${today} AND etl_status='failed'`).first<{c:number}>(),
-          env.DB.prepare(`SELECT COUNT(*) as c FROM translation_tasks WHERE updated_at >= ${today} AND status='done'`).first<{c:number}>(),
-          env.DB.prepare(`SELECT COUNT(*) as c FROM translation_tasks WHERE updated_at >= ${today} AND status='failed'`).first<{c:number}>(),
-        ])
-        return jsonResponse({
-          newApps: newApps?.c||0, etlDone: etlDone?.c||0, etlFailed: etlFailed?.c||0,
-          transDone: transDone?.c||0, transFailed: transFailed?.c||0,
-        })
-      }
-
-      if (path === '/admin/submissions' && adminAuth(request)) {
-        const st = url.searchParams.get('status') || 'pending'
-        const page = parseInt(url.searchParams.get('page') || '1')
-        const limit = 20; const offset = (page - 1) * limit
-        const { results } = await env.DB.prepare(
-          `SELECT * FROM user_submissions WHERE status = ? ORDER BY created_at DESC LIMIT ? OFFSET ?`,
-        ).bind(st, limit, offset).all()
-        const { c } = await env.DB.prepare(`SELECT COUNT(*) as c FROM user_submissions WHERE status = ?`).bind(st).first<{c:number}>() || {c:0}
-        return jsonResponse({ data: results||[], total: c||0, page, limit })
-      }
-
-      // ---- Admin 触发 ETL/Translator 端点 ----
-      if (path === '/admin/trigger-etl' && adminAuth(request)) {
-        ctx.waitUntil(fetch('https://opensource-hub-etl.358042175.workers.dev/etl/trigger', {
-          method: 'POST', headers: { 'Authorization': `Bearer ${env.TRIGGER_TOKEN}` },
-        }))
-        return jsonResponse({ ok: true })
-      }
-      if (path === '/admin/trigger-translate' && adminAuth(request)) {
-        ctx.waitUntil(fetch('https://opensource-hub-translator.358042175.workers.dev/translate/trigger', {
-          method: 'POST', headers: { 'Authorization': `Bearer ${env.TRIGGER_TOKEN}` },
-        }))
-        return jsonResponse({ ok: true })
-      }
+      // ---- Admin 路由（GET + 触发器）----
+      const adminResult = await handleAdminRoute(path, method, request, env, ctx)
+      if (adminResult) return adminResult
 
       // 404
       return errorResponse('Not found', 404)
