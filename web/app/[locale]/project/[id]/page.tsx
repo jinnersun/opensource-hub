@@ -14,7 +14,7 @@ import { ErrorState } from "@/components/error-state"
 import { FavoriteButton } from "@/components/favorite-button"
 import { transformAppForDisplay } from "@/lib/api"
 import type { Project } from "@/lib/api"
-import { Star, ShieldCheck, CheckCircle2, Sparkles, Lightbulb, AlertTriangle, Target, Tag, FileEdit } from "lucide-react"
+import { Star, ShieldCheck, CheckCircle2, Sparkles, Lightbulb, AlertTriangle, Target, Tag } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Link } from '@/i18n/routing'
@@ -275,21 +275,6 @@ export default async function ProjectPage({ params }: Props) {
 
             {/* Getting Started */}
             <GettingStartedCard project={project} />
-
-            {/* Release Notes */}
-            {project.latestReleaseNotes && (
-              <section>
-                <h2 className="flex items-center gap-2 text-xl font-bold mb-4">
-                  <FileEdit className="size-5 text-blue-500" />
-                  {t('releaseNotes')}
-                </h2>
-                <div className="rounded-xl border bg-card p-4 text-sm text-muted-foreground">
-                  {project.latestReleaseNotes.split('\n').filter((l: string) => l.trim()).map((line: string, i: number) => (
-                    <p key={i} className="mb-1">{line}</p>
-                  ))}
-                </div>
-              </section>
-            )}
           </div>
 
           {/* Right Sidebar */}
