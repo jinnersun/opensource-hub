@@ -349,11 +349,7 @@ export default {
       if (!account) {
         return Response.json({ error: 'AI_GATEWAY_ACCOUNT not configured' }, { status: 400 })
       }
-      const results = await testAllGateways(account, {
-        deepseek: env.OPENAI_API_KEY,
-        gemini: env.GEMINI_API_KEY || '',
-        qwen: env.QWEN_API_KEY || '',
-      })
+      const results = await testAllGateways(account)
       return Response.json({ gateway: account, results })
     }
 
