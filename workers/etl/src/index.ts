@@ -337,37 +337,8 @@ export default {
           'GET /etl/diag',
           'GET /etl/status',
           'GET /etl/metrics',
-          'GET /etl/ai-test',
         ],
       })
-    }
-
-    // AI Gateway 连通性测试
-    if (url.pathname === '/etl/ai-test' && request.method === 'GET') {
-      const results: Array<{ provider: string; ok: boolean; latencyMs: number; preview: string; error?: string }> = []
-
-      const testRun = async (name: string, model: string, gateway: string, payload: any) => {
-        const start = Date.now()
-        try {
-          const resp = await env.AI.run(model, payload, { gateway: { id: gateway } })
-          results.push({ provider: name, ok: true, latencyMs: Date.now() - start, preview: JSON.stringify(resp).slice(0, 150) })
-        } catch (e: any) {
-          results.push({ provider: name, ok: false, latencyMs: Date.now() - start, preview: '', error: e.message?.slice(0, 200) })
-        }
-      }
-
-      // DeepSeek: 各种 model name 格式
-      await testRun('ds-v4-flash', 'deepseek-v4-flash', 'deepseek', { messages: [{ role: 'user', content: 'Reply with exactly: OK' }], max_tokens: 10, temperature: 0 })
-      await testRun('ds-openai', 'openai/deepseek-v4-flash', 'deepseek', { messages: [{ role: 'user', content: 'Reply with exactly: OK' }], max_tokens: 10 })
-      await testRun('ds-default', 'deepseek-v4-flash', 'default', { messages: [{ role: 'user', content: 'Reply with exactly: OK' }], max_tokens: 10, temperature: 0 })
-
-      // Qwen
-      await testRun('qwen', 'qwen-plus', 'qwen', { messages: [{ role: 'user', content: 'Reply with exactly: OK' }], max_tokens: 10, temperature: 0 })
-
-      // Gemini
-      await testRun('gemini', 'gemini-2.0-flash', 'my-gemini-proxy', { messages: [{ role: 'user', content: 'Reply with exactly: OK' }], max_tokens: 10 })
-
-      return Response.json({ results })
     }
 
     return new Response('Not Found', { status: 404 })

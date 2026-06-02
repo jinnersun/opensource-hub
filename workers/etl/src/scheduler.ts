@@ -244,7 +244,11 @@ async function processBatch(env: Env, github: GitHubClient, ai: AIClient): Promi
  */
 export async function runEtl(env: Env): Promise<BatchStats> {
   const github = new GitHubClient(env.GITHUB_TOKEN)
-  const ai = new AIClient(env.OPENAI_API_KEY)
+  const ai = new AIClient(env.OPENAI_API_KEY,
+    env.AI_GATEWAY_ACCOUNT && env.AI_GATEWAY_TOKEN
+      ? { account: env.AI_GATEWAY_ACCOUNT, token: env.AI_GATEWAY_TOKEN }
+      : undefined,
+  )
   const start = Date.now()
   const total: BatchStats = {
     fetched: 0, notModified: 0, skipped: 0, succeeded: 0, failed: 0, rateLimited: 0,

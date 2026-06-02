@@ -1,118 +1,89 @@
 /**
- * Cloudflare AI Gateway 统一调用（B 模式：Key 存在 Gateway，代码不传）
- *
- * 三个 Gateway:
- *   deepseek       → chat/completions (OpenAI 兼容)
- *   my-gemini-proxy → generateContent
- *   qwen           → chat/completions (OpenAI 兼容)
+ * Cloudflare AI Gateway 统一调用 (Universal Endpoint + BYOK)
+ * 代码中不传 Provider API Key，Gateway 从 Vault 自动注入
  */
 
-function gatewayBase(account: string): string {
-  return `https://gateway.ai.cloudflare.com/v1/${account}`
+export interface GatewayClient {
+  account: string
+  token: string
+  qwenKey?: string
+  qwenWorkspace?: string  // 百炼业务空间
 }
 
-// ---- URL 构建 ----
-
-export function deepseekUrl(account: string): string {
-  return `${gatewayBase(account)}/deepseek/chat/completions`
-}
-export function geminiUrl(account: string): string {
-  return `${gatewayBase(account)}/my-gemini-proxy/v1beta/models/gemini-2.0-flash:generateContent`
-}
-export function qwenUrl(account: string): string {
-  return `${gatewayBase(account)}/qwen/compatible-mode/v1/chat/completions`
+function url(account: string, gateway: string, provider: string, path: string): string {
+  return `https://gateway.ai.cloudflare.com/v1/${account}/${gateway}/${provider}/${path}`
 }
 
-// ---- 调用函数（B 模式不传 Key，Gateway 自动注入） ----
+const headers = (token: string) => ({
+  'Content-Type': 'application/json',
+  'cf-aig-authorization': `Bearer ${token}`,
+})
 
+// DeepSeek ✅ verified (provider=deepseek, model=deepseek-chat)
 export async function callDeepSeek(
-  account: string,
+  client: GatewayClient,
   body: { messages: Array<{ role: string; content: string }>; temperature?: number; max_tokens?: number },
   timeoutMs = 60000
 ): Promise<string> {
-  const resp = await fetch(deepseekUrl(account), {
+  const resp = await fetch(url(client.account, 'deepseek', 'deepseek', 'v1/chat/completions'), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: 'deepseek-v4-flash', ...body, stream: false }),
+    headers: headers(client.token),
+    body: JSON.stringify({ model: 'deepseek-chat', ...body, stream: false }),
     signal: AbortSignal.timeout(timeoutMs),
   })
-  if (!resp.ok) {
-    const text = await resp.text().catch(() => '')
-    throw new Error(`DeepSeek ${resp.status}: ${text.slice(0, 200)}`)
-  }
-  const data = await resp.json() as { choices: Array<{ message: { content: string } }> }
-  return data.choices?.[0]?.message?.content || ''
+  return handleOpenAIResp(resp, 'deepseek')
 }
 
-export async function callGemini(account: string, prompt: string, timeoutMs = 30000): Promise<string> {
-  const resp = await fetch(geminiUrl(account), {
+// Qwen
+export async function callQwen(
+  client: GatewayClient,
+  body: { messages: Array<{ role: string; content: string }>; temperature?: number; max_tokens?: number },
+  timeoutMs = 60000
+): Promise<string> {
+  const h: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (client.qwenKey) {
+    h['Authorization'] = `Bearer ${client.qwenKey}`
+  }
+  if (client.qwenWorkspace) {
+    h['X-DashScope-WorkSpace'] = client.qwenWorkspace
+  }
+  // Qwen 不走 Gateway，直连百炼 DashScope OpenAI 兼容端点
+  const resp = await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.2, maxOutputTokens: 1024 },
-    }),
+    headers: h,
+    body: JSON.stringify({ model: 'qwen-plus', ...body, stream: false }),
     signal: AbortSignal.timeout(timeoutMs),
   })
+  return handleOpenAIResp(resp, 'qwen')
+}
+
+// Gemini ✅
+export async function callGemini(client: GatewayClient, prompt: string, timeoutMs = 30000): Promise<string> {
+  const resp = await fetch(
+    url(client.account, 'my-gemini-proxy', 'google-ai-studio', 'v1beta/models/gemini-2.5-flash:generateContent'),
+    {
+      method: 'POST',
+      headers: headers(client.token),
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.2, maxOutputTokens: 1024 },
+      }),
+      signal: AbortSignal.timeout(timeoutMs),
+    }
+  )
   if (!resp.ok) {
     const text = await resp.text().catch(() => '')
-    throw new Error(`Gemini ${resp.status}: ${text.slice(0, 200)}`)
+    throw new Error(`gemini ${resp.status}: ${text.slice(0, 300)}`)
   }
   const data = await resp.json() as { candidates: Array<{ content: { parts: Array<{ text: string }> } }> }
   return data.candidates?.[0]?.content?.parts?.[0]?.text || ''
 }
 
-export async function callQwen(
-  account: string,
-  body: { messages: Array<{ role: string; content: string }>; temperature?: number; max_tokens?: number },
-  timeoutMs = 30000
-): Promise<string> {
-  const resp = await fetch(qwenUrl(account), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: 'qwen-plus', ...body, stream: false }),
-    signal: AbortSignal.timeout(timeoutMs),
-  })
+async function handleOpenAIResp(resp: Response, name: string): Promise<string> {
   if (!resp.ok) {
     const text = await resp.text().catch(() => '')
-    throw new Error(`Qwen ${resp.status}: ${text.slice(0, 200)}`)
+    throw new Error(`${name} ${resp.status}: ${text.slice(0, 300)}`)
   }
   const data = await resp.json() as { choices: Array<{ message: { content: string } }> }
   return data.choices?.[0]?.message?.content || ''
-}
-
-// ---- 测试 ----
-
-export interface GatewayTestResult {
-  provider: string; ok: boolean; latencyMs: number; preview: string; error?: string
-}
-
-export async function testAllGateways(account: string): Promise<GatewayTestResult[]> {
-  const results: GatewayTestResult[] = []
-
-  const dsStart = Date.now()
-  try {
-    const text = await callDeepSeek(account, { messages: [{ role: 'user', content: 'Reply with exactly: OK' }], max_tokens: 10, temperature: 0 }, 15000)
-    results.push({ provider: 'deepseek', ok: text.includes('OK'), latencyMs: Date.now() - dsStart, preview: text.slice(0, 80) })
-  } catch (e: any) {
-    results.push({ provider: 'deepseek', ok: false, latencyMs: Date.now() - dsStart, preview: '', error: e.message })
-  }
-
-  const gmStart = Date.now()
-  try {
-    const text = await callGemini(account, 'Reply with exactly: OK', 15000)
-    results.push({ provider: 'gemini', ok: text.includes('OK'), latencyMs: Date.now() - gmStart, preview: text.slice(0, 80) })
-  } catch (e: any) {
-    results.push({ provider: 'gemini', ok: false, latencyMs: Date.now() - gmStart, preview: '', error: e.message })
-  }
-
-  const qwStart = Date.now()
-  try {
-    const text = await callQwen(account, { messages: [{ role: 'user', content: 'Reply with exactly: OK' }], max_tokens: 10, temperature: 0 }, 15000)
-    results.push({ provider: 'qwen', ok: text.includes('OK'), latencyMs: Date.now() - qwStart, preview: text.slice(0, 80) })
-  } catch (e: any) {
-    results.push({ provider: 'qwen', ok: false, latencyMs: Date.now() - qwStart, preview: '', error: e.message })
-  }
-
-  return results
 }
