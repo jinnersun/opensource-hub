@@ -346,46 +346,26 @@ export default {
     if (url.pathname === '/etl/ai-test' && request.method === 'GET') {
       const results: Array<{ provider: string; ok: boolean; latencyMs: number; preview: string; error?: string }> = []
 
-      const testGateway = async (name: string, gatewayId: string, isOpenAI: boolean) => {
+      const testRun = async (name: string, model: string, gateway: string, payload: any) => {
         const start = Date.now()
         try {
-          let text = ''
-          if (typeof (env.AI as any).gateway === 'function') {
-            // 线上环境: gateway().run()
-            const gw = (env.AI as any).gateway(gatewayId)
-            if (isOpenAI) {
-              const resp = await gw.run({
-                provider: 'openai',
-                endpoint: 'chat/completions',
-                query: { messages: [{ role: 'user', content: 'Reply with exactly: OK' }], max_tokens: 10, temperature: 0 },
-              })
-              text = JSON.stringify(resp).slice(0, 150)
-            } else {
-              const resp = await gw.run({
-                provider: 'google',
-                endpoint: 'v1beta/models/gemini-2.0-flash:generateContent',
-                query: { contents: [{ parts: [{ text: 'Reply with exactly: OK' }] }], generationConfig: { maxOutputTokens: 10 } },
-              })
-              text = JSON.stringify(resp).slice(0, 150)
-            }
-          } else {
-            // 本地 dev fallback: env.AI.run()
-            const resp = await env.AI.run(
-              isOpenAI ? 'openai/deepseek-v4-flash' : '@cf/meta/llama-3.1-8b-instruct',
-              isOpenAI ? { messages: [{ role: 'user', content: 'Reply with exactly: OK' }], max_tokens: 10 } : { prompt: 'Reply with exactly: OK', max_tokens: 10 },
-              { gateway: { id: gatewayId } }
-            )
-            text = JSON.stringify(resp).slice(0, 150)
-          }
-          results.push({ provider: name, ok: text.includes('OK'), latencyMs: Date.now() - start, preview: text })
+          const resp = await env.AI.run(model, payload, { gateway: { id: gateway } })
+          results.push({ provider: name, ok: true, latencyMs: Date.now() - start, preview: JSON.stringify(resp).slice(0, 150) })
         } catch (e: any) {
           results.push({ provider: name, ok: false, latencyMs: Date.now() - start, preview: '', error: e.message?.slice(0, 200) })
         }
       }
 
-      await testGateway('deepseek', 'deepseek', true)
-      await testGateway('gemini', 'my-gemini-proxy', false)
-      await testGateway('qwen', 'qwen', true)
+      // DeepSeek: 各种 model name 格式
+      await testRun('ds-v4-flash', 'deepseek-v4-flash', 'deepseek', { messages: [{ role: 'user', content: 'Reply with exactly: OK' }], max_tokens: 10, temperature: 0 })
+      await testRun('ds-openai', 'openai/deepseek-v4-flash', 'deepseek', { messages: [{ role: 'user', content: 'Reply with exactly: OK' }], max_tokens: 10 })
+      await testRun('ds-default', 'deepseek-v4-flash', 'default', { messages: [{ role: 'user', content: 'Reply with exactly: OK' }], max_tokens: 10, temperature: 0 })
+
+      // Qwen
+      await testRun('qwen', 'qwen-plus', 'qwen', { messages: [{ role: 'user', content: 'Reply with exactly: OK' }], max_tokens: 10, temperature: 0 })
+
+      // Gemini
+      await testRun('gemini', 'gemini-2.0-flash', 'my-gemini-proxy', { messages: [{ role: 'user', content: 'Reply with exactly: OK' }], max_tokens: 10 })
 
       return Response.json({ results })
     }
