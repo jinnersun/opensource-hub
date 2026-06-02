@@ -12,7 +12,6 @@ export interface Env {
   QWEN_WORKSPACE?: string           // 百炼业务空间
   AI_GATEWAY_ACCOUNT?: string
   AI_GATEWAY_TOKEN?: string
-  CF_GATEWAY_NAME?: string
   GITHUB_TOKEN?: string
   ALERT_WEBHOOK_URL?: string
   TRIGGER_TOKEN?: string

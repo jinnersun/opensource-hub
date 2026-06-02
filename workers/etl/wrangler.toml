@@ -33,6 +33,10 @@ index_name = "opensource-hub-search"
 ENVIRONMENT = "production"
 
 # 需要通过 wrangler secret 配置：
-#   wrangler secret put OPENAI_API_KEY   # DeepSeek/OpenAI API Key
-#   wrangler secret put GITHUB_TOKEN     # GitHub PAT，用于提升限流到 5000/h
-#   wrangler secret put ALERT_WEBHOOK_URL # 可选：失败告警 Webhook
+#   wrangler secret put OPENAI_API_KEY     # DeepSeek API Key (Gateway 回退)
+#   wrangler secret put GITHUB_TOKEN       # GitHub PAT，用于提升限流到 5000/h
+#   wrangler secret put AI_GATEWAY_ACCOUNT # CF Account ID
+#   wrangler secret put AI_GATEWAY_TOKEN   # CF AI Gateway Access Token
+#   wrangler secret put QWEN_API_KEY       # 百炼 API Key
+#   wrangler secret put QWEN_WORKSPACE     # 百炼业务空间
+#   wrangler secret put ALERT_WEBHOOK_URL   # 可选：失败告警 Webhook
