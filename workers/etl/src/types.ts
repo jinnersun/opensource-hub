@@ -8,7 +8,11 @@ export interface Env {
   VECTORIZE: VectorizeIndex
   AI: Ai
   OPENAI_API_KEY: string
-  AI_GATEWAY_ACCOUNT?: string    // CF AI Gateway account ID
+  QWEN_API_KEY?: string
+  QWEN_WORKSPACE?: string           // 百炼业务空间
+  AI_GATEWAY_ACCOUNT?: string
+  AI_GATEWAY_TOKEN?: string
+  CF_GATEWAY_NAME?: string
   GITHUB_TOKEN?: string
   ALERT_WEBHOOK_URL?: string
   TRIGGER_TOKEN?: string
