@@ -8,6 +8,7 @@ export interface Env {
   VECTORIZE: VectorizeIndex
   AI: Ai
   OPENAI_API_KEY: string
+  AI_GATEWAY_ACCOUNT?: string    // CF AI Gateway account ID
   GITHUB_TOKEN?: string
   ALERT_WEBHOOK_URL?: string
   TRIGGER_TOKEN?: string

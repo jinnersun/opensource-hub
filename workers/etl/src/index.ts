@@ -337,8 +337,57 @@ export default {
           'GET /etl/diag',
           'GET /etl/status',
           'GET /etl/metrics',
+          'GET /etl/ai-test',
         ],
       })
+    }
+
+    // AI Gateway 连通性测试
+    if (url.pathname === '/etl/ai-test' && request.method === 'GET') {
+      const results: Array<{ provider: string; ok: boolean; latencyMs: number; preview: string; error?: string }> = []
+
+      const testGateway = async (name: string, gatewayId: string, isOpenAI: boolean) => {
+        const start = Date.now()
+        try {
+          let text = ''
+          if (typeof (env.AI as any).gateway === 'function') {
+            // 线上环境: gateway().run()
+            const gw = (env.AI as any).gateway(gatewayId)
+            if (isOpenAI) {
+              const resp = await gw.run({
+                provider: 'openai',
+                endpoint: 'chat/completions',
+                query: { messages: [{ role: 'user', content: 'Reply with exactly: OK' }], max_tokens: 10, temperature: 0 },
+              })
+              text = JSON.stringify(resp).slice(0, 150)
+            } else {
+              const resp = await gw.run({
+                provider: 'google',
+                endpoint: 'v1beta/models/gemini-2.0-flash:generateContent',
+                query: { contents: [{ parts: [{ text: 'Reply with exactly: OK' }] }], generationConfig: { maxOutputTokens: 10 } },
+              })
+              text = JSON.stringify(resp).slice(0, 150)
+            }
+          } else {
+            // 本地 dev fallback: env.AI.run()
+            const resp = await env.AI.run(
+              isOpenAI ? 'openai/deepseek-v4-flash' : '@cf/meta/llama-3.1-8b-instruct',
+              isOpenAI ? { messages: [{ role: 'user', content: 'Reply with exactly: OK' }], max_tokens: 10 } : { prompt: 'Reply with exactly: OK', max_tokens: 10 },
+              { gateway: { id: gatewayId } }
+            )
+            text = JSON.stringify(resp).slice(0, 150)
+          }
+          results.push({ provider: name, ok: text.includes('OK'), latencyMs: Date.now() - start, preview: text })
+        } catch (e: any) {
+          results.push({ provider: name, ok: false, latencyMs: Date.now() - start, preview: '', error: e.message?.slice(0, 200) })
+        }
+      }
+
+      await testGateway('deepseek', 'deepseek', true)
+      await testGateway('gemini', 'my-gemini-proxy', false)
+      await testGateway('qwen', 'qwen', true)
+
+      return Response.json({ results })
     }
 
     return new Response('Not Found', { status: 404 })
