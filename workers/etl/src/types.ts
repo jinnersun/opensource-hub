@@ -7,7 +7,10 @@ export interface Env {
   KV: KVNamespace
   VECTORIZE: VectorizeIndex
   AI: Ai
-  OPENAI_API_KEY: string
+  OPENAI_API_KEY: string        // DeepSeek API key
+  GEMINI_API_KEY?: string        // Gemini API key
+  QWEN_API_KEY?: string          // Qwen API key
+  AI_GATEWAY_ACCOUNT?: string    // CF AI Gateway account ID
   GITHUB_TOKEN?: string
   ALERT_WEBHOOK_URL?: string
   TRIGGER_TOKEN?: string

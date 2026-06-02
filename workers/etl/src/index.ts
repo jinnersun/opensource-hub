@@ -337,8 +337,24 @@ export default {
           'GET /etl/diag',
           'GET /etl/status',
           'GET /etl/metrics',
+          'GET /etl/ai-test',
         ],
       })
+    }
+
+    // AI Gateway 连通性测试
+    if (url.pathname === '/etl/ai-test' && request.method === 'GET') {
+      const { testAllGateways } = await import('./gateway')
+      const account = env.AI_GATEWAY_ACCOUNT
+      if (!account) {
+        return Response.json({ error: 'AI_GATEWAY_ACCOUNT not configured' }, { status: 400 })
+      }
+      const results = await testAllGateways(account, {
+        deepseek: env.OPENAI_API_KEY,
+        gemini: env.GEMINI_API_KEY || '',
+        qwen: env.QWEN_API_KEY || '',
+      })
+      return Response.json({ gateway: account, results })
     }
 
     return new Response('Not Found', { status: 404 })
