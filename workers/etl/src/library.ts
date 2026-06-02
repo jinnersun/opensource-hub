@@ -164,10 +164,8 @@ Rules:
 Example of a valid response (format reference, content unrelated to current project):
 {"projectType":"cli-tool","category":"dev-tools","tags":["git","cli","terminal","productivity"],"summary":"A fast terminal-based Git repository browser with fuzzy search.","summaryZh":"终端系 Git 仓库浏览器，支持模糊搜索。","fullDescription":"Lightweight TUI that lets developers navigate commit history, diffs and branches without leaving the shell. Supports keyboard-driven workflows and integrates with common Git commands.","fullDescriptionZh":"轻量级 TUI 工具，让开发者在命令行内浏览提交历史、diff 与分支，支持键盘快捷操作，与常用 Git 命令无缝集成。"}`
 
-import { callDeepSeek } from './gateway'
-
 export class LibraryAIClient {
-  constructor(private apiKey: string, private gatewayAccount?: string) {}
+  constructor(private apiKey: string) {}
 
   async generate(repo: GitHubRepoInfo, readme: string, timeoutMs = 45_000): Promise<LibraryAIResult> {
     const MAX_ATTEMPTS = 3
@@ -207,39 +205,30 @@ export class LibraryAIClient {
 
     const temperature = attempt === 0 ? 0.2 : Math.min(0.5, 0.2 + attempt * 0.15)
 
-    const raw = this.gatewayAccount
-      ? await callDeepSeek(this.gatewayAccount, this.apiKey, {
-          messages: [
-            { role: 'system', content: 'You are an open-source project analyst. Respond with ONLY a valid JSON object.' },
-            { role: 'user', content: prompt },
-          ],
-          temperature,
-          max_tokens: 800,
-        }, timeoutMs)
-      : await (async () => {
-          const resp = await fetch('https://api.deepseek.com/chat/completions', {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${this.apiKey}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              model: 'deepseek-v4-flash',
-              messages: [
-                { role: 'system', content: 'You are an open-source project analyst. Respond with ONLY a valid JSON object.' },
-                { role: 'user', content: prompt },
-              ],
-              temperature,
-              max_tokens: 800,
-              stream: false,
-            }),
-            signal: AbortSignal.timeout(timeoutMs),
-          })
-          if (!resp.ok) {
-            const text = await resp.text().catch(() => '')
-            if (resp.status === 429) throw new Error(`AI rate limit: ${resp.status} ${text.slice(0, 200)}`)
-            throw new Error(`AI API error: ${resp.status} ${text.slice(0, 200)}`)
-          }
-          const data = await resp.json() as { choices: Array<{ message: { content: string } }> }
-          return data.choices?.[0]?.message?.content || ''
-        })()
+    const resp = await fetch('https://api.deepseek.com/chat/completions', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${this.apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'deepseek-v4-flash',
+        messages: [
+          { role: 'system', content: 'You are an open-source project analyst. Respond with ONLY a valid JSON object.' },
+          { role: 'user', content: prompt },
+        ],
+        temperature,
+        max_tokens: 800,
+        stream: false,
+      }),
+      signal: AbortSignal.timeout(timeoutMs),
+    })
+
+    if (!resp.ok) {
+      const text = await resp.text().catch(() => '')
+      if (resp.status === 429) throw new Error(`AI rate limit: ${resp.status} ${text.slice(0, 200)}`)
+      throw new Error(`AI API error: ${resp.status} ${text.slice(0, 200)}`)
+    }
+
+    const data = await resp.json() as { choices: Array<{ message: { content: string } }> }
+    const raw = data.choices?.[0]?.message?.content || ''
 
     let result: LibraryAIResult
     try { result = parseLibraryAIJson(raw) }
@@ -379,7 +368,7 @@ async function persistLibraryEntry(
  */
 export async function promoteToLibrary(env: Env): Promise<LibraryBatchStats> {
   const stats: LibraryBatchStats = { scanned: 0, promoted: 0, aiFailed: 0, dbFailed: 0, noData: 0 }
-  const ai = new LibraryAIClient(env.OPENAI_API_KEY, env.AI_GATEWAY_ACCOUNT)
+  const ai = new LibraryAIClient(env.OPENAI_API_KEY)
   let consecutiveAIFailures = 0
 
   outer: for (let batchIdx = 0; batchIdx < MAX_BATCHES_PER_RUN; batchIdx++) {

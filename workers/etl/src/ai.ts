@@ -65,10 +65,8 @@ README 内容：
 8. 【SEO 优化】在 description/fullDescription 中以技术评测口吻指出该项目相比同类工具的 1-2 个独特优势。如果你知道同领域的知名工具，做一个简短对比（如"相比 XXX，本项目更轻量/更易配置/更安全"）。这能让生成的内容包含独特的长尾关键词，区分于普通镜像站。
 8. description/fullDescription（顶层）必须是英文；descriptionZh/fullDescriptionZh 必须是中文`
 
-import { callDeepSeek } from './gateway'
-
 export class AIClient {
-  constructor(private apiKey: string, private gatewayAccount?: string) {}
+  constructor(private apiKey: string) {}
 
   /**
    * 生成 AI 内容，带内部重试
@@ -126,45 +124,35 @@ export class AIClient {
     // 重试时适当提高 temperature，避免确定性重复产出同样的失败结果
     const temperature = attempt === 0 ? 0.3 : Math.min(0.6, 0.3 + attempt * 0.15)
 
-    const raw = this.gatewayAccount
-      ? await callDeepSeek(this.gatewayAccount, this.apiKey, {
-          messages: [
-            { role: 'system', content: '你是一个专业的开源软件分析师。' },
-            { role: 'user', content: prompt },
-          ],
-          temperature,
-          max_tokens: 2000,
-        }, timeoutMs)
-      : await (async () => {
-          // 无 Gateway 时的兼容逻辑：直接调 DeepSeek API
-          const resp = await fetch('https://api.deepseek.com/chat/completions', {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${this.apiKey}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              model: 'deepseek-v4-flash',
-              messages: [
-                { role: 'system', content: '你是一个专业的开源软件分析师。' },
-                { role: 'user', content: prompt },
-              ],
-              temperature,
-              max_tokens: 2000,
-              stream: false,
-            }),
-            signal: AbortSignal.timeout(timeoutMs),
-          })
-          if (!resp.ok) {
-            const text = await resp.text().catch(() => '')
-            if (resp.status === 429) {
-              throw new Error(`AI rate limit: ${resp.status} ${text.slice(0, 200)}`)
-            }
-            throw new Error(`AI API error: ${resp.status} ${text.slice(0, 200)}`)
-          }
-          const data = await resp.json() as { choices: Array<{ message: { content: string } }> }
-          return data.choices?.[0]?.message?.content || ''
-        })()
+    const resp = await fetch('https://api.deepseek.com/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${this.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'deepseek-v4-flash',
+        messages: [
+          { role: 'system', content: '你是一个专业的开源软件分析师。' },
+          { role: 'user', content: prompt },
+        ],
+        temperature,
+        max_tokens: 2000,
+        stream: false,
+      }),
+      signal: AbortSignal.timeout(timeoutMs),
+    })
+
+    if (!resp.ok) {
+      const text = await resp.text().catch(() => '')
+      if (resp.status === 429) {
+        throw new Error(`AI rate limit: ${resp.status} ${text.slice(0, 200)}`)
+      }
+      throw new Error(`AI API error: ${resp.status} ${text.slice(0, 200)}`)
+    }
+
+    const data = await resp.json() as { choices: Array<{ message: { content: string } }> }
+    const raw = data.choices?.[0]?.message?.content || ''
     const cleaned = raw
       .replace(/^```json\s*/i, '')
       .replace(/\s*```$/i, '')
