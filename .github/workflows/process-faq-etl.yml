@@ -1,0 +1,57 @@
+name: Process FAQ ETL
+
+on:
+  schedule:
+    - cron: '0 5 * * *'  # 每日凌晨 5:00 UTC (采集完成后 2 小时)
+  workflow_dispatch:     # 支持手动触发
+
+jobs:
+  process-faq-etl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120  # AI 处理可能耗时较长
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: scripts/package-lock.json
+          
+      - name: Install dependencies
+        run: |
+          cd scripts
+          npm ci
+          
+      - name: Run FAQ ETL processor
+        env:
+          AI_GATEWAY_ACCOUNT: ${{ secrets.AI_GATEWAY_ACCOUNT }}
+          AI_GATEWAY_TOKEN: ${{ secrets.AI_GATEWAY_TOKEN }}
+          QWEN_API_KEY: ${{ secrets.QWEN_API_KEY }}
+        run: |
+          cd scripts
+          npx tsx faq-etl-processor_v2.ts --all
+
+      - name: Upload ETL log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: faq-etl-v2-log
+          path: /tmp/faq-etl-v2-*.log
+          retention-days: 7
+
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '❌ FAQ ETL 处理失败',
+              body: `FAQ ETL 处理任务失败，请检查日志：${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              labels: ['bug', 'data-pipeline']
+            })
