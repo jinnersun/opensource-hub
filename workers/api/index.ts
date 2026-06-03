@@ -362,6 +362,27 @@ export default {
         })
       }
 
+      if (path === '/admin/faq-stats' && adminAuth(request)) {
+        const [raw, faqs, trTasks, todayHarvested, todayEtlDone] = await Promise.all([
+          env.DB.prepare(`SELECT etl_status, COUNT(*) as c FROM raw_faqs GROUP BY etl_status`).all<{etl_status:string;c:number}>(),
+          env.DB.prepare(`SELECT status, COUNT(*) as c FROM app_faqs GROUP BY status`).all<{status:string;c:number}>(),
+          env.DB.prepare(`SELECT target_locale, status, COUNT(*) as c FROM translation_tasks WHERE source_table='app_faqs' GROUP BY target_locale, status ORDER BY target_locale, status`).all<{target_locale:string;status:string;c:number}>(),
+          env.DB.prepare(`SELECT COUNT(*) as c FROM raw_faqs WHERE fetched_at >= datetime('now', 'start of day')`).first<{c:number}>(),
+          env.DB.prepare(`SELECT COUNT(*) as c FROM raw_faqs WHERE etl_processed_at >= datetime('now', 'start of day')`).first<{c:number}>(),
+        ])
+        const rawMap: Record<string,number> = {}; (raw.results||[]).forEach(r => rawMap[r.etl_status]=r.c)
+        const faqMap: Record<string,number> = {}; (faqs.results||[]).forEach(r => faqMap[r.status]=r.c)
+        const trMap: Record<string, Record<string,number>> = {}
+        ;(trTasks.results||[]).forEach(r => {
+          if (!trMap[r.target_locale]) trMap[r.target_locale] = {}
+          trMap[r.target_locale][r.status] = r.c
+        })
+        return jsonResponse({
+          raw: rawMap, faqs: faqMap, translations: trMap,
+          todayHarvested: todayHarvested?.c || 0, todayEtlDone: todayEtlDone?.c || 0,
+        })
+      }
+
       if (path === '/admin/submissions' && adminAuth(request)) {
         const st = url.searchParams.get('status') || 'pending'
         const page = parseInt(url.searchParams.get('page') || '1')
