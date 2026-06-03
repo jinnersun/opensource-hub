@@ -446,8 +446,8 @@ export async function promoteToLibrary(env: Env): Promise<LibraryBatchStats> {
             const libAppId = `lib_${repo.id}`
             for (const tl of ['ja', 'ko', 'es', 'pt-BR']) {
               await env.DB.prepare(
-                `INSERT OR IGNORE INTO translation_tasks (app_id, source_locale, target_locale) VALUES (?, 'zh', ?)`,
-              ).bind(libAppId, tl).run()
+                `INSERT OR IGNORE INTO translation_tasks (app_id, source_table, source_id, source_locale, target_locale) VALUES (?, 'app_translations', ?, 'zh', ?)`,
+              ).bind(libAppId, libAppId, tl).run()
             }
           } catch { /* 忽略 */ }
           console.log(`[Library] ${c.full_name} → ${aiResult.projectType}/${aiResult.category}`)

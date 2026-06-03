@@ -199,8 +199,8 @@ async function processOneInner(
     const appId = `app_${repo.id}`
     for (const tl of ['ja', 'ko', 'es', 'pt-BR']) {
       await env.DB.prepare(
-        `INSERT OR IGNORE INTO translation_tasks (app_id, source_locale, target_locale) VALUES (?, 'zh', ?)`,
-      ).bind(appId, tl).run()
+        `INSERT OR IGNORE INTO translation_tasks (app_id, source_table, source_id, source_locale, target_locale) VALUES (?, 'app_translations', ?, 'zh', ?)`,
+      ).bind(appId, appId, tl).run()
     }
   } catch { /* 忽略 */ }
   

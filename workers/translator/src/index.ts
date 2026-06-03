@@ -28,6 +28,8 @@ const LANG_MAP: Record<string, string> = {
 interface Task {
   id: number
   app_id: string
+  source_table: string
+  source_id: string | null
   source_locale: string
   target_locale: string
   retry_count: number
@@ -63,7 +65,7 @@ async function translateText(env: Env, text: string, sourceLang: string, targetL
 
 async function fetchPendingTasks(db: D1Database): Promise<Task[]> {
   const { results } = await db.prepare(
-    `SELECT id, app_id, source_locale, target_locale, retry_count
+    `SELECT id, app_id, source_table, source_id, source_locale, target_locale, retry_count
      FROM translation_tasks
      WHERE status = 'pending' AND retry_count < 3
      ORDER BY created_at ASC
@@ -131,6 +133,27 @@ async function getSourceTranslation(db: D1Database, appId: string, sourceLocale:
   return { data: row, usedLocale: row?.locale || sourceLocale }
 }
 
+interface FAQSource {
+  question: string
+  answer: string
+}
+
+async function getFaqSourceTranslation(db: D1Database, faqId: string): Promise<FAQSource | null> {
+  const row = await db.prepare(
+    `SELECT question_en, answer_en FROM app_faqs WHERE id = ?`,
+  ).bind(faqId).first<{ question_en: string; answer_en: string }>()
+  if (!row) return null
+  return { question: row.question_en, answer: row.answer_en }
+}
+
+async function upsertFaqTranslation(db: D1Database, faqId: string, locale: string, question: string, answer: string): Promise<void> {
+  const id = `faq_trans_${faqId}_${locale}`
+  await db.prepare(
+    `INSERT OR REPLACE INTO app_faq_translations (id, faq_id, locale, question, answer, translated_at)
+     VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+  ).bind(id, faqId, locale, question, answer).run()
+}
+
 async function upsertTranslation(db: D1Database, t: Translation): Promise<void> {
   if (isLibrary(t.app_id)) {
     const repoId = parseInt(t.app_id.replace('lib_', ''))
@@ -155,7 +178,41 @@ async function upsertTranslation(db: D1Database, t: Translation): Promise<void> 
   ).run()
 }
 
+async function processFaqTask(env: Env, task: Task): Promise<void> {
+  const faqId = task.source_id!
+
+  const source = await getFaqSourceTranslation(env.DB, faqId)
+  if (!source) {
+    await markFailed(env.DB, task.id, `FAQ source not found: ${faqId}`)
+    return
+  }
+
+  try {
+    const [question, answer] = await Promise.all([
+      translateText(env, source.question, task.source_locale, task.target_locale),
+      translateText(env, source.answer, task.source_locale, task.target_locale),
+    ])
+
+    await upsertFaqTranslation(env.DB, faqId, task.target_locale, question, answer)
+
+    await env.DB.prepare(
+      `UPDATE app_faqs SET status = 'active', updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+    ).bind(faqId).run()
+
+    await markDone(env.DB, task.id)
+    console.log(`[translator] faq done: ${faqId} → ${task.target_locale}`)
+  } catch (err) {
+    await markFailed(env.DB, task.id, (err as Error).message)
+    console.warn(`[translator] faq failed: ${faqId} → ${task.target_locale}: ${(err as Error).message}`)
+  }
+}
+
 async function processTask(env: Env, task: Task): Promise<void> {
+  if (task.source_table === 'app_faqs' && task.source_id) {
+    await processFaqTask(env, task)
+    return
+  }
+
   // 获取源语言翻译（zh 无内容则 fallback en）
   const src = await getSourceTranslation(env.DB, task.app_id, task.source_locale)
   const source = src.data
@@ -243,8 +300,8 @@ export default {
       for (const tl of TARGET_LOCALES) {
         try {
           await env.DB.prepare(
-            `INSERT OR IGNORE INTO translation_tasks (app_id, source_locale, target_locale) VALUES (?, 'zh', ?)`,
-          ).bind(appId, tl).run()
+            `INSERT OR IGNORE INTO translation_tasks (app_id, source_table, source_id, source_locale, target_locale) VALUES (?, 'app_translations', ?, 'zh', ?)`,
+          ).bind(appId, appId, tl).run()
           count++
         } catch { /* UNIQUE constraint */ }
       }
@@ -265,8 +322,8 @@ export default {
           for (const tl of TARGET_LOCALES) {
             try {
               await env.DB.prepare(
-                `INSERT OR IGNORE INTO translation_tasks (app_id, source_locale, target_locale) VALUES (?, 'zh', ?)`,
-              ).bind(r.id, tl).run()
+                `INSERT OR IGNORE INTO translation_tasks (app_id, source_table, source_id, source_locale, target_locale) VALUES (?, 'app_translations', ?, 'zh', ?)`,
+              ).bind(r.id, r.id, tl).run()
               created++
             } catch { /* UNIQUE constraint */ }
           }
