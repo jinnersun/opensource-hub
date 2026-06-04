@@ -65,7 +65,7 @@ async function getServerData(locale: string, projectId: string) {
       (async () => {
         try {
           const faqRes = await api.fetch(new Request(
-            `http://internal/api/apps/${encodeURIComponent(project.id)}/faqs?lang=${locale}`
+            `http://internal/api/apps/${encodeURIComponent(appData.id || project.id)}/faqs?lang=${locale}`
           ))
           const faqData = await faqRes.json() as any
           return (faqData?.faqs || null) as FAQItem[] | null
