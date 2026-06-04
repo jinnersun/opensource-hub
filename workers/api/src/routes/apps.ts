@@ -203,3 +203,25 @@ export async function getAppById(db: D1Database, id: string, lang: string): Prom
     return errorResponse('Failed to fetch app', 500)
   }
 }
+
+// 获取应用 FAQ 列表
+export async function getAppFAQs(db: D1Database, appId: string, lang: string): Promise<Response> {
+  try {
+    const { results } = await db.prepare(`
+      SELECT
+        f.id, f.source_issue_url, f.source_issue_number, f.search_intent, f.confidence,
+        COALESCE(t.question, f.question_en) as question,
+        COALESCE(t.answer, f.answer_en) as answer
+      FROM app_faqs f
+      LEFT JOIN app_faq_translations t ON f.id = t.faq_id AND t.locale = ?
+      WHERE f.app_id = ? AND f.status = 'active'
+      ORDER BY f.confidence DESC
+      LIMIT 5
+    `).bind(lang, appId).all()
+
+    return jsonResponse({ faqs: results || [] })
+  } catch (error) {
+    console.error('Error fetching FAQs:', error)
+    return errorResponse('Failed to fetch FAQs', 500)
+  }
+}

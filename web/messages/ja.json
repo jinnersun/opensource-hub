@@ -88,6 +88,15 @@
     "screenshotPlaceholder": "アプリのスクリーンショット",
     "demoPlaceholder": "機能デモ",
     "similarProjects": "類似プロジェクト",
+    "faqTitle": "トラブルシューティング & FAQ",
+    "sourceIssue": "参照 Issue",
+    "faqQuickLink": "問題が発生？以下のFAQを確認",
+    "searchIntent": {
+      "how-to": "ハウツー",
+      "troubleshooting": "トラブル対応",
+      "comparison": "比較",
+      "configuration": "設定"
+    },
     "smartDownload": "スマートダウンロード",
     "autoDetected": "お使いのシステムを自動検出しました",
     "downloadVersion": "{os} 版をダウンロード",
@@ -287,6 +296,14 @@
     "lastUpdated": "最終更新",
     "tags": "タグ",
     "overview": "概要",
+    "faqTitle": "FAQ",
+    "sourceIssue": "参照 Issue",
+    "searchIntent": {
+      "how-to": "ハウツー",
+      "troubleshooting": "トラブル対応",
+      "comparison": "比較",
+      "configuration": "設定"
+    },
     "type": {
       "all": "すべて",
       "framework": "フレームワーク",

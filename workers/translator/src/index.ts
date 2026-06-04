@@ -199,6 +199,20 @@ async function processFaqTask(env: Env, task: Task): Promise<void> {
       `UPDATE app_faqs SET status = 'active', updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
     ).bind(faqId).run()
 
+    // 同步更新父 app/library 的 last_updated（SEO: sitemap 反映 FAQ 变更）
+    if (task.app_id.startsWith('lib_')) {
+      const repoId = parseInt(task.app_id.replace('lib_', ''))
+      if (!isNaN(repoId)) {
+        await env.DB.prepare(
+          `UPDATE apps_library SET last_updated = CURRENT_TIMESTAMP WHERE github_repo_id = ?`,
+        ).bind(repoId).run()
+      }
+    } else {
+      await env.DB.prepare(
+        `UPDATE apps SET last_updated = CURRENT_TIMESTAMP WHERE id = ?`,
+      ).bind(task.app_id).run()
+    }
+
     await markDone(env.DB, task.id)
     console.log(`[translator] faq done: ${faqId} → ${task.target_locale}`)
   } catch (err) {

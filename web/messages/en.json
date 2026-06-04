@@ -88,6 +88,15 @@
     "screenshotPlaceholder": "Application Screenshot",
     "demoPlaceholder": "Feature Demo",
     "similarProjects": "Similar Projects",
+    "faqTitle": "Troubleshooting & FAQ",
+    "sourceIssue": "GitHub Issue",
+    "faqQuickLink": "Having issues? Check the FAQ below",
+    "searchIntent": {
+      "how-to": "How-to",
+      "troubleshooting": "Troubleshooting",
+      "comparison": "Comparison",
+      "configuration": "Configuration"
+    },
     "smartDownload": "Smart Download",
     "autoDetected": "Auto-detected your system",
     "downloadVersion": "Download {os} Version",
@@ -287,6 +296,14 @@
     "lastUpdated": "Last Updated",
     "tags": "Tags",
     "overview": "Overview",
+    "faqTitle": "FAQ",
+    "sourceIssue": "GitHub Issue",
+    "searchIntent": {
+      "how-to": "How-to",
+      "troubleshooting": "Troubleshooting",
+      "comparison": "Comparison",
+      "configuration": "Configuration"
+    },
     "type": {
       "all": "All",
       "framework": "Framework",

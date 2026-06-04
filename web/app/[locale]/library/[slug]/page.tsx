@@ -14,6 +14,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { ErrorState } from '@/components/error-state'
+import { FAQSection, type FAQItem } from '@/components/project-detail/faq-section'
+import { buildFAQJsonLd } from '@/lib/faq-jsonld'
 import {
   parseLibraryTags,
   type LibraryItem,
@@ -96,7 +98,20 @@ async function getServerData(locale: string, slug: string) {
       } catch { /* related non-critical */ }
     }
 
-    return { item, related }
+    // Fetch FAQ (non-blocking)
+    let faqs: FAQItem[] | null = null
+    if (item.github_repo_id) {
+      try {
+        const faqAppId = `lib_${item.github_repo_id}`
+        const faqRes = await api.fetch(new Request(
+          `http://internal/api/apps/${encodeURIComponent(faqAppId)}/faqs?lang=${locale}`
+        ))
+        const faqData = await faqRes.json() as any
+        faqs = faqData?.faqs || null
+      } catch { /* FAQ failure is non-critical */ }
+    }
+
+    return { item, related, faqs }
   } catch (e) {
     console.error('[SSR library]', e)
     return null
@@ -122,10 +137,10 @@ export default async function LibraryDetailPage({ params }: LibraryProps) {
     )
   }
 
-  const { item, related } = data
+  const { item, related, faqs } = data
   const tags = parseLibraryTags(item.tags)
 
-  const jsonLd = {
+  const jsonLd: any = {
     '@context': 'https://schema.org',
     '@graph': [
       {
@@ -148,6 +163,10 @@ export default async function LibraryDetailPage({ params }: LibraryProps) {
         ],
       },
     ],
+  }
+
+  if (faqs && faqs.length > 0) {
+    jsonLd['@graph'].push(buildFAQJsonLd(faqs))
   }
 
   return (
@@ -223,6 +242,25 @@ export default async function LibraryDetailPage({ params }: LibraryProps) {
                   <pre className="text-xs leading-relaxed whitespace-pre-wrap break-words font-mono text-muted-foreground max-h-[600px] overflow-auto">
                     {item.readme_preview}
                   </pre>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* FAQ Section */}
+            {faqs && faqs.length > 0 && (
+              <Card>
+                <CardContent className="p-6">
+                  <h2 className="text-lg font-semibold mb-3">{t('faqTitle')} ({faqs.length})</h2>
+                  <FAQSection
+                    faqs={faqs}
+                    sourceIssueLabel={t('sourceIssue')}
+                    searchIntentLabels={{
+                      'how-to': t('searchIntent.how-to'),
+                      'troubleshooting': t('searchIntent.troubleshooting'),
+                      'comparison': t('searchIntent.comparison'),
+                      'configuration': t('searchIntent.configuration'),
+                    }}
+                  />
                 </CardContent>
               </Card>
             )}

@@ -1,4 +1,3 @@
-import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { Header } from "@/components/header"
@@ -10,6 +9,10 @@ import { SafeAuditCard } from "@/components/project-detail/safe-audit-card"
 import { EnvironmentGuide } from "@/components/project-detail/environment-guide"
 import { MetaInfoCard } from "@/components/project-detail/meta-info-card"
 import { GettingStartedCard } from "@/components/project-detail/getting-started-card"
+import { DeepDiveTabs } from "@/components/project-detail/deep-dive-tabs"
+import { FAQQuickLink } from "@/components/project-detail/faq-quick-link"
+import type { FAQItem } from "@/components/project-detail/faq-section"
+import { buildFAQJsonLd } from "@/lib/faq-jsonld"
 import { ErrorState } from "@/components/error-state"
 import { FavoriteButton } from "@/components/favorite-button"
 import { transformAppForDisplay } from "@/lib/api"
@@ -39,26 +42,38 @@ async function getServerData(locale: string, projectId: string) {
 
     const project = transformAppForDisplay(appData)
 
-    // 2. Get similar projects by category (non-blocking)
-    let similarProjects: Project[] = []
-    try {
-      const similarRes = await api.fetch(new Request(`http://internal/api/apps?category=${encodeURIComponent(project.category)}&limit=10&lang=${locale}`))
-      const similarData = await similarRes.json() as any
-      const currentTags = new Set(project.tags || [])
-      similarProjects = (similarData.data || [])
-        .map(transformAppForDisplay)
-        .filter((sp: Project) => sp.id !== project.id)
-        .map((sp: Project) => {
-          const spTags = new Set(sp.tags || [])
-          const overlap = [...currentTags].filter(t => spTags.has(t)).length
-          return { project: sp, overlap }
-        })
-        .sort((a: { project: Project; overlap: number }, b: { project: Project; overlap: number }) => b.overlap - a.overlap || b.project.stars - a.project.stars)
-        .slice(0, 3)
-        .map((s: { project: Project; overlap: number }) => s.project)
-    } catch { /* similar projects failure is non-critical */ }
+    // 2. Get similar projects + FAQ in parallel (no dependency between them)
+    const [similarProjects, faqs] = await Promise.all([
+      (async () => {
+        try {
+          const similarRes = await api.fetch(new Request(`http://internal/api/apps?category=${encodeURIComponent(project.category)}&limit=10&lang=${locale}`))
+          const similarData = await similarRes.json() as any
+          const currentTags = new Set(project.tags || [])
+          return (similarData.data || [])
+            .map(transformAppForDisplay)
+            .filter((sp: Project) => sp.id !== project.id)
+            .map((sp: Project) => {
+              const spTags = new Set(sp.tags || [])
+              const overlap = [...currentTags].filter(t => spTags.has(t)).length
+              return { project: sp, overlap }
+            })
+            .sort((a: { project: Project; overlap: number }, b: { project: Project; overlap: number }) => b.overlap - a.overlap || b.project.stars - a.project.stars)
+            .slice(0, 3)
+            .map((s: { project: Project; overlap: number }) => s.project)
+        } catch { return [] as Project[] }
+      })(),
+      (async () => {
+        try {
+          const faqRes = await api.fetch(new Request(
+            `http://internal/api/apps/${encodeURIComponent(project.id)}/faqs?lang=${locale}`
+          ))
+          const faqData = await faqRes.json() as any
+          return (faqData?.faqs || null) as FAQItem[] | null
+        } catch { return null }
+      })(),
+    ])
 
-    return { project, similarProjects }
+    return { project, similarProjects, faqs }
   } catch (e) {
     console.error('[SSR project]', e)
     return null
@@ -85,10 +100,10 @@ export default async function ProjectPage({ params }: Props) {
     )
   }
 
-  const { project, similarProjects } = data
+  const { project, similarProjects, faqs } = data
   const categoryLabel = td(`categories.${project.category}.label`)
 
-  const jsonLd = {
+  const jsonLd: any = {
     '@context': 'https://schema.org',
     '@graph': [
       {
@@ -111,6 +126,10 @@ export default async function ProjectPage({ params }: Props) {
         ],
       },
     ],
+  }
+
+  if (faqs && faqs.length > 0) {
+    jsonLd['@graph'].push(buildFAQJsonLd(faqs))
   }
 
   return (
@@ -250,13 +269,20 @@ export default async function ProjectPage({ params }: Props) {
               </section>
             )}
 
-            {/* Long Description */}
-            <section>
-              <h2 className="text-xl font-bold mb-4">{t('longDescription')}</h2>
-              <div className="prose prose-sm max-w-none text-muted-foreground">
-                <p>{project.longDescription}</p>
-              </div>
-            </section>
+            {/* Long Description + FAQ */}
+            <DeepDiveTabs
+              longDescription={project.longDescription}
+              faqs={faqs}
+              detailLabel={t('longDescription')}
+              faqLabel={t('faqTitle')}
+              sourceIssueLabel={t('sourceIssue')}
+              searchIntentLabels={{
+                'how-to': t('searchIntent.how-to'),
+                'troubleshooting': t('searchIntent.troubleshooting'),
+                'comparison': t('searchIntent.comparison'),
+                'configuration': t('searchIntent.configuration'),
+              }}
+            />
 
             {/* Tags */}
             {project.tags && project.tags.length > 0 && (
@@ -282,6 +308,9 @@ export default async function ProjectPage({ params }: Props) {
             <SafeAuditCard project={project} />
             <EnvironmentGuide project={project} />
             <MetaInfoCard project={project} />
+
+            {/* FAQ Quick Link */}
+            <FAQQuickLink faqCount={faqs?.length || 0} label={t('faqQuickLink')} />
 
             {/* Similar Projects */}
             {similarProjects.length > 0 && (

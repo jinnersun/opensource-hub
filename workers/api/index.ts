@@ -5,7 +5,7 @@
 
 // 导入路由函数
 import { getApps } from './src/routes/apps'
-import { getAppById } from './src/routes/apps'
+import { getAppById, getAppFAQs } from './src/routes/apps'
 import { getCategories } from './src/routes/categories'
 import { getTrending } from './src/routes/trending'
 import { getHomeData } from './src/routes/home'
@@ -293,6 +293,12 @@ export default {
       const libraryDetailMatch = path.match(/^\/api\/library\/([^/]+)$/)
       if (libraryDetailMatch) {
         return await getLibraryItem(env.DB, libraryDetailMatch[1], url.searchParams.get('lang') || 'zh')
+      }
+
+      // FAQ 列表（按 app_id）
+      const faqMatch = path.match(/^\/api\/apps\/([^/]+)\/faqs$/)
+      if (faqMatch) {
+        return await getAppFAQs(env.DB, faqMatch[1], url.searchParams.get('lang') || 'en')
       }
 
       // ---- Admin 路由（仅 GET） ----

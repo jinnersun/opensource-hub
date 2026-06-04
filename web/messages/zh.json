@@ -88,6 +88,15 @@
     "screenshotPlaceholder": "软件界面截图",
     "demoPlaceholder": "功能演示动图",
     "similarProjects": "相似推荐",
+    "faqTitle": "常见问题与排障",
+    "sourceIssue": "来源 Issue",
+    "faqQuickLink": "遇到问题？查看下方 FAQ",
+    "searchIntent": {
+      "how-to": "操作指南",
+      "troubleshooting": "故障排除",
+      "comparison": "对比",
+      "configuration": "配置"
+    },
     "smartDownload": "智能下载",
     "autoDetected": "已自动识别你的系统",
     "downloadVersion": "下载 {os} 版本",
@@ -287,6 +296,14 @@
     "lastUpdated": "最近更新",
     "tags": "标签",
     "overview": "项目简介",
+    "faqTitle": "常见问题",
+    "sourceIssue": "来源 Issue",
+    "searchIntent": {
+      "how-to": "操作指南",
+      "troubleshooting": "故障排除",
+      "comparison": "对比",
+      "configuration": "配置"
+    },
     "type": {
       "all": "全部",
       "framework": "框架",

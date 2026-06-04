@@ -88,6 +88,15 @@
     "screenshotPlaceholder": "앱 스크린샷",
     "demoPlaceholder": "기능 데모",
     "similarProjects": "유사한 프로젝트",
+    "faqTitle": "문제 해결 & FAQ",
+    "sourceIssue": "원본 Issue",
+    "faqQuickLink": "문제 발생? 아래 FAQ 확인",
+    "searchIntent": {
+      "how-to": "방법",
+      "troubleshooting": "문제 해결",
+      "comparison": "비교",
+      "configuration": "설정"
+    },
     "smartDownload": "스마트 다운로드",
     "autoDetected": "사용 중인 시스템을 자동 감지했습니다",
     "downloadVersion": "{os} 버전 다운로드",
@@ -287,6 +296,14 @@
     "lastUpdated": "마지막 업데이트",
     "tags": "태그",
     "overview": "개요",
+    "faqTitle": "FAQ",
+    "sourceIssue": "원본 Issue",
+    "searchIntent": {
+      "how-to": "방법",
+      "troubleshooting": "문제 해결",
+      "comparison": "비교",
+      "configuration": "설정"
+    },
     "type": {
       "all": "전체",
       "framework": "프레임워크",
