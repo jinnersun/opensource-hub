@@ -33,7 +33,7 @@ jobs:
           QWEN_API_KEY: ${{ secrets.QWEN_API_KEY }}
         run: |
           cd scripts
-          npx tsx v3/generate.ts v3/data/collected-*.json
+          npx tsx v3/generate.ts --all
 
       - name: Upload ETL log
         if: always()

@@ -1,27 +1,18 @@
 #!/usr/bin/env tsx
 /**
- * FAQ V3 — 采集 + 特征打分（合并脚本）
+ * FAQ V3 — 采集 + 特征打分 → raw_faqs (D1)
  *
  * 流程:
- *   1. GitHub 宽松采集: is:issue is:closed（不限 comments）
- *   2. 拉取社区信号: state_reason, closed_by, comment reactions
- *   3. Timeline API 获取 Linked PRs
+ *   1. 从 apps + apps_library 获取活跃项目
+ *   2. GitHub 宽松采集: is:issue is:closed
+ *   3. 拉取社区信号 + Timeline API Linked PRs + 评论
  *   4. 特征打分（零 Token）→ 只保留 ≥30 分的 Issue
- *   5. 输出: v3/data/collected-{ts}.json
+ *   5. 写入 D1 raw_faqs
  *
  * 使用:
  *   tsx scripts/v3/collect.ts --sample     # 前 30 个项目
  *   tsx scripts/v3/collect.ts --all        # 全量
  *   tsx scripts/v3/collect.ts --app-id=xxx
- *
- * 评分规则:
- *   +15 关键词: workaround/fixed/solved/similarly
- *   +30 评论含可执行代码块 (```bash ```sh ```yaml ```json)
- *   +15 评论含任意代码块 (```)
- *   +35 关联了 PR
- *   +25 官方确认 (state_reason=completed 或 maintainer 关闭)
- *   +10 社区认可 (评论 👍 ≥ 2)
- *   门槛: ≥30 分
  */
 
 import { execSync } from 'child_process'
@@ -54,11 +45,6 @@ interface CollectedIssue {
   linked_prs: { title: string; body: string }[]
   max_comment_reactions: number
   score: number; score_breakdown: string[]
-}
-
-interface CollectedOutput {
-  generated_at: string; app_count: number; issue_count: number; passed_count: number
-  apps: { app_id: string; name: string; full_name: string; issues: CollectedIssue[] }[]
 }
 
 // ==========================================
@@ -162,6 +148,44 @@ async function getLinkedPRs(owner: string, repo: string, num: number): Promise<{
 }
 
 // ==========================================
+// D1 写入
+// ==========================================
+
+function esc(s: string): string {
+  return s.replace(/'/g, "''").replace(/\\/g, '\\\\')
+}
+
+function execWranglerFile(sql: string): void {
+  const f = path.join(os.tmpdir(), `faq-collect-${Date.now()}.sql`)
+  fs.writeFileSync(f, sql, 'utf-8')
+  try {
+    execSync(`wrangler d1 execute opensource-hub-db --file "${f}" --remote`, {
+      encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe']
+    })
+    fs.unlinkSync(f)
+  } catch (e) { try { fs.unlinkSync(f) } catch {}; throw e }
+}
+
+function writeRawFAQ(appId: string, issue: CollectedIssue): void {
+  const title = esc(issue.title)
+  const body = esc(issue.body)
+  const labels = esc(JSON.stringify(issue.labels))
+  const comments = esc(JSON.stringify(issue.comments))
+  const prs = esc(JSON.stringify(issue.linked_prs))
+  const breakdown = esc(issue.score_breakdown.join(', '))
+
+  execWranglerFile(
+    `INSERT INTO raw_faqs (app_id, issue_number, issue_title, issue_body, issue_state, issue_labels, comments_count, issue_created_at, issue_updated_at, issue_url, issue_comments, linked_prs, etl_status)
+     VALUES ('${appId}', ${issue.issue_number}, '${title}', '${body}', 'closed', '${labels}', ${issue.comments_count}, '', '', '${issue.html_url}', '${comments}', '${prs}', 'pending')
+     ON CONFLICT(app_id, issue_number) DO UPDATE SET
+       issue_title = excluded.issue_title, issue_body = excluded.issue_body,
+       issue_labels = excluded.issue_labels, comments_count = excluded.comments_count,
+       issue_url = excluded.issue_url, issue_comments = excluded.issue_comments,
+       linked_prs = excluded.linked_prs, etl_status = 'pending', error_log = NULL, retry_count = 0;`
+  )
+}
+
+// ==========================================
 // 特征打分
 // ==========================================
 
@@ -223,23 +247,21 @@ function scoreIssue(
 // 主流程
 // ==========================================
 
-async function collectApp(app: App): Promise<CollectedOutput['apps'][0] | null> {
+async function collectApp(app: App): Promise<number> {
   const [owner, repo] = [app.github_owner, app.github_repo]
   const fullName = `${owner}/${repo}`
   console.log(`\n📦 ${app.name} (${fullName})`)
 
   const issues = await searchIssues(fullName)
   console.log(`   找到 ${issues.length} 个 closed issues`)
-  if (!issues.length) return null
+  if (!issues.length) return 0
 
-  const collected: CollectedIssue[] = []
-  let passed = 0
+  let written = 0
 
   for (let i = 0; i < issues.length; i++) {
     const is = issues[i]
     console.log(`    [#${is.number}] ${is.title.slice(0, 60)}`)
 
-    // 获取详情 + 评论 + PR（评论和 PR 并行）
     const [detail, comments, prs] = await Promise.all([
       getIssueDetail(owner, repo, is.number),
       is.comments > 0 ? getComments(owner, repo, is.number) : Promise.resolve([]),
@@ -253,19 +275,20 @@ async function collectApp(app: App): Promise<CollectedOutput['apps'][0] | null> 
       detail?.closed_by?.login || null,
       comments, prs,
     )
-    collected.push(scored)
-    if (scored.score >= PASS_THRESHOLD) passed++
+
+    if (scored.score >= PASS_THRESHOLD) {
+      writeRawFAQ(app.id, scored)
+      console.log(`      ✅ ${scored.score}分 ${scored.score_breakdown.join(', ')}`)
+      written++
+    } else {
+      console.log(`      ⏭️  ${scored.score}分 (未达${PASS_THRESHOLD})`)
+    }
 
     if (i < issues.length - 1) await delay(DELAY_ISSUE)
   }
 
-  const passedIssues = collected.filter(c => c.score >= PASS_THRESHOLD)
-  console.log(`   ✅ ${passedIssues.length}/${collected.length} 通过门槛`)
-  for (const s of passedIssues) {
-    console.log(`      [#${s.issue_number}] ${s.score}分 ${s.score_breakdown.join(', ')} | ${s.title.slice(0, 50)}`)
-  }
-
-  return { app_id: app.id, name: app.name, full_name: fullName, issues: passedIssues }
+  console.log(`   📦 写入 ${written}/${issues.length} 条`)
+  return written
 }
 
 // ==========================================
@@ -282,40 +305,25 @@ async function main() {
     process.exit(1)
   }
 
-  console.log(`🔍 FAQ V3 采集+打分`)
+  console.log(`🔍 FAQ V3 采集+打分 → raw_faqs`)
   console.log(`📊 模式: ${isSample ? `测试(${SAMPLE_SIZE})` : isAll ? '全量' : `指定(${appId})`}`)
 
   const apps = await getApps(isSample, appId)
   console.log(`📊 ${apps.length} 个项目\n`)
 
-  const output: CollectedOutput = {
-    generated_at: new Date().toISOString(),
-    app_count: apps.length, issue_count: 0, passed_count: 0,
-    apps: [],
-  }
+  let totalApps = 0, totalIssues = 0
 
   for (let i = 0; i < apps.length; i++) {
     console.log(`[${i + 1}/${apps.length}]`)
     try {
-      const appData = await collectApp(apps[i])
-      if (appData && appData.issues.length > 0) {
-        output.apps.push(appData)
-        output.issue_count += appData.issues.length
-        output.passed_count += appData.issues.length
-      }
+      const n = await collectApp(apps[i])
+      if (n > 0) { totalApps++; totalIssues += n }
       if (i < apps.length - 1) await delay(DELAY_APP)
     } catch (err) { console.error(`❌ ${apps[i].name}:`, (err as Error).message) }
   }
 
-  const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
-  const outDir = path.join(__dirname, 'data')
-  fs.mkdirSync(outDir, { recursive: true })
-  const outPath = path.join(outDir, `collected-${ts}.json`)
-  fs.writeFileSync(outPath, JSON.stringify(output, null, 2), 'utf-8')
-
   console.log(`\n${'='.repeat(60)}`)
-  console.log(`🎉 完成! 项目:${output.app_count} Issues:${output.issue_count}`)
-  console.log(`📄 ${outPath}`)
+  console.log(`🎉 完成! 项目:${totalApps} Issues:${totalIssues}`)
   console.log(`${'='.repeat(60)}`)
 }
 
