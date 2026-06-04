@@ -111,11 +111,22 @@ async function ghFetch(url: string, headers?: Record<string, string>): Promise<a
   return resp.json()
 }
 
-async function searchIssues(fullName: string): Promise<GitHubIssue[]> {
-  const q = `is:issue is:closed`
+async function searchIssues(fullName: string, isNew: boolean): Promise<GitHubIssue[]> {
+  let q: string
+  if (isNew) {
+    q = `is:issue is:closed`  // 新 APP: 全量采集历史 Issue
+  } else {
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
+    q = `is:issue is:closed updated:>=${yesterday}`  // 已有数据: 只采 24h 增量
+  }
   const url = `https://api.github.com/search/issues?q=repo:${fullName}+${encodeURIComponent(q)}&sort=updated&order=desc&per_page=${MAX_PER_APP}`
   const data = await ghFetch(url)
   return (data?.items || []).filter((i: any) => !i.pull_request)
+}
+
+function appHasExistingFAQ(appId: string): boolean {
+  const r = execWrangler(`SELECT COUNT(*) as c FROM raw_faqs WHERE app_id='${appId}' LIMIT 1`)
+  return (r?.results?.[0]?.c || 0) > 0
 }
 
 async function getIssueDetail(owner: string, repo: string, num: number): Promise<any> {
@@ -250,9 +261,10 @@ function scoreIssue(
 async function collectApp(app: App): Promise<number> {
   const [owner, repo] = [app.github_owner, app.github_repo]
   const fullName = `${owner}/${repo}`
-  console.log(`\n📦 ${app.name} (${fullName})`)
+  const isNew = !appHasExistingFAQ(app.id)
+  console.log(`\n📦 ${app.name} (${fullName}) — ${isNew ? '首次全量' : '24h增量'}`)
 
-  const issues = await searchIssues(fullName)
+  const issues = await searchIssues(fullName, isNew)
   console.log(`   找到 ${issues.length} 个 closed issues`)
   if (!issues.length) return 0
 

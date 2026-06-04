@@ -5,7 +5,6 @@
 import { AIClient } from './ai'
 import { GitHubClient } from './github'
 import { fetchLatestRelease } from './release'
-import { processFAQsForApp } from './faq-generator'
 import {
   computeNextCheckAt,
   computeNextCheckAt304,
@@ -203,19 +202,7 @@ async function processOneInner(
       ).bind(appId, appId, tl).run()
     }
   } catch { /* 忽略 */ }
-  
-  // FAQ 处理 (新增)
-  try {
-    const appId = `app_${repo.id}`
-    const faqStats = await processFAQsForApp(env, appId, aiResult.name, aiResult.fullDescription)
-    if (faqStats.processed > 0) {
-      console.log(`[ETL] FAQ 处理完成: ${faqStats.succeeded}/${faqStats.processed}`)
-    }
-  } catch (err) {
-    console.error(`[ETL] FAQ 处理失败:`, (err as Error).message)
-    // FAQ 处理失败不阻塞主流程
-  }
-  
+
   stats.succeeded++
 }
 

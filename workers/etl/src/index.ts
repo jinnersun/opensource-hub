@@ -12,6 +12,7 @@ import { runEtl } from './scheduler'
 import { fetchLatestRelease } from './release'
 import { saveVersionsOnly, upsertEmbedding } from './persistence'
 import { promoteToLibrary } from './library'
+import { processAllPendingFAQs } from './faq-generator'
 import type { BatchStats, Env } from './types'
 
 interface ETLMetrics {
@@ -66,6 +67,17 @@ async function executeAndRecord(env: Env): Promise<void> {
     console.log('[ETL scheduled] library stats:', libStats)
   } catch (err) {
     console.error('[ETL scheduled] promoteToLibrary failed:', (err as Error).message)
+  }
+}
+
+async function processFAQ(env: Env): Promise<void> {
+  try {
+    const fStats = await processAllPendingFAQs(env)
+    if (fStats.issues > 0) {
+      console.log('[FAQ] scheduled stats:', fStats)
+    }
+  } catch (err) {
+    console.error('[FAQ] processAllPendingFAQs failed:', (err as Error).message)
   }
 }
 
@@ -228,8 +240,11 @@ async function backfillLibraryEmbeddings(
 
 export default {
   async scheduled(_controller: ScheduledController, env: Env, ctx: ExecutionContext) {
-    console.log('[ETL] scheduled 触发')
-    ctx.waitUntil(executeAndRecord(env))
+    console.log('[ETL] scheduled trigger')
+    ctx.waitUntil(Promise.all([
+      executeAndRecord(env),
+      processFAQ(env),
+    ]))
   },
 
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
