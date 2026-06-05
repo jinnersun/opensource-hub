@@ -1,7 +1,11 @@
 /**
  * OpenSource-Hub Translator Worker
- * 定时扫描 translation_tasks，用 CF AI m2m100 翻译软件内容
+ * 定时扫描 translation_tasks，用 DeepSeek-v4-flash 翻译软件内容
  * 触发: cron 每 5 分钟 (见 wrangler.toml)
+ *
+ * Secrets (wrangler secret put):
+ *   AI_GATEWAY_ACCOUNT — CF Account ID
+ *   AI_GATEWAY_TOKEN   — CF AI Gateway Access Token
  */
 
 export interface Env {
@@ -10,19 +14,19 @@ export interface Env {
   BATCH_SIZE: string
   TARGET_LOCALES: string
   TRIGGER_TOKEN?: string
+  AI_GATEWAY_ACCOUNT?: string
+  AI_GATEWAY_TOKEN?: string
 }
 
 const TARGET_LOCALES = ['ja', 'ko', 'es', 'pt-BR']
 const BATCH_SIZE = 5
 
-// m2m100 语言代码 (Cloudflare Workers AI 使用 ISO 639-1)
-const LANG_MAP: Record<string, string> = {
-  zh: 'zh',
-  en: 'en',
-  ja: 'ja',
-  ko: 'ko',
-  es: 'es',
-  'pt-BR': 'pt',
+// m2m100 语言代码 (fallback)
+const LANG_MAP: Record<string, string> = { zh: 'zh', en: 'en', ja: 'ja', ko: 'ko', es: 'es', 'pt-BR': 'pt' }
+
+const LANG_NAMES: Record<string, string> = {
+  zh: 'Simplified Chinese', en: 'English', ja: 'Japanese',
+  ko: 'Korean', es: 'Spanish', 'pt-BR': 'Brazilian Portuguese',
 }
 
 interface Task {
@@ -50,15 +54,56 @@ interface Translation {
 
 async function translateText(env: Env, text: string, sourceLang: string, targetLang: string): Promise<string> {
   if (!text || text.trim().length === 0) return text
+
+  // DeepSeek-v4-flash 翻译 (via AI Gateway)
+  if (env.AI_GATEWAY_ACCOUNT && env.AI_GATEWAY_TOKEN) {
+    try {
+      const sourceName = LANG_NAMES[sourceLang] || sourceLang
+      const targetName = LANG_NAMES[targetLang] || targetLang
+      const systemPrompt = 'Translate the following text from ' + sourceName + ' to ' + targetName + '. Keep technical terms (API names, CLI flags, error codes, version numbers, file paths, brand names) in their original form. Output ONLY the translated text, no explanations, no markdown.'
+
+      const controller = new AbortController()
+      const timer = setTimeout(() => controller.abort(), 30_000)
+      try {
+        const url = 'https://gateway.ai.cloudflare.com/v1/' + env.AI_GATEWAY_ACCOUNT + '/deepseek/deepseek/v1/chat/completions'
+        const resp = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'cf-aig-authorization': 'Bearer ' + env.AI_GATEWAY_TOKEN,
+          },
+          signal: controller.signal,
+          body: JSON.stringify({
+            model: 'deepseek-v4-flash',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: text },
+            ],
+            temperature: 0.1, max_tokens: 4000,
+          }),
+        })
+        if (!resp.ok) throw new Error('DS ' + resp.status)
+        const data = await resp.json() as any
+        const translated = data?.choices?.[0]?.message?.content?.trim()
+        if (translated && translated.length > text.length * 0.1) return translated
+        throw new Error('Empty or too-short translation')
+      } finally { clearTimeout(timer) }
+    } catch (err) {
+      console.warn('[translate] DeepSeek failed:', (err as Error).message)
+      throw err
+    }
+  }
+
+  // Fallback: m2m100
   try {
     const result = await env.AI.run('@cf/meta/m2m100-1.2b', {
       text: text,
-      source_lang: LANG_MAP[sourceLang] || 'zho_Hans',
-      target_lang: LANG_MAP[targetLang] || 'jpn_Jpan',
+      source_lang: LANG_MAP[sourceLang] || 'zh',
+      target_lang: LANG_MAP[targetLang] || 'ja',
     }) as { translated_text?: string }
     return result?.translated_text || text
   } catch (err) {
-    console.warn(`[translate] m2m100 failed:`, (err as Error).message)
+    console.warn('[translate] m2m100 fallback failed:', (err as Error).message)
     throw err
   }
 }
@@ -169,7 +214,7 @@ async function upsertTranslation(db: D1Database, t: Translation): Promise<void> 
        (id, app_id, locale, summary, description, full_description,
         features, use_cases, quick_start_guide, uninstall_guide, caveats,
         translated_by, ai_model_version, quality_score)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'cf-m2m100', 'm2m100-1.2b', 0.85)`,
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'deepseek-v4-flash', 'deepseek-v4-flash', 0.85)`,
   ).bind(
     `tr_${t.app_id}_${t.locale}`,
     t.app_id, t.locale,

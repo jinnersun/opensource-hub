@@ -17,6 +17,10 @@ database_id = "9989fa14-ca29-46ef-8c9f-9ab55f6b47d7"
 [ai]
 binding = "AI"
 
+# Secrets (wrangler secret put):
+#   wrangler secret put AI_GATEWAY_ACCOUNT
+#   wrangler secret put AI_GATEWAY_TOKEN
+
 [vars]
 BATCH_SIZE = "5"
 TARGET_LOCALES = "ja,ko,es,pt-BR"

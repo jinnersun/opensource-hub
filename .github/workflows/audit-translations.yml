@@ -1,0 +1,58 @@
+name: Audit Translations
+
+on:
+  schedule:
+    - cron: '0 7 * * *'  # 每日 7:00 UTC
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          cd scripts
+          npm ci || npm install
+
+      - name: Run audit (check only)
+        run: |
+          cd scripts
+          npx tsx audit-translations.ts --check
+        continue-on-error: true
+
+      - name: Auto-fix (if anomalies under threshold)
+        run: |
+          cd scripts
+          # 安全阈值: < 200 条异常才自动修复
+          ANOMALIES=$(npx tsx audit-translations.ts --check 2>&1 | grep -c "|" || echo "0")
+          if [ "$ANOMALIES" -gt 0 ] && [ "$ANOMALIES" -lt 200 ]; then
+            echo "Found $ANOMALIES anomalies, auto-fixing..."
+            npx tsx audit-translations.ts --fix
+          elif [ "$ANOMALIES" -ge 200 ]; then
+            echo "WARNING: $ANOMALIES anomalies exceeds threshold (200). Skipping auto-fix."
+          else
+            echo "No anomalies found."
+          fi
+
+      - name: Notify on large anomalies
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Translation audit detected anomalies',
+              body: 'Translation audit found anomalies exceeding safe threshold. Review at: ' + context.serverUrl + '/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId,
+              labels: ['data-pipeline']
+            })
