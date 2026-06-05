@@ -11,6 +11,7 @@ interface AdminStats {
   etl: Record<string, number>
   submissions: Record<string, number>
   translation: Record<string, number>
+  translationDeadlocked: number
 }
 
 const api = (path: string, params?: Record<string,string|number>) => {
@@ -44,6 +45,7 @@ export default function AdminDashboard() {
     { label: '库项目', value: stats.library || 0, icon: BookOpen, color: 'text-violet-500', bg: 'bg-violet-500/10' },
     { label: '待审核提交', value: stats.submissions?.pending || 0, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-500/10', link: '/admin/submissions' },
     { label: 'ETL 失败', value: stats.etl?.failed || 0, icon: AlertTriangle, color: 'text-red-500', bg: 'bg-red-500/10', link: '/admin/etl' },
+    { label: '翻译死锁', value: stats.translationDeadlocked || 0, icon: AlertTriangle, color: 'text-orange-500', bg: 'bg-orange-500/10', link: '/admin/translations?status=failed' },
   ]
 
   return (

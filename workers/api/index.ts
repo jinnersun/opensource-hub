@@ -309,17 +309,18 @@ export default {
       }
 
       if (path === '/admin/stats' && adminAuth(request)) {
-        const [appCount, libCount, etlStats, submissions, translationStats] = await Promise.all([
+        const [appCount, libCount, etlStats, submissions, translationStats, deadlocked] = await Promise.all([
           env.DB.prepare(`SELECT COUNT(*) as c FROM apps WHERE status = 'active'`).first<{c:number}>(),
           env.DB.prepare(`SELECT COUNT(*) as c FROM apps_library WHERE status = 'active'`).first<{c:number}>(),
           env.DB.prepare(`SELECT etl_status, COUNT(*) as c FROM raw_apps GROUP BY etl_status`).all<{etl_status:string;c:number}>(),
           env.DB.prepare(`SELECT status, COUNT(*) as c FROM user_submissions GROUP BY status`).all<{status:string;c:number}>(),
           env.DB.prepare(`SELECT status, COUNT(*) as c FROM translation_tasks GROUP BY status`).all<{status:string;c:number}>(),
+          env.DB.prepare(`SELECT COUNT(*) as c FROM translation_tasks WHERE status='failed' AND retry_count >= 3 AND last_error LIKE 'Audit:%'`).first<{c:number}>(),
         ])
         const etl: Record<string,number> = {}; (etlStats.results||[]).forEach(r => etl[r.etl_status]=r.c)
         const sub: Record<string,number> = {}; (submissions.results||[]).forEach(r => sub[r.status]=r.c)
         const tr: Record<string,number> = {}; (translationStats.results||[]).forEach(r => tr[r.status]=r.c)
-        return jsonResponse({ apps: appCount?.c||0, library: libCount?.c||0, etl, submissions: sub, translation: tr })
+        return jsonResponse({ apps: appCount?.c||0, library: libCount?.c||0, etl, submissions: sub, translation: tr, translationDeadlocked: deadlocked?.c||0 })
       }
 
       if (path === '/admin/jobs' && adminAuth(request)) {

@@ -120,14 +120,48 @@ function scanAll(): AuditResult[] {
 }
 
 // ==========================================
-// 修复
+// 修复 — 按具体记录精确修复
 // ==========================================
 
-function fixRecord(locale: string, retryCount: number, sourceTableMatch: string): string {
-  if (retryCount >= 3) {
-    return "UPDATE translation_tasks SET status='failed', retry_count=3, last_error='Audit: persistent translation hallucination (needs manual review)', updated_at=CURRENT_TIMESTAMP WHERE status='done' AND target_locale='" + locale + "' AND source_table IN (" + sourceTableMatch + ") AND retry_count >= 3"
+interface FixTarget { sourceTable: string; sourceId: string; locale: string }
+
+function mapToTask(r: AuditResult): FixTarget {
+  if (r.table === 'app_faq_translations') {
+    return { sourceTable: 'app_faqs', sourceId: r.recordId, locale: r.locale }
   }
-  return "UPDATE translation_tasks SET status='pending', retry_count=retry_count+1, last_error='Audit: detected untranslated content', updated_at=CURRENT_TIMESTAMP WHERE status='done' AND target_locale='" + locale + "' AND source_table IN (" + sourceTableMatch + ") AND retry_count < 3"
+  if (r.table === 'apps_library_translations') {
+    return { sourceTable: 'app_translations', sourceId: 'lib_' + r.recordId, locale: r.locale }
+  }
+  return { sourceTable: 'app_translations', sourceId: r.recordId, locale: r.locale }
+}
+
+function fixOne(target: FixTarget): string {
+  return "UPDATE translation_tasks SET status='pending', retry_count=retry_count+1, last_error='Audit: untranslated content', updated_at=CURRENT_TIMESTAMP WHERE status='done' AND source_table='" + target.sourceTable + "' AND source_id='" + target.sourceId + "' AND target_locale='" + target.locale + "' AND retry_count < 3"
+}
+
+function fixResults(results: AuditResult[]): number {
+  // 去重：多个 audit result 可能指向同一个 translation_task
+  const seen = new Set<string>()
+  const targets: FixTarget[] = []
+  for (const r of results) {
+    const t = mapToTask(r)
+    const key = t.sourceTable + '|' + t.sourceId + '|' + t.locale
+    if (!seen.has(key)) { seen.add(key); targets.push(t) }
+  }
+
+  console.log('Resetting ' + targets.length + ' unique translation tasks...')
+  let fixed = 0
+
+  for (const t of targets) {
+    try {
+      execWrangler(fixOne(t))
+      fixed++
+    } catch (e: any) {
+      console.error('  Failed: ' + t.sourceTable + '/' + t.sourceId + '/' + t.locale + ': ' + (e.message || '').slice(0, 100))
+    }
+  }
+
+  return fixed
 }
 
 // ==========================================
@@ -166,31 +200,9 @@ function main() {
 
   // Fix
   if (doFix) {
-    // 统计 retry_count 分布
-    const dist = execWranglerQuery(
-      "SELECT retry_count, COUNT(*) as cnt FROM translation_tasks WHERE status='done' GROUP BY retry_count"
-    )
     console.log('')
-    console.log('Translation task retry distribution:')
-    for (const d of dist) {
-      console.log('  retry_count=' + d.retry_count + ': ' + d.cnt + ' tasks')
-    }
-
-    console.log('')
-    console.log('Resetting suspicious translations...')
-
-    const locales = ['ja', 'ko', 'en']
-    const sourceMatch = "'app_translations','apps_library_translations','app_faqs'"
-
-    for (const locale of locales) {
-      // >=3 retries → need_human_fix
-      execWrangler(fixRecord(locale, 3, sourceMatch))
-      // <3 retries → pending, retry_count++
-      execWrangler(fixRecord(locale, 0, sourceMatch))
-    }
-
-    console.log('Done. Translator Worker will reprocess pending tasks next cron.')
-    console.log('Tasks with retry_count >=3 marked as need_human_fix.')
+    const fixed = fixResults(results)
+    console.log('Fixed ' + fixed + ' tasks. Translator Worker will retry next cron.')
   }
 
   process.exit(0)
