@@ -18,8 +18,7 @@ database_id = "9989fa14-ca29-46ef-8c9f-9ab55f6b47d7"
 binding = "AI"
 
 # Secrets (wrangler secret put):
-#   wrangler secret put AI_GATEWAY_ACCOUNT
-#   wrangler secret put AI_GATEWAY_TOKEN
+#   wrangler secret put DEEPSEEK_API_KEY  # DeepSeek API Key (直连, 不走 Gateway)
 
 [vars]
 BATCH_SIZE = "5"
