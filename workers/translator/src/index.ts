@@ -4,8 +4,7 @@
  * 触发: cron 每 5 分钟 (见 wrangler.toml)
  *
  * Secrets (wrangler secret put):
- *   AI_GATEWAY_ACCOUNT — CF Account ID
- *   AI_GATEWAY_TOKEN   — CF AI Gateway Access Token
+ *   DEEPSEEK_API_KEY — DeepSeek API Key (直连)
  */
 
 export interface Env {
@@ -14,8 +13,7 @@ export interface Env {
   BATCH_SIZE: string
   TARGET_LOCALES: string
   TRIGGER_TOKEN?: string
-  AI_GATEWAY_ACCOUNT?: string
-  AI_GATEWAY_TOKEN?: string
+  DEEPSEEK_API_KEY?: string
 }
 
 const TARGET_LOCALES = ['ja', 'ko', 'es', 'pt-BR']
@@ -55,8 +53,8 @@ interface Translation {
 async function translateText(env: Env, text: string, sourceLang: string, targetLang: string): Promise<string> {
   if (!text || text.trim().length === 0) return text
 
-  // DeepSeek-v4-flash 翻译 (via AI Gateway)
-  if (env.AI_GATEWAY_ACCOUNT && env.AI_GATEWAY_TOKEN) {
+  // DeepSeek API 直连
+  if (env.DEEPSEEK_API_KEY) {
     try {
       const sourceName = LANG_NAMES[sourceLang] || sourceLang
       const targetName = LANG_NAMES[targetLang] || targetLang
@@ -65,12 +63,11 @@ async function translateText(env: Env, text: string, sourceLang: string, targetL
       const controller = new AbortController()
       const timer = setTimeout(() => controller.abort(), 30_000)
       try {
-        const url = 'https://gateway.ai.cloudflare.com/v1/' + env.AI_GATEWAY_ACCOUNT + '/deepseek/deepseek/v1/chat/completions'
-        const resp = await fetch(url, {
+        const resp = await fetch('https://api.deepseek.com/v1/chat/completions', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'cf-aig-authorization': 'Bearer ' + env.AI_GATEWAY_TOKEN,
+            'Authorization': 'Bearer ' + env.DEEPSEEK_API_KEY,
           },
           signal: controller.signal,
           body: JSON.stringify({
