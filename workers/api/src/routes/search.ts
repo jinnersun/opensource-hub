@@ -13,8 +13,13 @@ export interface Env {
   TRIGGER_TOKEN?: string
 }
 
+function isMultiWord(q: string): boolean {
+  return q.includes(' ') || q.length > 15  // 空格分词或超长字符串
+}
+
 async function ftsSearchApps(db: D1Database, query: string, lang: string, limit: number): Promise<any[]> {
-  // FTS5 trigram: 支持拼写错误 + 中文分词
+  // FTS5 trigram: 仅单 token 使用（不按空格分词），多词走 LIKE
+  if (isMultiWord(query)) return []
   try {
     const { results } = await db.prepare(`
       SELECT a.id, a.name, a.slug, a.description, a.full_description, a.category, a.tags,
@@ -34,6 +39,7 @@ async function ftsSearchApps(db: D1Database, query: string, lang: string, limit:
 }
 
 async function ftsSearchLibs(db: D1Database, query: string, lang: string): Promise<any[]> {
+  if (isMultiWord(query)) return []
   try {
     const { results } = await db.prepare(`
       SELECT l.id, l.github_repo_id, l.slug, l.name, l.full_name,
