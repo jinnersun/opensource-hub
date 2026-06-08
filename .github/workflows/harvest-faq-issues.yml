@@ -25,10 +25,11 @@ jobs:
           cache: 'npm'
           cache-dependency-path: scripts/package-lock.json
 
-      - name: Install dependencies
+      - name: Install dependencies + wrangler
         run: |
           cd scripts
           npm ci
+          npm install -g wrangler
 
       - name: Run V3 collect (采集 + 打分)
         env:
@@ -36,14 +37,6 @@ jobs:
         run: |
           cd scripts
           npx tsx v3/collect.ts --all
-
-      - name: Upload collected data
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: faq-collected
-          path: scripts/v3/data/
-          retention-days: 7
 
       - name: Notify on failure
         if: failure()
