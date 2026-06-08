@@ -26,7 +26,7 @@ async function ftsSearchApps(db: D1Database, query: string, lang: string, limit:
       ${TRANSLATION_JOIN}
       WHERE a.status = 'active' AND apps_search_idx MATCH ?
       ORDER BY rank LIMIT ?
-    `).bind(query, limit).all()
+    `).bind(lang, query, limit).all()
     return (results || [])
   } catch {
     return []  // FTS5 查询失败时返回空
