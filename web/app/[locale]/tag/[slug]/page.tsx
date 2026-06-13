@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
-import { notFound } from 'next/navigation'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { ProjectCard } from '@/components/project-card'
@@ -76,25 +75,36 @@ async function getTagData(locale: string, slug: string) {
   try {
     const ctx = (globalThis as any)[Symbol.for('__cloudflare-context__')]
     const api = ctx?.env?.API
-    if (!api) return null
+    if (!api) {
+      console.error('[SSR tag] Service Binding not available')
+      return { error: 'api_unavailable', apps: [], appCount: 0, isEmpty: true }
+    }
 
     // 通过 slug 反查原始标签名
     const mapRes = await api.fetch(new Request('http://internal/api/tags'))
+    if (!mapRes.ok) {
+      console.error('[SSR tag] /api/tags failed:', mapRes.status)
+      return { error: 'api_error', apps: [], appCount: 0, isEmpty: true }
+    }
     const { map } = await mapRes.json() as { map: Record<string, string> }
     const originalTag = map[slug] || slug
 
     const res = await api.fetch(
       new Request(`http://internal/api/apps?tag=${encodeURIComponent(originalTag)}&limit=50&lang=${locale}`)
     )
+    if (!res.ok) {
+      console.error('[SSR tag] /api/apps failed:', res.status)
+      return { error: 'api_error', apps: [], appCount: 0, isEmpty: true }
+    }
     const data = await res.json() as any
     const apps = (data.data || [])
       .map(transformAppForDisplay)
       .sort((a: Project, b: Project) => b.stars - a.stars)
 
     return { tag: originalTag, appCount: apps.length, apps, isEmpty: apps.length === 0 }
-  } catch (e) {
-    console.error('[SSR tag]', e)
-    return null
+  } catch (e: any) {
+    console.error('[SSR tag] Exception:', e?.message || e)
+    return { error: e?.message || 'unknown', apps: [], appCount: 0, isEmpty: true }
   }
 }
 
@@ -105,13 +115,14 @@ export default async function TagPage({ params }: Props) {
 
   const data = await getTagData(locale, slug)
 
-  // 如果数据获取失败或tag不存在，返回404
-  if (!data) {
-    notFound()
-  }
-
-  const { apps, appCount, isEmpty } = data
+  // data 现在总是有值，不会 null
+  const { apps, appCount, isEmpty, error, tag } = data as any
   const tagDisplay = getTagDisplayName(slug, locale)
+  
+  // 如果有错误，记录日志但仍渲染页面（空状态）
+  if (error) {
+    console.error('[TagPage] Error:', error, 'Slug:', slug)
+  }
 
   // JSON-LD ItemList
   const jsonLd = {
