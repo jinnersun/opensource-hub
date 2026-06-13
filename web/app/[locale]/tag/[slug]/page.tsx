@@ -132,6 +132,28 @@ async function getTagData(locale: string, slug: string) {
 
 export default async function TagPage({ params }: Props) {
   const { locale, slug } = await params
+  
+  // 最简单测试：直接返回一个简单页面，不调用任何API
+  // 如果这都不能渲染，说明问题在OpenNext或Next.js本身
+  const TEST_MODE = true
+  
+  if (TEST_MODE) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <div className="p-8 bg-green-100 border-4 border-green-500 rounded-lg">
+            <h1 className="text-3xl font-bold text-green-800">✅ 测试成功！</h1>
+            <p className="mt-4 text-lg">如果你看到这个页面，说明OpenNext渲染正常工作</p>
+            <p className="mt-2">Locale: {locale}</p>
+            <p>Slug: {slug}</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
   const t = await getTranslations({ locale, namespace: 'category' })
   const te = await getTranslations({ locale, namespace: 'errors' })
 
