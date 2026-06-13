@@ -72,39 +72,61 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 async function getTagData(locale: string, slug: string) {
+  console.log('[SSR tag] ========== 开始获取Tag数据 ==========')
+  console.log('[SSR tag] 参数: locale=', locale, ', slug=', slug)
+  
   try {
     const ctx = (globalThis as any)[Symbol.for('__cloudflare-context__')]
+    console.log('[SSR tag] Cloudflare context:', ctx ? '存在' : '不存在')
+    
     const api = ctx?.env?.API
+    console.log('[SSR tag] API binding:', api ? '可用' : '不可用')
+    
     if (!api) {
-      console.error('[SSR tag] Service Binding not available')
-      return { error: 'api_unavailable', apps: [], appCount: 0, isEmpty: true }
+      console.error('[SSR tag] ❌ Service Binding not available')
+      return { error: 'api_unavailable', apps: [], appCount: 0, isEmpty: true, debug: 'no_api_binding' }
     }
 
     // 通过 slug 反查原始标签名
+    console.log('[SSR tag] 正在调用 /api/tags...')
     const mapRes = await api.fetch(new Request('http://internal/api/tags'))
+    console.log('[SSR tag] /api/tags 响应状态:', mapRes.status)
+    
     if (!mapRes.ok) {
-      console.error('[SSR tag] /api/tags failed:', mapRes.status)
-      return { error: 'api_error', apps: [], appCount: 0, isEmpty: true }
+      console.error('[SSR tag] ❌ /api/tags failed:', mapRes.status)
+      return { error: 'api_error', apps: [], appCount: 0, isEmpty: true, debug: 'tags_api_failed' }
     }
-    const { map } = await mapRes.json() as { map: Record<string, string> }
+    
+    const { map, tags } = await mapRes.json() as { map: Record<string, string>; tags: string[] }
+    console.log('[SSR tag] 获取到标签数量:', tags?.length || 0)
+    
     const originalTag = map[slug] || slug
+    console.log('[SSR tag] Slug映射: ', slug, '->', originalTag)
 
+    console.log('[SSR tag] 正在调用 /api/apps?tag=...')
     const res = await api.fetch(
       new Request(`http://internal/api/apps?tag=${encodeURIComponent(originalTag)}&limit=50&lang=${locale}`)
     )
+    console.log('[SSR tag] /api/apps 响应状态:', res.status)
+    
     if (!res.ok) {
-      console.error('[SSR tag] /api/apps failed:', res.status)
-      return { error: 'api_error', apps: [], appCount: 0, isEmpty: true }
+      const errorText = await res.text().catch(() => 'unknown')
+      console.error('[SSR tag] ❌ /api/apps failed:', res.status, errorText)
+      return { error: 'api_error', apps: [], appCount: 0, isEmpty: true, debug: 'apps_api_failed' }
     }
+    
     const data = await res.json() as any
+    console.log('[SSR tag] API返回应用数量:', data?.data?.length || 0)
+    
     const apps = (data.data || [])
       .map(transformAppForDisplay)
       .sort((a: Project, b: Project) => b.stars - a.stars)
 
-    return { tag: originalTag, appCount: apps.length, apps, isEmpty: apps.length === 0 }
+    console.log('[SSR tag] ✅ 成功获取数据，应用数:', apps.length)
+    return { tag: originalTag, appCount: apps.length, apps, isEmpty: apps.length === 0, debug: 'success' }
   } catch (e: any) {
-    console.error('[SSR tag] Exception:', e?.message || e)
-    return { error: e?.message || 'unknown', apps: [], appCount: 0, isEmpty: true }
+    console.error('[SSR tag] ❌ Exception:', e?.message || e, e?.stack)
+    return { error: e?.message || 'unknown', apps: [], appCount: 0, isEmpty: true, debug: 'exception' }
   }
 }
 
@@ -113,15 +135,28 @@ export default async function TagPage({ params }: Props) {
   const t = await getTranslations({ locale, namespace: 'category' })
   const te = await getTranslations({ locale, namespace: 'errors' })
 
+  console.log('[TagPage] ========== 页面组件开始渲染 ==========')
+  console.log('[TagPage] params: locale=', locale, ', slug=', slug)
+
   const data = await getTagData(locale, slug)
+  console.log('[TagPage] getTagData返回:', JSON.stringify({
+    error: data.error,
+    debug: (data as any).debug,
+    appCount: data.appCount,
+    isEmpty: data.isEmpty
+  }))
 
   // data 现在总是有值，不会 null
-  const { apps, appCount, isEmpty, error, tag } = data as any
+  const { apps, appCount, isEmpty, error, tag, debug } = data as any
   const tagDisplay = getTagDisplayName(slug, locale)
+  
+  console.log('[TagPage] 解构后: apps=', apps?.length, ', appCount=', appCount, ', isEmpty=', isEmpty, ', error=', error)
   
   // 如果有错误，记录日志但仍渲染页面（空状态）
   if (error) {
-    console.error('[TagPage] Error:', error, 'Slug:', slug)
+    console.error('[TagPage] ❌ 错误:', error, ', Slug:', slug, ', Debug:', debug)
+  } else {
+    console.log('[TagPage] ✅ 数据正常，开始渲染页面')
   }
 
   // JSON-LD ItemList
@@ -149,6 +184,17 @@ export default async function TagPage({ params }: Props) {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* 调试信息 - 临时显示 */}
+        <div className="mb-4 p-4 bg-yellow-100 border border-yellow-400 rounded text-sm font-mono">
+          <p><strong>🔍 调试信息:</strong></p>
+          <p>Debug: {debug || 'N/A'}</p>
+          <p>Error: {error || 'None'}</p>
+          <p>App Count: {appCount}</p>
+          <p>isEmpty: {String(isEmpty)}</p>
+          <p>Slug: {slug}</p>
+          <p>Tag: {tag || 'N/A'}</p>
+        </div>
+
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
         {/* Breadcrumb */}
