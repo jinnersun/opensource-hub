@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
+import { notFound } from 'next/navigation'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { ProjectCard } from '@/components/project-card'
@@ -48,21 +49,26 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale, slug } = await params
-  const tagDisplay = getTagDisplayName(slug, locale)
-  return {
-    title: `${tagDisplay} - OpenSource-Hub`,
-    description: `Discover the best open source ${formatTagName(slug).toLowerCase()} tools. Free, secure, and community-trusted.`,
-    alternates: {
-      canonical: `https://www.opensource-hub.com/${locale}/tag/${slug}`,
-      languages: {
-        zh: `https://www.opensource-hub.com/zh/tag/${slug}`,
-        en: `https://www.opensource-hub.com/en/tag/${slug}`,
-        ja: `https://www.opensource-hub.com/ja/tag/${slug}`,
-        ko: `https://www.opensource-hub.com/ko/tag/${slug}`,
-        'x-default': `https://www.opensource-hub.com/en/tag/${slug}`,
+  try {
+    const { locale, slug } = await params
+    const tagDisplay = getTagDisplayName(slug, locale)
+    return {
+      title: `${tagDisplay} - OpenSource-Hub`,
+      description: `Discover the best open source ${formatTagName(slug).toLowerCase()} tools. Free, secure, and community-trusted.`,
+      alternates: {
+        canonical: `https://www.opensource-hub.com/${locale}/tag/${slug}`,
+        languages: {
+          zh: `https://www.opensource-hub.com/zh/tag/${slug}`,
+          en: `https://www.opensource-hub.com/en/tag/${slug}`,
+          ja: `https://www.opensource-hub.com/ja/tag/${slug}`,
+          ko: `https://www.opensource-hub.com/ko/tag/${slug}`,
+          'x-default': `https://www.opensource-hub.com/en/tag/${slug}`,
+        },
       },
-    },
+    }
+  } catch (error) {
+    console.error('[generateMetadata tag]', error)
+    return {}
   }
 }
 
@@ -99,16 +105,9 @@ export default async function TagPage({ params }: Props) {
 
   const data = await getTagData(locale, slug)
 
+  // 如果数据获取失败或tag不存在，返回404
   if (!data) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <main className="mx-auto max-w-7xl px-4 py-12">
-          <ErrorState title={te('title')} description={te('description')} />
-        </main>
-        <Footer />
-      </div>
-    )
+    notFound()
   }
 
   const { apps, appCount, isEmpty } = data
