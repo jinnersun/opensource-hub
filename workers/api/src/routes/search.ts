@@ -81,7 +81,7 @@ function likeSearchApps(db: D1Database, query: string, lang: string, limit: numb
     ? `AND a.id NOT IN (${[...excludeIds].map(() => '?').join(',')})`
     : ''
   const binds: any[] = [lang]
-  for (let i = 0; i < 10; i++) binds.push(pattern)
+  for (let i = 0; i < 11; i++) binds.push(pattern)
   binds.push(query, pattern, pattern)
   excludeIds.forEach(id => binds.push(id))
   binds.push(limit)
