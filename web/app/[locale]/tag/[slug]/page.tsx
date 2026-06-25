@@ -10,8 +10,9 @@ import { ArrowLeft, Tag, Loader2 } from 'lucide-react'
 
 type Props = { params: Promise<{ locale: string; slug: string }> }
 
-// 不设 dynamicParams = false：build 时 Worker 不可用导致 generateStaticParams 返回空
-// 改为运行时 SSR on-demand，此时 Service Binding 可用
+// 核心修复：强制声明为动态 SSR 路由，阻止 OpenNext 构建静态依赖
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 // 标签翻译映射表（热门标签，未覆盖的 fallback 到 formatTagName）
 const TAG_TRANSLATIONS: Record<string, Record<string, string>> = {
@@ -35,34 +36,29 @@ function getTagDisplayName(slug: string, locale: string): string {
   return TAG_TRANSLATIONS[slug]?.[locale] || formatTagName(slug)
 }
 
-export async function generateStaticParams() {
-  const locales = ['zh', 'en', 'ja', 'ko']
-  try {
-    const ctx = (globalThis as any)[Symbol.for('__cloudflare-context__')]
-    const api = ctx?.env?.API
-    if (!api) return []
-    const res = await api.fetch(new Request('http://internal/api/tags'))
-    const { tags } = await res.json() as { tags: string[] }
-    return locales.flatMap(locale => tags.map(tag => ({ locale, slug: tag })))
-  } catch { return [] }
-}
+// 核心修复：彻底移除 generateStaticParams()，不再尝试构建时预渲染
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale, slug } = await params
-  const tagDisplay = getTagDisplayName(slug, locale)
-  return {
-    title: `${tagDisplay} - OpenSource-Hub`,
-    description: `Discover the best open source ${formatTagName(slug).toLowerCase()} tools. Free, secure, and community-trusted.`,
-    alternates: {
-      canonical: `https://www.opensource-hub.com/${locale}/tag/${slug}`,
-      languages: {
-        zh: `https://www.opensource-hub.com/zh/tag/${slug}`,
-        en: `https://www.opensource-hub.com/en/tag/${slug}`,
-        ja: `https://www.opensource-hub.com/ja/tag/${slug}`,
-        ko: `https://www.opensource-hub.com/ko/tag/${slug}`,
-        'x-default': `https://www.opensource-hub.com/en/tag/${slug}`,
+  try {
+    const { locale, slug } = await params
+    const tagDisplay = getTagDisplayName(slug, locale)
+    return {
+      title: `${tagDisplay} - OpenSource-Hub`,
+      description: `Discover the best open source ${formatTagName(slug).toLowerCase()} tools. Free, secure, and community-trusted.`,
+      alternates: {
+        canonical: `https://www.opensource-hub.com/${locale}/tag/${slug}`,
+        languages: {
+          zh: `https://www.opensource-hub.com/zh/tag/${slug}`,
+          en: `https://www.opensource-hub.com/en/tag/${slug}`,
+          ja: `https://www.opensource-hub.com/ja/tag/${slug}`,
+          ko: `https://www.opensource-hub.com/ko/tag/${slug}`,
+          'x-default': `https://www.opensource-hub.com/en/tag/${slug}`,
+        },
       },
-    },
+    }
+  } catch (error) {
+    console.error('[generateMetadata tag]', error)
+    return {}
   }
 }
 
@@ -70,16 +66,21 @@ async function getTagData(locale: string, slug: string) {
   try {
     const ctx = (globalThis as any)[Symbol.for('__cloudflare-context__')]
     const api = ctx?.env?.API
-    if (!api) return null
+    if (!api) {
+      console.error('[SSR tag] Service Binding not available')
+      return null
+    }
 
     // 通过 slug 反查原始标签名
     const mapRes = await api.fetch(new Request('http://internal/api/tags'))
+    if (!mapRes.ok) return null
     const { map } = await mapRes.json() as { map: Record<string, string> }
     const originalTag = map[slug] || slug
 
     const res = await api.fetch(
       new Request(`http://internal/api/apps?tag=${encodeURIComponent(originalTag)}&limit=50&lang=${locale}`)
     )
+    if (!res.ok) return null
     const data = await res.json() as any
     const apps = (data.data || [])
       .map(transformAppForDisplay)
@@ -99,12 +100,13 @@ export default async function TagPage({ params }: Props) {
 
   const data = await getTagData(locale, slug)
 
+  // 数据获取失败时渲染错误状态（不用 notFound()，避免 OpenNext 兼容问题）
   if (!data) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
         <main className="mx-auto max-w-7xl px-4 py-12">
-          <ErrorState title={te('title')} description={te('description')} />
+          <p className="text-center text-muted-foreground">{te('description')}</p>
         </main>
         <Footer />
       </div>
