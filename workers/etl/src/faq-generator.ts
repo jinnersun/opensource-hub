@@ -155,10 +155,9 @@ async function fetchPendingFAQs(env: Env, appId: string, limit = 10): Promise<Ra
 
 async function fetchAppsWithPendingFAQs(env: Env): Promise<{ id: string; name: string }[]> {
   const { results } = await env.DB.prepare(
-    `SELECT DISTINCT a.id, a.name FROM apps a
-     INNER JOIN raw_faqs rf ON a.id = rf.app_id
-     WHERE rf.etl_status = 'pending' AND a.status = 'active'
-     ORDER BY a.stars_count DESC`
+    `SELECT app_id as id, app_id as name FROM raw_faqs
+     WHERE etl_status = 'pending'
+     GROUP BY app_id ORDER BY COUNT(*) DESC`
   ).all<{ id: string; name: string }>()
   return results || []
 }

@@ -166,14 +166,19 @@ function esc(s: string): string {
   return s.replace(/'/g, "''").replace(/\\/g, '\\\\')
 }
 
-function execWranglerFile(sql: string): void {
+function execWranglerFile(sql: string): any {
+  const fs = require('fs')
+  const path = require('path')
+  const os = require('os')
   const f = path.join(os.tmpdir(), `faq-collect-${Date.now()}.sql`)
   fs.writeFileSync(f, sql, 'utf-8')
   try {
-    execSync(`wrangler d1 execute opensource-hub-db --file "${f}" --remote`, {
+    const out = execSync(`wrangler d1 execute opensource-hub-db --file "${f}" --remote`, {
       encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe']
     })
     fs.unlinkSync(f)
+    const i = out.indexOf('[')
+    return i < 0 ? null : JSON.parse(out.substring(i))[0]
   } catch (e) { try { fs.unlinkSync(f) } catch {}; throw e }
 }
 
@@ -183,17 +188,25 @@ function writeRawFAQ(appId: string, issue: CollectedIssue): void {
   const labels = esc(JSON.stringify(issue.labels))
   const comments = esc(JSON.stringify(issue.comments))
   const prs = esc(JSON.stringify(issue.linked_prs))
-  const breakdown = esc(issue.score_breakdown.join(', '))
 
   execWranglerFile(
-    `INSERT INTO raw_faqs (app_id, issue_number, issue_title, issue_body, issue_state, issue_labels, comments_count, issue_created_at, issue_updated_at, issue_url, issue_comments, linked_prs, etl_status)
-     VALUES ('${appId}', ${issue.issue_number}, '${title}', '${body}', 'closed', '${labels}', ${issue.comments_count}, '', '', '${issue.html_url}', '${comments}', '${prs}', 'pending')
+    `INSERT INTO raw_faqs (app_id, issue_number, issue_title, issue_body, issue_state, issue_labels, comments_count, issue_url, issue_comments, linked_prs, etl_status, fetched_at)
+     VALUES ('${appId}', ${issue.issue_number}, '${title}', '${body}', 'closed', '${labels}', ${issue.comments_count}, '${issue.html_url}', '${comments}', '${prs}', 'pending', CURRENT_TIMESTAMP)
      ON CONFLICT(app_id, issue_number) DO UPDATE SET
        issue_title = excluded.issue_title, issue_body = excluded.issue_body,
        issue_labels = excluded.issue_labels, comments_count = excluded.comments_count,
        issue_url = excluded.issue_url, issue_comments = excluded.issue_comments,
-       linked_prs = excluded.linked_prs, etl_status = 'pending', error_log = NULL, retry_count = 0;`
+       linked_prs = excluded.linked_prs, etl_status = 'pending', error_log = NULL, retry_count = 0, fetched_at = CURRENT_TIMESTAMP;`
   )
+}
+
+function updateFaqStatus(appId: string): void {
+  if (appId.startsWith('lib_')) {
+    const repoId = appId.replace('lib_', '')
+    execSync(`wrangler d1 execute opensource-hub-db --command "UPDATE apps_library SET faq_status='completed', faq_processed_at=CURRENT_TIMESTAMP WHERE github_repo_id='${repoId}'" --remote`, { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] })
+  } else {
+    execSync(`wrangler d1 execute opensource-hub-db --command "UPDATE apps SET faq_status='completed', faq_processed_at=CURRENT_TIMESTAMP WHERE id='${appId}'" --remote`, { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] })
+  }
 }
 
 // ==========================================
@@ -290,6 +303,7 @@ async function collectApp(app: App): Promise<number> {
 
     if (scored.score >= PASS_THRESHOLD) {
       writeRawFAQ(app.id, scored)
+      if (written === 0) updateFaqStatus(app.id)
       console.log(`      ✅ ${scored.score}分 ${scored.score_breakdown.join(', ')}`)
       written++
     } else {
